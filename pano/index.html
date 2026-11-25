@@ -1,0 +1,90 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ALAIA 360</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600&family=Alexandria:wght@300;400;500;600&display=swap">
+<style>
+:root{--bg:#0B0F0E;--ink:#EEE9DF;--mute:rgba(238,233,223,.62);--line:rgba(238,233,223,.18);--acc:#93D3CA;--ease:cubic-bezier(.16,1,.3,1)}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:"Onest",system-ui,sans-serif;-webkit-font-smoothing:antialiased;touch-action:none;user-select:none}
+html[dir=rtl] body{font-family:"Alexandria",Tahoma,sans-serif}
+canvas{display:block;width:100%;height:100%;cursor:grab}canvas:active{cursor:grabbing}
+#fade{position:fixed;inset:0;background:var(--bg);opacity:1;transition:opacity .9s var(--ease);pointer-events:none}
+.shade{position:fixed;inset:0;pointer-events:none;background:linear-gradient(to top,rgba(8,11,10,.72),transparent 38%),linear-gradient(to bottom,rgba(8,11,10,.55),transparent 22%)}
+.cap{position:fixed;left:max(40px,env(safe-area-inset-left));bottom:44px;max-width:min(640px,80vw);pointer-events:none}
+html[dir=rtl] .cap{left:auto;right:max(40px,env(safe-area-inset-right))}
+.eye{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--mute);font-weight:500}
+html[dir=rtl] .eye{letter-spacing:0;font-size:13px;text-transform:none}
+h1{margin:12px 0 0;font-family:"Onest",system-ui,sans-serif;font-weight:400;font-size:clamp(40px,5vw,84px);line-height:.98;letter-spacing:-.02em}
+html[dir=rtl] h1{font-family:"Alexandria",sans-serif;line-height:1.3;letter-spacing:0}
+.cap p{margin:12px 0 0;color:var(--mute);font-weight:300;font-size:15px;line-height:1.6}
+.nav{position:fixed;top:max(24px,env(safe-area-inset-top));left:max(24px,env(safe-area-inset-left));right:90px;display:flex;gap:8px;flex-wrap:wrap}
+html[dir=rtl] .nav{left:90px;right:max(24px,env(safe-area-inset-right))}
+.nav button{font:inherit;font-size:12px;letter-spacing:.08em;color:var(--ink);background:rgba(11,15,14,.45);border:1px solid var(--line);border-radius:999px;padding:10px 16px;cursor:pointer;transition:all .5s var(--ease)}
+html[dir=rtl] .nav button{letter-spacing:0;font-size:13px}
+.nav button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hint{position:fixed;right:max(40px,env(safe-area-inset-right));bottom:50px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:10px;transition:opacity 1s}
+html[dir=rtl] .hint{right:auto;left:40px;letter-spacing:0;text-transform:none;font-size:13px}
+.hint i{width:34px;height:1px;background:var(--mute);display:block;animation:sw 2.4s var(--ease) infinite}
+@keyframes sw{0%,100%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+.zm{position:fixed;right:max(40px,env(safe-area-inset-right));bottom:96px;display:flex;flex-direction:column;gap:6px;padding:5px;border:1px solid var(--line);border-radius:999px;background:rgba(11,15,14,.45)}
+.zm button{width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;transition:background .3s}.zm button:hover{background:rgba(255,255,255,.12)}.zm svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
+html[dir=rtl] .zm{right:auto;left:max(40px,env(safe-area-inset-left))}
+.compass{position:fixed;right:max(40px,env(safe-area-inset-right));top:50%;width:1px;height:0}
+@media (max-width:700px){.cap{left:16px;bottom:28px}.hint{display:none}.nav{left:12px;right:64px}}
+</style></head><body>
+<canvas id="c"></canvas><div class="shade"></div>
+<div class="nav" id="nav"></div>
+<div class="cap" id="cap"></div>
+<div class="zm"><button id="zin" aria-label="zoom in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><button id="zout" aria-label="zoom out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button></div>
+<div class="hint" id="hint"><i></i><span id="hintT">Drag to look around</span></div>
+<div id="fade"></div>
+<script src="three.min.js"></script>
+<script>
+const Q=new URLSearchParams(location.search), AR=Q.get('lang')==='ar'; if(AR){document.documentElement.dir='rtl';document.documentElement.lang='ar';}
+const V=39.6; // band half-angle (deg) of the equirectangular strip
+const SC=[
+ {id:'aerial',img:'img/aerial.jpg',yaw:0,h:184.6,en:['Over the resort','ALAIA from above','Thirteen towers around three crystal lagoons, south of the coastal road.'],ar:['فوق المشروع','ألايا من فوق','١٣ برج حوالين ٣ لاجونات كريستال، قبلي الطريق الساحلي.']},
+ {id:'balcony',img:'img/balcony.jpg',yaw:-40,h:184.6,en:['Tower 06 · second floor','The view from your balcony','Real sun, real neighbours, real lagoon, exactly where the building stands.'],ar:['برج ٠٦ · الدور الثاني','الفيو من البلكونة','نفس الشمس ونفس الجيران ونفس اللاجون، من مكان العمارة بالظبط.']},
+ {id:'corridor',img:'img/corridor.jpg',yaw:0,en:['Inside the tower','The corridor','From the stair core to your front door.'],ar:['جوه البرج','الطرقة','من السلم لحد باب الشقة.']},
+ {id:'st',img:'img/st_room.jpg',yaw:-22,kind:'st',en:['Studio · 31 m²','The studio','One open room, kitchen and bathroom.'],ar:['استوديو · ٣١ م²','الاستوديو','مساحة مفتوحة ومطبخ وحمام.']},
+ {id:'br1',img:'img/br1_living.jpg',yaw:0,kind:'br1',en:['One bedroom · 39 m²','Living and kitchen','Living, kitchen and the door to the bedroom.'],ar:['غرفة · ٣٩ م²','الريسبشن والمطبخ','الريسبشن والمطبخ وباب غرفة النوم.']},
+ {id:'br1bed',img:'img/br1_bed.jpg',yaw:30,h:184.7,en:['One bedroom · 39 m²','The bedroom','Morning light from the window.'],ar:['غرفة · ٣٩ م²','غرفة النوم','نور الصبح من الشباك.']},
+];
+const AV=(window.AVAIL||[]); let scenes=[];
+const renderer=new THREE.WebGLRenderer({canvas:c,antialias:true}); renderer.setPixelRatio(Math.min(2,devicePixelRatio));
+const scene=new THREE.Scene(); const cam=new THREE.PerspectiveCamera(62,1,.1,100);
+const mat=new THREE.MeshBasicMaterial({color:0xffffff}); let mesh=null, HC=360;
+function setGeo(h){ if(mesh){scene.remove(mesh);mesh.geometry.dispose();} HC=h; const g=new THREE.SphereGeometry(10,128,48,(-h/2)*Math.PI/180,h*Math.PI/180,(90-V)*Math.PI/180,2*V*Math.PI/180); g.scale(-1,1,1); mesh=new THREE.Mesh(g,mat); scene.add(mesh);} setGeo(360);
+let AD=1,lon=0,lat=0,vlon=0,drag=null,idle=0,cur=-1;
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;
+ // keep the band filling the view vertically: vertical fov <= 2V - margin
+ FMAX=Math.min(64,2*V-4); if(w/h<1) FMAX=Math.min(2*V-4,72); fovT=Math.min(fovT||FMAX,FMAX); cam.fov=fovT; cam.updateProjectionMatrix();}
+let FMAX=62,fovT=0; const FMIN=30; function zoomBy(f){ fovT=Math.max(FMIN,Math.min(FMAX,fovT*f)); idle=0; }
+addEventListener('resize',resize);resize();
+const L=new THREE.TextureLoader();
+function txt(s){return AR?s.ar:s.en}
+function show(i){ if(i===cur) return; const s=scenes[i]; fade.style.opacity=1;
+  L.load(renderer.capabilities.maxTextureSize>=8192?s.img:s.img.replace('.jpg','_s.jpg'),t=>{ t.colorSpace=THREE.SRGBColorSpace||t.colorSpace; t.anisotropy=8; setTimeout(()=>{ if(mat.map) mat.map.dispose(); mat.map=t; mat.needsUpdate=true; setGeo(s.h||360); lon=s.yaw; lat=0; cur=i;
+    const [e,h,p]=txt(s); cap.innerHTML=`<div class="eye">${e}</div><h1>${h}</h1><p>${p}</p>`;
+    nav.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-pressed',j===i)); fade.style.opacity=0; },cur<0?0:500); },undefined,()=>{ if(i+1<scenes.length) show(i+1); });
+}
+function build(){ const ok=[]; let n=0; SC.forEach(s=>{const im=new Image();im.onload=()=>{ok.push(s);done();};im.onerror=done;im.src=s.img;});
+  function done(){ if(++n<SC.length) return; scenes=SC.filter(s=>ok.includes(s));
+    const lab={aerial:['Aerial','من فوق'],balcony:['Balcony view','الفيو من البلكونة'],corridor:['Corridor','الطرقة'],st:['Studio','استوديو'],br1:['1 Bedroom','غرفة'],br1bed:['Bedroom','غرفة النوم'],br2:['2 Bedrooms','غرفتين']};
+    nav.innerHTML=scenes.map((s,i)=>`<button data-i="${i}">${lab[s.id][AR?1:0]}</button>`).join(''); nav.querySelectorAll('button').forEach(b=>b.onclick=()=>show(+b.dataset.i));
+    const k=Q.get('u'); let st=Q.get('s')?scenes.findIndex(s=>s.id===Q.get('s')):-1; if(st<0) st=scenes.findIndex(s=>s.kind===k); if(st<0) st=scenes.findIndex(s=>s.id===(k?'br1':'balcony')); show(Math.max(0,st)); } }
+hintT.textContent=AR?'اسحب عشان تلف · صباعين للزووم':'Drag to look around · pinch to zoom';
+const PT=new Map(); let pinch=null;
+c.addEventListener('pointerdown',e=>{PT.set(e.pointerId,[e.clientX,e.clientY]); if(PT.size===2){const [a,b]=[...PT.values()];pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1]),f:fovT};drag=null;return;} drag={x:e.clientX,y:e.clientY,lon,lat,t:performance.now()};c.setPointerCapture(e.pointerId);idle=0;hint.style.opacity=0;});
+c.addEventListener('pointermove',e=>{ if(PT.has(e.pointerId))PT.set(e.pointerId,[e.clientX,e.clientY]); if(pinch&&PT.size===2){const [a,b]=[...PT.values()];const d=Math.hypot(a[0]-b[0],a[1]-b[1]);fovT=Math.max(FMIN,Math.min(FMAX,pinch.f*pinch.d/d));idle=0;return;} if(!drag)return;const k=cam.fov/innerHeight;const nl=drag.lon-(e.clientX-drag.x)*k;vlon=(nl-lon);lon=nl;lat=Math.max(-(V-cam.fov/2),Math.min(V-cam.fov/2,drag.lat+(e.clientY-drag.y)*k));});
+const up=e=>{PT.delete(e.pointerId); if(PT.size<2)pinch=null; drag=null;}; c.addEventListener('pointerup',up); c.addEventListener('pointercancel',up);
+c.addEventListener('wheel',e=>{e.preventDefault(); if(Math.abs(e.deltaY)>Math.abs(e.deltaX)) zoomBy(Math.exp(e.deltaY*.0012)); else lon+=e.deltaX*.05; idle=0;},{passive:false});
+addEventListener('keydown',e=>{if(e.key==='+'||e.key==='=')zoomBy(.85);if(e.key==='-')zoomBy(1/.85);});
+addEventListener('keydown',e=>{if(e.key==='ArrowRight')show((cur+1)%scenes.length);if(e.key==='ArrowLeft')show((cur-1+scenes.length)%scenes.length);});
+let last=performance.now();
+function loop(t){const dt=Math.min(50,t-last);last=t; if(!drag){ lon+=vlon; vlon*=.92; idle+=dt; if(idle>3500) lon+=dt*.0035*AD; }
+  if(Math.abs(cam.fov-fovT)>.01){cam.fov+= (fovT-cam.fov)*.18; cam.updateProjectionMatrix();}
+  const lim=V-cam.fov/2; lat=Math.max(-lim,Math.min(lim,lat));
+  if(HC<360){ const hf=2*Math.atan(Math.tan(cam.fov*Math.PI/360)*cam.aspect)*180/Math.PI; const m=Math.max(0,(HC-hf)/2); if(lon>m){lon=m;vlon=-Math.abs(vlon)*.5;} if(lon<-m){lon=-m;vlon=Math.abs(vlon)*.5;} if(lon>=m-0.01)AD=-1; if(lon<=-m+0.01)AD=1; }
+  const phi=(90-lat)*Math.PI/180, th=lon*Math.PI/180; cam.lookAt(Math.sin(phi)*Math.cos(th),Math.cos(phi),Math.sin(phi)*Math.sin(th));
+  renderer.render(scene,cam); requestAnimationFrame(loop);}
+requestAnimationFrame(loop); build(); zin.onclick=()=>zoomBy(.8); zout.onclick=()=>zoomBy(1.25);
+</script></body></html>
