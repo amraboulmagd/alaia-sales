@@ -1,0 +1,17 @@
+{
+ "mode": "touch",
+ "W": 1920,
+ "H": 1080,
+ "taps": 64,
+ "ok": 64,
+ "fail": [],
+ "errors": [
+  "console: Failed to load resource: the server responded with a status of 404 (File not found)",
+  "console: Failed to load resource: the server responded with a status of 404 (File not found)",
+  "console: Failed to load resource: the server responded with a status of 404 (File not found)",
+  "console: Failed to load resource: the server responded with a status of 404 (File not found)",
+  "console: Failed to load resource: the server responded with a status of 404 (File not found)",
+  "console: Failed to load resource: the server responded with a status of 404 (File not found)",
+  "console: Failed to load resource: the server responded with a status of 404 (File not found)"
+ ]
+}

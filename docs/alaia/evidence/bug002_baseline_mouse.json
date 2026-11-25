@@ -1,0 +1,128 @@
+{
+ "mode": "mouse",
+ "total": 17,
+ "ok": 2,
+ "fails": [
+  {
+   "start": "T06-B-207",
+   "step": "next",
+   "unit": "T06-B-208",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T06-B-207",
+   "step": "prev",
+   "unit": "T06-B-207",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T06-B-207",
+   "step": "next2",
+   "unit": "T06-B-208",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G01",
+   "step": "direct",
+   "unit": "T01-A-G01",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G01",
+   "step": "next",
+   "unit": "T01-A-G02",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G01",
+   "step": "prev",
+   "unit": "T01-A-G01",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G01",
+   "step": "next2",
+   "unit": "T01-A-G02",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G02",
+   "step": "direct",
+   "unit": "T01-A-G02",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G02",
+   "step": "next",
+   "unit": "T01-A-G03",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G02",
+   "step": "prev",
+   "unit": "T01-A-G02",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G02",
+   "step": "next2",
+   "unit": "T01-A-G03",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G03",
+   "step": "direct",
+   "unit": "T01-A-G03",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G03",
+   "step": "next",
+   "unit": "T01-A-G04",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G03",
+   "step": "prev",
+   "unit": "T01-A-G03",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  },
+  {
+   "start": "T01-A-G03",
+   "step": "next2",
+   "unit": "T01-A-G04",
+   "btnCount": 1,
+   "opened": null,
+   "ok": false
+  }
+ ],
+ "errors": []
+}
