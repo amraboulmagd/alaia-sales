@@ -797,6 +797,30 @@ body.sales .resf .dhbox{top:200px!important}
 
 /* BUG-006: unit panel header (code + prev/next) stays reachable while the panel scrolls */
 #sc>div:has(#u-n){position:sticky;top:0;z-index:3;background:var(--bg2);margin-inline:-8px;padding:10px 8px;border-radius:12px}
+
+/* ===== BUG-008 phone layout (<=600px): nothing clipped, no overlaps, calm type ===== */
+@media (max-width:600px){
+ header.top .seg button[aria-pressed=true]{display:none!important}
+ header.top .seg{padding:2px!important;gap:0!important}
+ header.top #fs{display:none!important}
+ .dock{background:var(--bg2)!important;border-top:1px solid var(--line)!important;padding:6px 14px calc(6px + env(safe-area-inset-bottom,0px))!important;gap:20px!important;scrollbar-width:none;z-index:30!important}
+ .dock::-webkit-scrollbar{display:none}
+ .dock>*{font-size:13px!important;letter-spacing:.06em!important;white-space:nowrap;flex:0 0 auto}
+ .orbctl{bottom:calc(66px + env(safe-area-inset-bottom,0px))!important;inset-inline:12px!important;max-width:none!important;scrollbar-width:none}
+ .orbctl::-webkit-scrollbar{display:none}
+ .orbctl>*{flex:0 0 auto}
+ .orbctl .orb-t,.orbctl .orb-plan{font-size:14px!important;padding-inline:12px!important;white-space:nowrap}
+ .orbinfo{top:76px!important}
+ .orbinfo h1{font-size:30px!important;letter-spacing:.18em}
+ .orbinfo p{font-size:13px!important;margin:4px 0 10px!important}
+ .orbinfo .chips{flex-wrap:nowrap!important;overflow-x:auto;max-width:calc(100vw - 32px);scrollbar-width:none;gap:6px!important}
+ .orbinfo .chips::-webkit-scrollbar{display:none}
+ .orbinfo .chip{font-size:14px!important;flex:0 0 auto;padding-inline:14px!important}
+ .frame.fswipe{overflow-x:auto;overflow-y:hidden;touch-action:pan-x;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+ .frame.fswipe::-webkit-scrollbar{display:none}
+ .frame.fswipe .planbox{margin-right:12px}
+ .side .sc{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))!important}
+}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -1311,7 +1335,7 @@ function sMaster(){
     if(v.readyState>=2) go2(); else { const ld=el.querySelector('.orb-load'); const lt=setTimeout(()=>ld.hidden=false,250); v.oncanplay=()=>{ v.oncanplay=null; clearTimeout(lt); ld.hidden=true; go2(); }; setTimeout(()=>{ if(!v.classList.contains('on')){ v.oncanplay=null; clearTimeout(lt); ld.hidden=true; fin(); } },2500); } };
   // ---------- hit areas + pills from anchor data (ORB = projected from the exact Blender camera of each angle)
   const draw=()=>{ const M=ORB[orbI]||{}; const fr=Object.entries(M).filter(([id])=>BLD.find(x=>x.id===id)).sort((a,b)=>b[1].d-a[1].d);
-    const r=el.getBoundingClientRect(); if(!el.isConnected||el.classList.contains('dive')||r.width<2||r.height<2) return; const s=Math.max(r.width/1920,r.height/1080)*Z.s; const PH=Math.max(48,44)/s, PW=PH*2.15, FS=18/s*1.15;
+    const r=el.getBoundingClientRect(); if(!el.isConnected||el.classList.contains('dive')||r.width<2||r.height<2) return; const s=Math.max(r.width/1920,r.height/1080)*Z.s; const PHONE=innerWidth<600, HMIN=(innerWidth>=1600?56:44)/s; const PH=(PHONE?34:48)/s, PW=PH*(PHONE?2.0:2.15), FS=(PHONE?15:18)/s*1.15;
     gH.innerHTML=fr.map(([id,v])=>{ const H=hullOf(v.hull); return `<polygon data-b="${id}" points="${H.map(p=>p.map(n=>n.toFixed(1)).join(',')).join(' ')}"/>`; }).join('');
     // greedy pill placement, nearest first, with leader lines when displaced
     const ctm=svg.getScreenCTM(); const inv=ctm?ctm.inverse():null; const zones=[];
@@ -1319,8 +1343,8 @@ function sMaster(){
     const inZ=(x,y)=>zones.some(z=>x+PW/2>z[0]&&x-PW/2<z[2]&&y+PH/2>z[1]&&y-PH/2<z[3]);
     const placed=[]; const out=[]; const lead=[];
     let VR=[0,0,1920,1080]; if(inv){ const pt=svg.createSVGPoint(); pt.x=0; pt.y=0; const a=pt.matrixTransform(inv); pt.x=innerWidth; pt.y=innerHeight; const c=pt.matrixTransform(inv); VR=[a.x,a.y,c.x,c.y]; }
-    [...fr].reverse().forEach(([id,v])=>{ const ax=v.top[0]*1920, ay=v.top[1]*1080; if(ax<VR[0]+8||ax>VR[2]-8||ay<VR[1]+8||ay>VR[3]-8) return; let px=ax, py=ay-PH*0.9; const ok=(x,y)=>x-PW/2>VR[0]+4&&x+PW/2<VR[2]-4&&y-PH/2>VR[1]+4&&y+PH/2<VR[3]-4&&!inZ(x,y)&&placed.every(p=>Math.abs(p[0]-x)>PW*1.06||Math.abs(p[1]-y)>PH*1.18);
-      const tries=[[0,0],[0,-1],[1,0],[-1,0],[1,-1],[-1,-1],[0,-2],[1.1,-2],[-1.1,-2],[0,1.4],[1.1,1.4],[-1.1,1.4],[2.2,0],[-2.2,0],[0,-3],[2.2,1.4],[2.2,-1.4],[0,2.6],[3.3,0],[3.3,1.4]]; let best=null; for(const [tx,ty] of tries){ const x=ax+tx*PW*1.08, y=py+ty*PH*1.22; if(ok(x,y)){ best=[x,y]; break; } } if(!best){ outer: for(let r=1;r<=8;r++){ for(let k=0;k<16;k++){ const an=k/16*Math.PI*2; const x=ax+Math.cos(an)*r*PW*0.8, y=py+Math.sin(an)*r*PH*1.1; if(x>PW&&x<1920-PW&&y>PH&&y<1080-PH&&ok(x,y)){ best=[x,y]; break outer; } } } } if(!best) best=[px,py]; placed.push(best);
+    [...fr].reverse().forEach(([id,v])=>{ const ax=v.top[0]*1920, ay=v.top[1]*1080; if(ax<VR[0]+8||ax>VR[2]-8||ay<VR[1]+8||ay>VR[3]-8) return; let px=ax, py=ay-PH*0.9; const ok=(x,y)=>x-PW/2>VR[0]+4&&x+PW/2<VR[2]-4&&y-PH/2>VR[1]+4&&y+PH/2<VR[3]-4&&!inZ(x,y)&&placed.every(p=>Math.abs(p[0]-x)>Math.max(PW,HMIN)*1.06||Math.abs(p[1]-y)>Math.max(PH,HMIN)*1.06);
+      const tries=[[0,0],[0,-1],[1,0],[-1,0],[1,-1],[-1,-1],[0,-2],[1.1,-2],[-1.1,-2],[0,1.4],[1.1,1.4],[-1.1,1.4],[2.2,0],[-2.2,0],[0,-3],[2.2,1.4],[2.2,-1.4],[0,2.6],[3.3,0],[3.3,1.4]]; let best=null; for(const [tx,ty] of tries){ const x=ax+tx*PW*1.08, y=py+ty*PH*1.22; if(ok(x,y)){ best=[x,y]; break; } } if(!best){ outer: for(let r=1;r<=8;r++){ for(let k=0;k<16;k++){ const an=k/16*Math.PI*2; const x=ax+Math.cos(an)*r*PW*0.8, y=py+Math.sin(an)*r*PH*1.1; if(x>PW&&x<1920-PW&&y>PH&&y<1080-PH&&ok(x,y)){ best=[x,y]; break outer; } } } } if(!best){ if(inZ(px,py)||placed.some(p=>Math.abs(p[0]-px)<Math.max(PW,HMIN)&&Math.abs(p[1]-py)<Math.max(PH,HMIN))) return; best=[px,py]; } placed.push(best);
       const b=BLD.find(x=>x.id===id), a=av(b); if(Math.hypot(best[0]-ax,best[1]-(ay-PH*0.9))>4) lead.push(`<line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${best[0].toFixed(1)}" y2="${(best[1]+PH/2).toFixed(1)}"/><circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="${(4/s).toFixed(1)}"/>`);
       const HH=Math.max(PH,(innerWidth>=1600?56:44)/s), HW=Math.max(PW,HH); out.push(`<g class="pl${state.kind&&!a?' dim':''}" data-b="${id}" transform="translate(${best[0].toFixed(1)},${best[1].toFixed(1)})"><rect class="hit" x="${(-HW/2).toFixed(1)}" y="${(-HH/2).toFixed(1)}" width="${HW.toFixed(1)}" height="${HH.toFixed(1)}"/><rect x="${(-PW/2).toFixed(1)}" y="${(-PH/2).toFixed(1)}" width="${PW.toFixed(1)}" height="${PH.toFixed(1)}" rx="${(PH/2).toFixed(1)}"/><text text-anchor="middle" y="${(FS*0.36).toFixed(1)}" style="font-size:${FS.toFixed(1)}px">${dg(id)}</text><circle cx="${(PW*0.3).toFixed(1)}" cy="0" r="${(5/s).toFixed(1)}" class="${a?'ok':'no'}"/></g>`); });
     gL.innerHTML=lead.join(''); gP.innerHTML=out.join('');
@@ -1424,7 +1448,7 @@ function sFloor({b,f}){
   state.b=b;state.f=f;state.u=null; const P=PLANS[b.plan];
   const fr=newFrame({full:true,html:`<div class="planbox" id="pbox"><div class="plan" id="plan"></div></div>`});
   const box=fr.querySelector('#pbox'); const pad=PAD(); const aw=innerWidth-pad.l-pad.r, ah=innerHeight-pad.t-pad.b-40;
-  const ar=P.w/(P.h+(b.single?40:0)); let w=aw,h=w/ar; if(h>ah){h=ah;w=h*ar;} Object.assign(box.style,{left:pad.l+(aw-w)/2-24+'px',top:pad.t+20+(ah-h)/2-24+'px',width:w+48+'px',height:h+48+'px'});
+  const ar=P.w/(P.h+(b.single?40:0)); let w=aw,h=w/ar; if(h>ah){h=ah;w=h*ar;} const swipe=innerWidth<700&&w<900; if(swipe){ w=900; h=w/ar; fr.classList.add('fswipe'); } Object.assign(box.style,{left:(swipe?12:pad.l+(aw-w)/2-24)+'px',top:(swipe?Math.max(170,pad.t+20+(ah-h)/2-24):pad.t+20+(ah-h)/2-24)+'px',width:w+48+'px',height:h+48+'px'});
   asset('plan_'+b.plan+'.svg').then(txt=>{ const host=fr.querySelector('#plan'); host.innerHTML=txt; const svg=host.querySelector('svg'); svg.setAttribute('preserveAspectRatio','xMidYMid meet');
     const ex=P.ext,cy=(ex[1]+ex[3])/2; svg.insertAdjacentHTML('beforeend',[['A',ex[0]+(ex[2]-ex[0])*.13],['B',ex[2]-(ex[2]-ex[0])*.13]].map(([e,x])=>`<g class="ent"><circle cx="${x}" cy="${b.single?ex[3]+22:cy}" r="22"/><text x="${x}" y="${(b.single?ex[3]+22:cy)+8}" text-anchor="middle">${e}</text></g>`).join(''));
     if(b.single) svg.setAttribute('viewBox',`0 0 ${P.w} ${P.h+40}`);

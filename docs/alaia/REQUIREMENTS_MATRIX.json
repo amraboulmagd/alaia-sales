@@ -1,0 +1,480 @@
+{
+ "source": "ALAIA Master Execution Directive V3 (25 Nov 2026) + ALAIA_HANDOFF.md (13-point brief)",
+ "statuses": [
+  "NOT_STARTED",
+  "IN_PROGRESS",
+  "IMPLEMENTED_NOT_VERIFIED",
+  "VERIFIED",
+  "BLOCKED",
+  "NOT_APPLICABLE_APPROVED"
+ ],
+ "requirements": [
+  {
+   "id": "R-00-01",
+   "desc": "Locate project, read handoff, confirm source/assets/deploy access",
+   "priority": "P0",
+   "files": [
+    "ALAIA_HANDOFF.md"
+   ],
+   "acceptance": "Repo cloned, source snapshot copied, Cloudflare project read via API",
+   "status": "VERIFIED",
+   "test": "PASS",
+   "evidence": "docs/alaia/PROJECT_STATE.md#environment",
+   "limits": "Original build pipeline (build_live.py) depends on cloud-only paths; built index.html is now the editable source"
+  },
+  {
+   "id": "R-00-02",
+   "desc": "Safe dev branch / checkpoint; production untouched",
+   "priority": "P0",
+   "files": [],
+   "acceptance": "Work on dev/v3-stabilize; main and production deployment unchanged",
+   "status": "VERIFIED",
+   "test": "PASS",
+   "evidence": "git log; Cloudflare production deployment 1e555b04 unchanged",
+   "limits": ""
+  },
+  {
+   "id": "R-00-03",
+   "desc": "Requirements matrix, project state, handoff docs + missing-evidence checker",
+   "priority": "P0",
+   "files": [
+    "docs/alaia/*",
+    "qa/check_matrix.js"
+   ],
+   "acceptance": "Every requirement has an ID; VERIFIED rows have evidence",
+   "status": "VERIFIED",
+   "test": "PASS",
+   "evidence": "qa/check_matrix.js output in TEST_RESULTS.md",
+   "limits": ""
+  },
+  {
+   "id": "R-00-04",
+   "desc": "Baseline evidence of every scene, EN/AR, desktop/tablet/phone",
+   "priority": "P1",
+   "files": [
+    "qa/scenes.js"
+   ],
+   "acceptance": "Screenshots per scene x language x viewport",
+   "status": "IN_PROGRESS",
+   "test": "PARTIAL",
+   "evidence": "docs/alaia/evidence/screens/",
+   "limits": "Pre-fix baseline captured only at 1920 and 390 EN; full matrix captured after fixes"
+  },
+  {
+   "id": "BUG-001",
+   "desc": "Master-plan tower tap opens the exact tower (pointer capture retargeting)",
+   "priority": "P0",
+   "files": [
+    "index.html (master plan pointer handlers)"
+   ],
+   "acceptance": "Real mouse + touch taps on every visible marker, 16 angles x 4 times of day, open the intended tower; drag/pinch/cancel never select",
+   "status": "VERIFIED",
+   "test": "PASS",
+   "evidence": "docs/alaia/evidence/bug001_baseline_mouse.json (0/64), bug001_fixed_mouse.json (64/64), bug001_fixed_touch.json (64/64), bug001_full_*.json, gestures_master.json",
+   "limits": "Browser touch emulation (CDP), not physical touchscreen"
+  },
+  {
+   "id": "BUG-002",
+   "desc": "Enter This Home works after navigation/rerender (T06-B-207)",
+   "priority": "P0",
+   "files": [
+    "index.html (sUnit override, newFrame)"
+   ],
+   "acceptance": "Direct, next, prev, reopen after close: walk opens for the selected unit, every type",
+   "status": "VERIFIED",
+   "test": "PASS",
+   "evidence": "docs/alaia/evidence/bug002_baseline_mouse.json (2/17), bug002_fixed_mouse.json (32/32)",
+   "limits": ""
+  },
+  {
+   "id": "BUG-003",
+   "desc": "Server-side staff authentication, sessions, rate limit, CSRF, no public secrets/helpers",
+   "priority": "P0",
+   "files": [
+    "functions/**",
+    "index.html (sales mode)"
+   ],
+   "acceptance": "sec_api.js all pass on local and preview; UI login/exit/expiry pass",
+   "status": "VERIFIED",
+   "test": "PASS preview 29/29 + UI 13/13",
+   "evidence": "docs/alaia/evidence/sec_preview.json, sales_ui_preview.json, sec_local.json",
+   "limits": "Preview verification pending; production needs its own D1 + secrets (approval)"
+  },
+  {
+   "id": "BUG-004",
+   "desc": "Touch targets: kiosk 56/64, tablet/phone 44",
+   "priority": "P0",
+   "files": [
+    "index.html CSS",
+    "qa/scenes.js"
+   ],
+   "acceptance": "scenes.js reports 0 undersized visible targets on all viewports",
+   "status": "VERIFIED",
+   "test": "PASS 140 scenes, 7 viewports x EN/AR, 0 undersized",
+   "evidence": "docs/alaia/evidence/screens/report.json",
+   "limits": "Full viewport x language run pending"
+  },
+  {
+   "id": "BUG-005",
+   "desc": "Interior media classified; illustrative disclosure; wrong node labels fixed",
+   "priority": "P0",
+   "files": [
+    "index.html (WN, strings)",
+    "docs/alaia/ASSET_REGISTRY.json"
+   ],
+   "acceptance": "Persistent EN/AR disclosure in walk viewer and dollhouse; node names match images; registry classifies all media",
+   "status": "IMPLEMENTED_NOT_VERIFIED",
+   "test": "visual check pending",
+   "evidence": "docs/alaia/ASSET_REGISTRY.json, evidence/media/*.png",
+   "limits": "No accurate per-tower interiors/views exist: needs developer renders (see DEVELOPER_DATA_REQUESTS)"
+  },
+  {
+   "id": "BUG-006",
+   "desc": "Sales exit/expiry closes protected UI; inventory translated; unit panel scroll/nav/stale data",
+   "priority": "P0",
+   "files": [
+    "index.html"
+   ],
+   "acceptance": "sales_ui.js 13/13",
+   "status": "VERIFIED",
+   "test": "PASS preview 13/13",
+   "evidence": "docs/alaia/evidence/sales_ui_preview.json",
+   "limits": "Preview run pending"
+  },
+  {
+   "id": "BUG-007",
+   "desc": "Touch gestures: drag rotate, pinch zoom, tap vs drag, touch-action, no context menu",
+   "priority": "P0",
+   "files": [
+    "index.html"
+   ],
+   "acceptance": "gestures_master.js pass; floor plan and walk viewer gesture checks; frame-time measurement",
+   "status": "IN_PROGRESS",
+   "test": "master plan PASS",
+   "evidence": "docs/alaia/evidence/gestures_master.json",
+   "limits": "Finger drag on master plan was cancelled by the browser (fixed). Walk viewer/floor plan gesture tests and frame timing not yet run"
+  },
+  {
+   "id": "BUG-008",
+   "desc": "Responsive phone/tablet/kiosk layouts EN/AR",
+   "priority": "P0",
+   "files": [
+    "index.html CSS"
+   ],
+   "acceptance": "No hscroll, overlap or clipped labels at 7 viewports x EN/AR, screenshot review",
+   "status": "IMPLEMENTED_NOT_VERIFIED",
+   "test": "phone screens reviewed; regressions pass",
+   "evidence": "Downloads/ALAIA/evidence/screens_phone_v2; bug001_after008_*.json",
+   "limits": "Bottom sheet overlaps ~15px of swiping floor plan on 360px; physical phones untested"
+  },
+  {
+   "id": "R-09-01",
+   "desc": "Re-verify kiosk sizes/typography",
+   "priority": "P1",
+   "files": [],
+   "acceptance": "Covered by BUG-004 audit",
+   "status": "IN_PROGRESS",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-09-02",
+   "desc": "Four times of day + 16 angles + 13 towers mappings",
+   "priority": "P1",
+   "files": [],
+   "acceptance": "BUG-001 full run",
+   "status": "IN_PROGRESS",
+   "test": "",
+   "evidence": "docs/alaia/evidence/bug001_full_*.json",
+   "limits": ""
+  },
+  {
+   "id": "R-09-03",
+   "desc": "Idle: 90 s + 5 s prompt self-serve, 10 min sales, attract resets and logs out",
+   "priority": "P1",
+   "files": [],
+   "acceptance": "Timed test with real input",
+   "status": "NOT_STARTED",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-09-04",
+   "desc": "Floor plans: labels, areas, status colours, selected outline, not colour-only",
+   "priority": "P1",
+   "files": [],
+   "acceptance": "All floors label count = unit count; status has non-colour cue",
+   "status": "NOT_STARTED",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-09-05",
+   "desc": "Arabic-Indic digits, Latin residence codes",
+   "priority": "P1",
+   "files": [],
+   "acceptance": "Scan of AR screens",
+   "status": "NOT_STARTED",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-09-06",
+   "desc": "Film poster first frame, staff vs visitor controls",
+   "priority": "P1",
+   "files": [],
+   "acceptance": "Screenshot at t<300ms not black",
+   "status": "NOT_STARTED",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-09-07",
+   "desc": "Lift / Enter Home never traps; overlay stops catching taps when dismissed",
+   "priority": "P1",
+   "files": [
+    "index.html resLift"
+   ],
+   "acceptance": "Skip works; Enter Home usable immediately",
+   "status": "IMPLEMENTED_NOT_VERIFIED",
+   "test": "covered by bug002",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-09-08",
+   "desc": "Media map entries present (reported 181) and 183-residence sweep reconciled with source data",
+   "priority": "P1",
+   "files": [
+    "videoMap.js",
+    "data.js"
+   ],
+   "acceptance": "Counts reconciled against ALLU (1,245 homes) and file system",
+   "status": "NOT_STARTED",
+   "test": "",
+   "evidence": "",
+   "limits": "Handoff's 183 is a sample sweep, not the inventory size (1,245)"
+  },
+  {
+   "id": "R-10-01",
+   "desc": "Welcome with three paths: Explore ALAIA / Find Your Home / Experience the Lifestyle; skippable film",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-10-02",
+   "desc": "Orientation: breadcrumb/hierarchy, back without losing context, fast repeat browsing",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-11-01",
+   "desc": "Premium creative direction review (no generic patterns), EN/AR designed independently",
+   "priority": "P3",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": "Material identity changes need Amr's approval with a limited comparison"
+  },
+  {
+   "id": "R-12-01",
+   "desc": "3D feasibility: assess 3ds Max / RVT / DWG / exports for authentic WebGL",
+   "priority": "P3",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": "Amr previously rejected game-like WebGL"
+  },
+  {
+   "id": "R-13-01",
+   "desc": "Residence finder filters on verified data",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-13-02",
+   "desc": "Shortlist and compare 2-3 residences",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-14-01",
+   "desc": "Plan/furnished plan/dollhouse/walk/view per residence, mirrored-unit disclosure",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": "Orientation data missing"
+  },
+  {
+   "id": "R-15-01",
+   "desc": "Genuine 360 viewer where panoramas exist; else document needed assets",
+   "priority": "P3",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": "No equirectangular panoramas found in ai/walk (flat renders)"
+  },
+  {
+   "id": "R-16-01",
+   "desc": "Motion system: no black frames, no fixed waits, reduced motion",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-17-01",
+   "desc": "Truthful enquiry states (received / pending sync), retry, dedupe, validation, abuse protection",
+   "priority": "P0",
+   "files": [
+    "crm.js",
+    "functions/api/leads.js"
+   ],
+   "acceptance": "sec_api lead checks pass; offline submit shows pending screen",
+   "status": "IMPLEMENTED_NOT_VERIFIED",
+   "test": "API PASS local",
+   "evidence": "docs/alaia/evidence/sec_local.json",
+   "limits": "Offline UI path not yet tested"
+  },
+  {
+   "id": "R-17-02",
+   "desc": "Engaz CRM integration",
+   "priority": "P1",
+   "files": [
+    "functions/api/leads.js"
+   ],
+   "acceptance": "Lead delivered to Engaz and status updated",
+   "status": "BLOCKED",
+   "test": "",
+   "evidence": "",
+   "limits": "No Engaz API documentation, endpoint or credentials"
+  },
+  {
+   "id": "R-17-03",
+   "desc": "One authoritative inventory model (server), status hidden notes",
+   "priority": "P1",
+   "files": [
+    "functions/api/inventory.js"
+   ],
+   "acceptance": "Public status only; staff writes; all screens converge",
+   "status": "IMPLEMENTED_NOT_VERIFIED",
+   "test": "API PASS local",
+   "evidence": "docs/alaia/evidence/sec_local.json",
+   "limits": ""
+  },
+  {
+   "id": "R-18-01",
+   "desc": "Residence deep links, local QR, WhatsApp share (verified contact)",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": "Verified sales WhatsApp number not available"
+  },
+  {
+   "id": "R-19-01",
+   "desc": "Localization + accessibility (focus, keyboard, contrast, reduced motion, modal focus)",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": "Current Arabic copy is colloquial Egyptian; luxury register review pending"
+  },
+  {
+   "id": "R-20-01",
+   "desc": "Performance: LCP/CLS lab, INP proxy, memory/listener leaks, cold/warm cache",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": "Known: master plan adds a resize listener per visit"
+  },
+  {
+   "id": "R-21-01",
+   "desc": "Soak test (target 8 h)",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": ""
+  },
+  {
+   "id": "R-21-02",
+   "desc": "Physical device acceptance checklist",
+   "priority": "P2",
+   "status": "NOT_STARTED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": "No physical device lab available"
+  },
+  {
+   "id": "R-24-01",
+   "desc": "Preview deployment verified; production promotion only with approval; rollback plan",
+   "priority": "P0",
+   "status": "IN_PROGRESS",
+   "files": [],
+   "acceptance": "",
+   "test": "preview 830aa9c9 verified for security/sales",
+   "evidence": "docs/alaia/evidence/sec_preview.json",
+   "limits": ""
+  },
+  {
+   "id": "R-24-02",
+   "desc": "Production config: own D1 + staff PIN secrets before merging Functions to main",
+   "priority": "P0",
+   "status": "BLOCKED",
+   "files": [],
+   "acceptance": "",
+   "test": "",
+   "evidence": "",
+   "limits": "Needs Amr's production approval"
+  }
+ ]
+}

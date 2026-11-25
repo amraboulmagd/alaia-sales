@@ -1,0 +1,21 @@
+{
+  "classes": {
+    "UNIT_SPECIFIC": "Actual visualization of one specific residence",
+    "BUILDING_SPECIFIC": "Verified visualization of a specific building / position",
+    "TYPICAL_TYPE": "Typical visualization of a residence type (studio / 1BR / 2BR)",
+    "ILLUSTRATIVE": "Illustrative only; content (e.g. window views) does not depict ALAIA reality",
+    "MISSING": "Missing or unverified asset"
+  },
+  "audited": "2026-11-25, contact sheets from real Chrome playback: docs/alaia/evidence/media/{st,br1,br2}.png",
+  "groups": [
+    {"paths": "ai/walk/{st,br1,br2}_n*.jpg", "count": 14, "class": "TYPICAL_TYPE + ILLUSTRATIVE (views)", "used_by": "Walk viewer nodes", "notes": "AI-generated interiors, one set per home type, reused for every tower and floor. Window views show generic low white villas and pool-like lagoons, not ALAIA's towers. Node 0 of every type was labelled 'Entrance' but shows living room (br1/br2) or the sleeping area (studio): relabelled.", "disclosure": "Persistent 'Interior and view are illustrative, typical for this home type.' (EN/AR) in walk viewer"},
+    {"paths": "ai/walk/*_t*.mp4, *_r*.mp4", "count": 20, "class": "TYPICAL_TYPE + ILLUSTRATIVE", "used_by": "Walk viewer transitions (forward/back)", "notes": "4 s camera moves between the stills above. br2_t0 goes living-room view to living-room view (was labelled entry to living): label fixed by renaming nodes; clip itself unchanged.", "disclosure": "Same as walk viewer"},
+    {"paths": "ai/res/*_room_*.jpg|mp4", "count": 14, "class": "TYPICAL_TYPE + ILLUSTRATIVE", "used_by": "Dollhouse room hotspots", "notes": "Same interior style; generic views", "disclosure": "Dollhouse disclosure line"},
+    {"paths": "ai/res/*_dh.jpg, *_dive_*.mp4, *_lift.mp4", "count": 12, "class": "TYPICAL_TYPE", "used_by": "Unit scene dollhouse, lift, dive", "notes": "Stylised isometric models per type; plan accuracy vs developer plans not verified; mirrored units reuse the same model", "disclosure": "Dollhouse disclosure line"},
+    {"paths": "ai/res/st_dive_2.mp4", "count": 1, "class": "MISSING", "used_by": "-", "notes": "Expected: studio has 2 dollhouse rooms only", "disclosure": "-"},
+    {"paths": "views/bf_T{01..13}_{a,b}_F{0..4}.jpg", "count": null, "class": "BUILDING_SPECIFIC (unverified)", "used_by": "View from this home", "notes": "Per tower, side and floor G-4 per handoff ('real balcony views'). Orientation/side mapping to each unit not verified against developer data.", "disclosure": "Labelled 'real' in UI per previous decision: needs developer confirmation (DEV-03)"},
+    {"paths": "ai/oc/f_*.mp4, r_*.mp4; ai/orb_*_{am,noon,pm,night}.jpg", "count": 32, "class": "BUILDING_SPECIFIC", "used_by": "Master plan 16 angles x 4 times of day", "notes": "Orbit of the project model at sunset; other times are stills", "disclosure": "-"},
+    {"paths": "ai/tw_*.jpg", "count": 13, "class": "BUILDING_SPECIFIC", "used_by": "Tower dive overlay", "notes": "", "disclosure": "-"},
+    {"paths": "ai/film.mp4, film_poster.jpg", "count": 2, "class": "BUILDING_SPECIFIC (cinematic)", "used_by": "Intro film", "notes": "", "disclosure": "-"}
+  ]
+}

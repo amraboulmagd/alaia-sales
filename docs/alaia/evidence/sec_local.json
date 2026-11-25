@@ -1,0 +1,152 @@
+{
+ "base": "http://localhost:8792",
+ "total": 29,
+ "passed": 29,
+ "results": [
+  {
+   "name": "no PIN hash in public HTML",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "no setAdmin console helper",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "docs blocked publicly",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "functions source not served",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "unauth GET /api/staff/session -> 401",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "unauth GET /api/staff/inventory -> 401",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "unauth GET /api/staff/leads -> 401",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "unauth POST inventory -> 401",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "forged cookie -> 401",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "login without x-alaia -> 403",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "login foreign origin -> 403",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "public inventory exposes status only",
+   "pass": true,
+   "info": "server"
+  },
+  {
+   "name": "valid PIN -> 200",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "cookie HttpOnly+Secure+SameSite=Strict",
+   "pass": true,
+   "info": "alaia_staff=<token>; Path=/api/staff; HttpOnly; Secure; SameSite=Strict; Max-Age=600"
+  },
+  {
+   "name": "authed session -> 200",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "authed status write -> 200",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "bad status value -> 400",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "authed write without CSRF header -> 403",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "write visible in public status",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "note not in public inventory",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "logout -> 200",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "replayed cookie after logout -> 401",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "lead invalid unit -> 400",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "lead without x-alaia -> 400",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "lead oversize -> 413",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "lead stored -> received",
+   "pass": true,
+   "info": "{\"ok\":true,\"id\":\"Lqa1795639522288\",\"status\":\"received\",\"crm\":\"not_configured\"}"
+  },
+  {
+   "name": "duplicate lead within 5 min deduped",
+   "pass": true,
+   "info": ""
+  },
+  {
+   "name": "wrong PINs -> 401 then 429 lockout",
+   "pass": true,
+   "info": "401,401,401,401,401,429"
+  },
+  {
+   "name": "correct PIN also refused while locked",
+   "pass": true,
+   "info": ""
+  }
+ ]
+}
