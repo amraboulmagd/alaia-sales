@@ -471,7 +471,7 @@ body.filming .top .brand,body.filming .top .crumbs,body.filming #fs{opacity:0}
  .dock{background:var(--bg);padding-block:10px!important;bottom:0!important;left:0!important;right:0!important;padding-inline:16px!important}
 }
 
-.frame.orb,.frame.orb *,.olab,.orbctl,.orbinfo{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.frame.orb img{-webkit-user-drag:none;pointer-events:none}
+.frame.orb,.frame.orb *,.olab,.orbctl,.orbinfo{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.frame.orb,.frame.orb svg{touch-action:none}.frame.orb img{-webkit-user-drag:none;pointer-events:none}
 
 @media (max-width:980px){.bf-cap{inset-inline-start:16px;inset-inline-end:16px;bottom:190px}.bf-ctl{left:16px;right:16px;gap:12px}.bf-ctl .cta{flex:1 1 100%;justify-content:space-between}}
 
@@ -774,6 +774,22 @@ html[dir=rtl] .cta{letter-spacing:0!important;font-size:18px!important}
 body.sales .title{margin-top:68px}
 body.sales .resf .dhbox{top:200px!important}
 
+
+/* ===== BUG-004 touch targets (kiosk >=1600px: 56 min / 64 primary; tablet & phone: 44 min). Hit areas grow, visuals stay calm. */
+@media (min-width:1600px){
+ header.top .seg button,header.top #fs{min-height:56px;min-width:56px}
+ #enter.go{min-height:64px;padding-inline:36px}
+ .modal .x{width:56px;height:56px}
+ .modal #pin{min-height:64px}
+ #wk .mm .rt button{min-height:56px}
+ #sc .chips .chip{min-width:56px;min-height:56px}
+ #u-p,#u-n{width:56px!important;height:56px!important}
+}
+@media (max-width:1599px){
+ header.top .seg button,header.top #fs,.modal .x,#wk-x,#rq-x,#lx,.ksheet .iconbtn,#wk .mm .rt button,#sc .chips .chip,#u-p,#u-n{min-width:44px;min-height:44px}
+ #u-p,#u-n{width:44px!important;height:44px!important}
+}
+.pl rect.hit,.pl.hv rect.hit,.pl.press rect.hit{fill:transparent!important;stroke:none!important;filter:none!important}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -824,7 +840,7 @@ en:{resort:"Resort · North Coast",resort2:"Resort",fullscreen:"Full screen",d_o
  home:"Home",netRooms:"Room areas (from the unit plan)",netTotal:"Rooms total",netArea:"Net area (from the 3D model)",saleArea:"Sales area",saleNote:"Net area + 35% services. Provisional until the developer confirms.",areaHead:"Areas",mixT:"Home mix",view:"View",level:"Level",
  v_lagoon:"Lagoon front",v_lagoonx:"Lagoon, across the garden street",v_blvd:"Entrance boulevard",
  indicative:"Indicative price",pay:"10% down · up to 8 years (illustrative)",
- d_admin:"Sales",blocked:"Locked",admT:"Sales control",admNote:"Client / note (optional)",admEye:"Sales team",admLogin:"Sales access",admLoginP:"Enter the sales PIN to change unit status, lock or open units.",admEnter:"Enter",admWrong:"Wrong PIN",admTitle:"Inventory control",admLive:"Live — every screen sees changes instantly.",admLocal:"Saved on this device. Connect the shared database to sync every screen.",admSearch:"Search code e.g. T06-A-2",admExport:"Export CSV",admImport:"Import CSV",admLogout:"Lock",admCode:"Code",admStatus:"Status",admNoteH:"Note",admImported:"units updated",admEngaz:"Two-way sync with Engaz is ready to connect: once Engaz provides the API key and documentation, statuses will flow in both directions automatically. Until then, use Export / Import with the Engaz inventory sheet.",syncFail:"Sync failed — saved locally",
+ d_admin:"Sales",blocked:"Locked",admT:"Sales control",admNote:"Client / note (optional)",admEye:"Sales team",admLogin:"Sales access",admLoginP:"Enter the sales PIN to change unit status, lock or open units.",admEnter:"Enter",admWrong:"Wrong PIN",admTitle:"Inventory control",admLive:"Live — every screen sees changes instantly.",admLocal:"Saved on this device. Connect the shared database to sync every screen.",admSearch:"Search code e.g. T06-A-2",admExport:"Export CSV",admImport:"Import CSV",admLogout:"Lock",admCode:"Code",admStatus:"Status",admNoteH:"Note",admImported:"units updated",admEngaz:"Engaz is not connected yet. Inventory statuses live on the ALAIA server; use Export / Import with the Engaz inventory sheet until Engaz supplies API documentation and credentials.",syncFail:"Sync failed — saved locally",
  step360:"360° photo",inside:"Step inside",insEye:"Inside",walk:"Walk",doll:"Dollhouse",finishes:"Finishes",fin_sand:"Sand & oak",fin_coast:"Coastal white",fin_terra:"Travertine & walnut",
  sp_entry:"Entrance",sp_living:"Living",sp_bed:"Bedroom",sp_bed1:"Master bedroom",sp_bed2:"Second bedroom",sp_view:"Window view",sp_balcony:"Balcony",sp_bath:"Bathroom",sp_kitchen:"Kitchen",
  insHint:"Drag to look around · click the floor to walk",realModel:"walls, doors & windows from the architect's model",exitInside:"Back to the tower",saleShort:"saleable",
@@ -870,7 +886,7 @@ ar:{resort:"منتجع · الساحل الشمالي",resort2:"منتجع",full
  home:"الوحدة",netRooms:"مساحات الغرف (من مسقط الوحدة)",netTotal:"إجمالي الغرف",netArea:"المساحة الصافية (من الموديل)",saleArea:"المساحة البيعية",saleNote:"الصافي + ٣٥٪ خدمات. أرقام مبدئية لحين تأكيد المطوّر.",areaHead:"المساحات",mixT:"توزيع الوحدات",view:"الإطلالة",level:"الدور",
  v_lagoon:"على البحيرة مباشرة",v_lagoonx:"البحيرة عبر شارع الحديقة",v_blvd:"بوليفار المدخل",
  indicative:"السعر الاسترشادي",pay:"مقدم ١٠٪ · تقسيط حتى ٨ سنوات (توضيحي)",
- d_admin:"المبيعات",blocked:"مقفولة",admT:"تحكم المبيعات",admNote:"اسم العميل / ملاحظة (اختياري)",admEye:"فريق المبيعات",admLogin:"دخول المبيعات",admLoginP:"اكتب الرقم السري للمبيعات علشان تغيّر حالة الوحدات وتقفل أو تفتح أي وحدة.",admEnter:"دخول",admWrong:"الرقم السري غلط",admTitle:"التحكم في الوحدات",admLive:"مباشر — أي شاشة بتشوف التغيير فورًا.",admLocal:"محفوظ على الجهاز ده. اربط قاعدة البيانات المشتركة علشان كل الشاشات تتزامن.",admSearch:"ابحث بالكود مثلًا T06-A-2",admExport:"تصدير CSV",admImport:"استيراد CSV",admLogout:"قفل",admCode:"الكود",admStatus:"الحالة",admNoteH:"ملاحظة",admImported:"وحدة اتحدّثت",admEngaz:"الربط مع Engaz جاهز يتوصل: أول ما Engaz يدّونا الـ API key والمستندات، الحالات هتتزامن في الاتجاهين أوتوماتيك. لحد كده استخدم التصدير والاستيراد مع شيت Engaz.",syncFail:"فشل التزامن — اتحفظ على الجهاز",
+ d_admin:"المبيعات",blocked:"مقفولة",admT:"تحكم المبيعات",admNote:"اسم العميل / ملاحظة (اختياري)",admEye:"فريق المبيعات",admLogin:"دخول المبيعات",admLoginP:"اكتب الرقم السري للمبيعات علشان تغيّر حالة الوحدات وتقفل أو تفتح أي وحدة.",admEnter:"دخول",admWrong:"الرقم السري غلط",admTitle:"التحكم في الوحدات",admLive:"مباشر — أي شاشة بتشوف التغيير فورًا.",admLocal:"محفوظ على الجهاز ده. اربط قاعدة البيانات المشتركة علشان كل الشاشات تتزامن.",admSearch:"ابحث بالكود مثلًا T06-A-2",admExport:"تصدير CSV",admImport:"استيراد CSV",admLogout:"قفل",admCode:"الكود",admStatus:"الحالة",admNoteH:"ملاحظة",admImported:"وحدة اتحدّثت",admEngaz:"Engaz لسه مش متوصل. حالات الوحدات محفوظة على سيرفر ألايا؛ استخدم التصدير والاستيراد مع شيت Engaz لحد ما Engaz يدّونا مستندات الـ API وبيانات الدخول.",syncFail:"فشل التزامن — اتحفظ على الجهاز",
  step360:"صورة ٣٦٠°",inside:"ادخل الشقة",insEye:"من الداخل",walk:"تجوّل",doll:"مجسّم",finishes:"التشطيب",fin_sand:"رملي وبلوط",fin_coast:"أبيض ساحلي",fin_terra:"ترافرتين وجوز",
  sp_entry:"المدخل",sp_living:"المعيشة",sp_bed:"غرفة النوم",sp_bed1:"الغرفة الرئيسية",sp_bed2:"الغرفة الثانية",sp_view:"منظر الشباك",sp_balcony:"البلكونة",sp_bath:"الحمام",sp_kitchen:"المطبخ",
  insHint:"اسحب للنظر حولك · اضغط على الأرض للتحرك",realModel:"الحيطان والأبواب والشبابيك من موديل المعماري",exitInside:"رجوع للبرج",saleShort:"بيعية",
@@ -1288,7 +1304,7 @@ function sMaster(){
     if(v.readyState>=2) go2(); else { const ld=el.querySelector('.orb-load'); const lt=setTimeout(()=>ld.hidden=false,250); v.oncanplay=()=>{ v.oncanplay=null; clearTimeout(lt); ld.hidden=true; go2(); }; setTimeout(()=>{ if(!v.classList.contains('on')){ v.oncanplay=null; clearTimeout(lt); ld.hidden=true; fin(); } },2500); } };
   // ---------- hit areas + pills from anchor data (ORB = projected from the exact Blender camera of each angle)
   const draw=()=>{ const M=ORB[orbI]||{}; const fr=Object.entries(M).filter(([id])=>BLD.find(x=>x.id===id)).sort((a,b)=>b[1].d-a[1].d);
-    const r=el.getBoundingClientRect(); const s=Math.max(r.width/1920,r.height/1080)*Z.s; const PH=Math.max(48,44)/s, PW=PH*2.15, FS=18/s*1.15;
+    const r=el.getBoundingClientRect(); if(!el.isConnected||el.classList.contains('dive')||r.width<2||r.height<2) return; const s=Math.max(r.width/1920,r.height/1080)*Z.s; const PH=Math.max(48,44)/s, PW=PH*2.15, FS=18/s*1.15;
     gH.innerHTML=fr.map(([id,v])=>{ const H=hullOf(v.hull); return `<polygon data-b="${id}" points="${H.map(p=>p.map(n=>n.toFixed(1)).join(',')).join(' ')}"/>`; }).join('');
     // greedy pill placement, nearest first, with leader lines when displaced
     const ctm=svg.getScreenCTM(); const inv=ctm?ctm.inverse():null; const zones=[];
@@ -1299,7 +1315,7 @@ function sMaster(){
     [...fr].reverse().forEach(([id,v])=>{ const ax=v.top[0]*1920, ay=v.top[1]*1080; if(ax<VR[0]+8||ax>VR[2]-8||ay<VR[1]+8||ay>VR[3]-8) return; let px=ax, py=ay-PH*0.9; const ok=(x,y)=>x-PW/2>VR[0]+4&&x+PW/2<VR[2]-4&&y-PH/2>VR[1]+4&&y+PH/2<VR[3]-4&&!inZ(x,y)&&placed.every(p=>Math.abs(p[0]-x)>PW*1.06||Math.abs(p[1]-y)>PH*1.18);
       const tries=[[0,0],[0,-1],[1,0],[-1,0],[1,-1],[-1,-1],[0,-2],[1.1,-2],[-1.1,-2],[0,1.4],[1.1,1.4],[-1.1,1.4],[2.2,0],[-2.2,0],[0,-3],[2.2,1.4],[2.2,-1.4],[0,2.6],[3.3,0],[3.3,1.4]]; let best=null; for(const [tx,ty] of tries){ const x=ax+tx*PW*1.08, y=py+ty*PH*1.22; if(ok(x,y)){ best=[x,y]; break; } } if(!best){ outer: for(let r=1;r<=8;r++){ for(let k=0;k<16;k++){ const an=k/16*Math.PI*2; const x=ax+Math.cos(an)*r*PW*0.8, y=py+Math.sin(an)*r*PH*1.1; if(x>PW&&x<1920-PW&&y>PH&&y<1080-PH&&ok(x,y)){ best=[x,y]; break outer; } } } } if(!best) best=[px,py]; placed.push(best);
       const b=BLD.find(x=>x.id===id), a=av(b); if(Math.hypot(best[0]-ax,best[1]-(ay-PH*0.9))>4) lead.push(`<line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${best[0].toFixed(1)}" y2="${(best[1]+PH/2).toFixed(1)}"/><circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="${(4/s).toFixed(1)}"/>`);
-      out.push(`<g class="pl${state.kind&&!a?' dim':''}" data-b="${id}" transform="translate(${best[0].toFixed(1)},${best[1].toFixed(1)})"><rect x="${(-PW/2).toFixed(1)}" y="${(-PH/2).toFixed(1)}" width="${PW.toFixed(1)}" height="${PH.toFixed(1)}" rx="${(PH/2).toFixed(1)}"/><text text-anchor="middle" y="${(FS*0.36).toFixed(1)}" style="font-size:${FS.toFixed(1)}px">${dg(id)}</text><circle cx="${(PW*0.3).toFixed(1)}" cy="0" r="${(5/s).toFixed(1)}" class="${a?'ok':'no'}"/></g>`); });
+      const HH=Math.max(PH,(innerWidth>=1600?56:44)/s), HW=Math.max(PW,HH); out.push(`<g class="pl${state.kind&&!a?' dim':''}" data-b="${id}" transform="translate(${best[0].toFixed(1)},${best[1].toFixed(1)})"><rect class="hit" x="${(-HW/2).toFixed(1)}" y="${(-HH/2).toFixed(1)}" width="${HW.toFixed(1)}" height="${HH.toFixed(1)}"/><rect x="${(-PW/2).toFixed(1)}" y="${(-PH/2).toFixed(1)}" width="${PW.toFixed(1)}" height="${PH.toFixed(1)}" rx="${(PH/2).toFixed(1)}"/><text text-anchor="middle" y="${(FS*0.36).toFixed(1)}" style="font-size:${FS.toFixed(1)}px">${dg(id)}</text><circle cx="${(PW*0.3).toFixed(1)}" cy="0" r="${(5/s).toFixed(1)}" class="${a?'ok':'no'}"/></g>`); });
     gL.innerHTML=lead.join(''); gP.innerHTML=out.join('');
     if(DBG){ gP.insertAdjacentHTML('beforeend',fr.map(([id,v])=>{ const c=hullOf(v.hull).reduce((m,p)=>[m[0]+p[0],m[1]+p[1]],[0,0]).map(n=>n/hullOf(v.hull).length); return `<text class="dbgl" x="${c[0].toFixed(0)}" y="${c[1].toFixed(0)}">${id}</text>`; }).join('')+`<text class="dbgl" x="40" y="1040">angle ${orbI} · ${TODS[orbT]}</text>`); }
   };
@@ -1325,7 +1341,7 @@ function sMaster(){
     if(Z.s<=1.02 && Math.abs(g.v)>0.45){ const n=Math.min(3,Math.round(Math.abs(g.v)*2.2)); for(let i=0;i<n;i++) step(g.v>0?-1:1); } };
   el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up);
   el.addEventListener('wheel',e=>{ e.preventDefault(); const r=el.getBoundingClientRect(); const s0=Z.s; Z.s=Math.max(1,Math.min(2.6,Z.s*Math.exp(-e.deltaY*0.0015))); const k=Z.s/s0; const cx=e.clientX-r.left-r.width/2, cy=e.clientY-r.top-r.height/2; Z.x=cx-(cx-Z.x)*k; Z.y=cy-(cy-Z.y)*k; clampZ(); applyZ(); draw(); },{passive:false});
-  el.addEventListener('dblclick',()=>{ Z.s=1;Z.x=0;Z.y=0; applyZ(); draw(); });
+  el.addEventListener('dblclick',()=>{ Z.s=1;Z.x=0;Z.y=0; applyZ(); draw(); }); el.addEventListener('contextmenu',e=>e.preventDefault());
   svg.addEventListener('mousemove',e=>{ const b=towerAt(e); if(b&&!busy){ tip(`<b>${t('building')} ${dg(b.id)}</b><span>${t('type')} ${b.ty} · ${nf(av(b))} ${t('avShort')}</span>`,e); svg.querySelectorAll('.hv').forEach(x=>x.classList.remove('hv')); svg.querySelectorAll(`[data-b="${b.id}"]`).forEach(x=>x.classList.add('hv')); } else { tip(null); svg.querySelectorAll('.hv').forEach(x=>x.classList.remove('hv')); } });
   const orbDive=b=>{ const v=(ORB[orbI]||{})[b.id]; tip(null); if(!v){go('tower',{b});return;} const r=el.getBoundingClientRect(); const sc=Math.max(r.width/1920,r.height/1080);
     const ox=r.width/2+(v.base[0]*1920-960)*sc, oy=r.height/2+((v.top[1]+v.base[1])/2*1080-540)*sc;
@@ -1520,19 +1536,25 @@ const head=(eye,title,p)=>`<header><div><span class="eye">${eye}</span><h3>${tit
 function openShare(u){ const msg=lang==='ar'?`مرحبًا، تفاصيل الوحدة ${u.code} في ألايا — الساحل الشمالي:\n${t(u.kind)} · ${floorName(u.f)} · ${t('v_'+u.view)}\nالمساحة البيعية: ${nf(u.area)} م²`:`Hello, here are the details of home ${u.code} at ALAIA — North Coast:\n${t(u.kind)} · ${floorName(u.f)} · ${t('v_'+u.view)}\nSaleable area: ${nf(u.area)} m²`;
   const {m}=modal(head(u.code,t('sendT'),t('shareP'))+`<textarea class="inp" id="sh-m">${msg}</textarea>${cta('sh-c',t('copy'),'send')}`);
   m.querySelector('#sh-c').onclick=()=>{const ta=m.querySelector('#sh-m');(navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>toast(t('copied'))).catch(()=>{ta.select();toast(t('copied'));});}; }
-const ADMIN_PIN_HASH='ed946f65d2c785d90e827c5ffd879ce3b49c68d4c88013074176a7e73bc58bcf'; const STK='alaia-status-v1'; let OVR={}; const STS=['available','reserved','sold','blocked'];
+const STK='alaia-status-v1'; let OVR={}; const STS=['available','reserved','sold','blocked'];
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
-function loadOVR(){try{OVR=JSON.parse(localStorage.getItem(STK)||'{}')||{};}catch(e){OVR={};}ALLU.forEach(u=>{const o=OVR[u.code];if(o&&STS.includes(o.st))u.st=o.st;});}
-function saveOVR(){try{localStorage.setItem(STK,JSON.stringify(OVR));}catch(e){}}
-function setStatus(u,st,note){OVR[u.code]={st,note:note??OVR[u.code]?.note??'',at:Date.now()};u.st=st;saveOVR();toast(`${u.code} · ${t(st)}`);rerender();}
+async function api(path,opt={}){ const r=await fetch(path,{method:opt.method||'GET',credentials:'same-origin',cache:'no-store',headers:Object.assign({'x-alaia':'1'},opt.body?{'content-type':'application/json'}:{}),body:opt.body?JSON.stringify(opt.body):undefined}); let j=null; try{ j=await r.json(); }catch(e){} return {ok:r.ok,status:r.status,j:j||{}}; }
+/* inventory status: the server (/api/inventory) is the single source of truth; developer data is the baseline */
+function loadOVR(){ ALLU.forEach(u=>{ if(u._st0==null) u._st0=u.st; }); api('/api/inventory').then(r=>{ if(!r.ok||r.j.source!=='server') return; const U=r.j.units||{}; ALLU.forEach(u=>{ const s=U[u.code]; u.st=(s&&STS.includes(s))?s:u._st0; OVR[u.code]=Object.assign(OVR[u.code]||{},{st:u.st}); }); }).catch(()=>{}); }
+setInterval(()=>{ if(!document.hidden) loadOVR(); },120000);
+
+async function setStatus(u,st,note){ if(!state.admin) return; note=note??OVR[u.code]?.note??''; let r; try{ r=await api('/api/staff/inventory',{method:'POST',body:{code:u.code,st,note}}); }catch(e){ r={ok:false,status:0}; }
+  if(r.status===401){ exitSales('expired'); return; } if(!r.ok){ toast(t('admSaveErr')); return; }
+  OVR[u.code]={st,note,at:Date.now()}; u.st=st; toast(`${u.code} · ${t(st)}`); rerender(); }
 function adminBlock(u){ if(!state.admin) return ''; return `<div class="adm"><span class="eye">${t('admT')}</span><div class="adm-st">${STS.map(s=>`<button data-st="${s}" aria-pressed="${u.st===s}"><i class="dot d-${s}"></i>${t(s)}</button>`).join('')}</div><input class="inp" id="adm-note" placeholder="${t('admNote')}" value="${(OVR[u.code]?.note||'').replace(/"/g,'&quot;')}"></div>`; }
 function bindAdmin(u){ if(!state.admin) return; $$('.adm-st [data-st]').forEach(b=>b.onclick=()=>setStatus(u,b.dataset.st,$('#adm-note').value)); const n=$('#adm-note'); if(n) n.onchange=()=>setStatus(u,u.st,n.value); }
 function openAdmin(){
-  if(!state.admin){ const {m,close}=modal(head(t('admEye'),t('admLogin'),t('admLoginP'))+`<form id="af" style="display:flex;flex-direction:column;gap:10px;max-width:320px"><input class="inp" id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" style="font-size:22px;letter-spacing:.3em;text-align:center">${cta('pgo',t('admEnter'))}</form>`);
-    m.querySelector('#pin').focus(); m.querySelector('#af').onsubmit=async e=>{e.preventDefault();if(await sha(m.querySelector('#pin').value)===ADMIN_PIN_HASH){state.admin=true;close();openAdmin();rerender();}else{m.querySelector('#pin').value='';toast(t('admWrong'));}};
+  if(!state.admin){ const {m,close}=modal(head(t('admEye'),t('admLogin'),t('admLoginP'))+`<form id="af" style="display:flex;flex-direction:column;gap:10px;max-width:320px"><input class="inp" id="pin" type="password" inputmode="numeric" autocomplete="off" minlength="6" maxlength="10" pattern="[0-9]*" placeholder="PIN" style="font-size:22px;letter-spacing:.3em;text-align:center">${cta('pgo',t('admEnter'))}</form>`);
+    m.querySelector('#pin').focus(); m.querySelector('#af').onsubmit=async e=>{e.preventDefault(); const inp=m.querySelector('#pin'), pin=inp.value.trim(), bt=m.querySelector('#pgo'); inp.value=''; bt.disabled=true; let r; try{ r=await api('/api/staff/login',{method:'POST',body:{pin}}); }catch(err){ r={ok:false,status:0,j:{}}; } bt.disabled=false;
+      if(r.ok){ state.admin=true; close(); staffStart(); openAdmin(); rerender(); } else toast(r.status===429?t('admLocked'):(r.status===0||r.status>=500)?t('admOffline'):t('admWrong')); };
     m.querySelector('#pgo').onclick=e=>{e.preventDefault();m.querySelector('#af').requestSubmit();}; return; }
   const c=s=>ALLU.filter(u=>u.st===s).length;
-  const {m,close}=modal(head(t('admEye'),t('admTitle'),t('admLocal'))+`<div class="stats" style="grid-template-columns:repeat(4,minmax(0,1fr))">${STS.map(s=>`<div class="stat"><b>${nf(c(s))}</b><span><i class="dot d-${s}"></i> ${t(s)}</span></div>`).join('')}</div>
+  const {m,close}=modal(head(t('admEye'),t('admTitle'),t('admServer'))+`<div class="stats" style="grid-template-columns:repeat(4,minmax(0,1fr))">${STS.map(s=>`<div class="stat"><b>${nf(c(s))}</b><span><i class="dot d-${s}"></i> ${t(s)}</span></div>`).join('')}</div>
    <div class="adm-bar"><select id="ft"><option value="">${t('all')} · ${t('building')}</option>${BLD.map(b=>`<option value="${b.id}">${t('building')} ${b.id}</option>`).join('')}</select><select id="fs2"><option value="">${t('all')}</option>${STS.map(s=>`<option value="${s}">${t(s)}</option>`).join('')}</select><select id="fk"><option value="">${t('all')}</option>${['st','br1','br2'].map(k=>`<option value="${k}">${t(k)}</option>`).join('')}</select><input class="inp" id="fq" placeholder="${t('admSearch')}"><span class="sp"></span><button class="chip" id="fx">${t('admExport')}</button><label class="chip" for="fi">${t('admImport')}</label><input type="file" id="fi" accept=".csv" hidden><button class="chip" id="fo">${t('admLogout')}</button></div>
    <div class="adm-list"><table class="tbl"><thead><tr><th>${t('admCode')}</th><th>${t('type')}</th><th>${t('level')}</th><th>${t('saleArea')}</th><th>${t('admStatus')}</th><th>${t('admNoteH')}</th></tr></thead><tbody id="fb"></tbody></table></div>
    <div style="padding:14px;border-radius:16px;background:var(--faint)"><span class="eye">Engaz CRM</span><p style="margin:6px 0 0;color:var(--mute);font-size:13px;line-height:1.6">${t('admEngaz')}</p></div>`);
@@ -1541,10 +1563,13 @@ function openAdmin(){
     m.querySelectorAll('select[data-c]').forEach(s=>s.onchange=()=>setStatus(ALLU.find(u=>u.code===s.dataset.c),s.value));
     m.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{close();go('unit',{u:ALLU.find(u=>u.code===b.dataset.go)});});};
   ['#ft','#fs2','#fk'].forEach(s=>m.querySelector(s).onchange=draw); m.querySelector('#fq').oninput=draw; draw();
+  api('/api/staff/inventory').then(r=>{ if(r.status===401) return exitSales('expired'); if(r.ok){ (r.j.units||[]).forEach(x=>{ OVR[x.code]={st:x.st,note:x.note||'',at:x.at*1000}; const u=ALLU.find(y=>y.code===x.code); if(u&&STS.includes(x.st)) u.st=x.st; }); if(m.isConnected) draw(); } }).catch(()=>{});
   m.querySelector('#fx').onclick=()=>{const csv='code,tower,entrance,floor,type,saleable_m2,status,note\n'+ALLU.map(u=>[u.code,u.b.id,u.ent,u.f===0?'G':u.f,u.kind,u.area,u.st,'"'+(OVR[u.code]?.note||'').replace(/"/g,'""')+'"'].join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));a.download='alaia-inventory.csv';a.click();};
   m.querySelector('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(txt=>{const L=txt.replace(/^﻿/,'').split(/\r?\n/).filter(Boolean);const h=L[0].toLowerCase().split(',');const ci=h.findIndex(x=>/code|unit|كود|الوحدة/.test(x)),si=h.findIndex(x=>/status|حالة/.test(x));let n=0;
-    L.slice(1).forEach(l=>{const c=l.split(',');const code=(c[ci]||'').trim().toUpperCase();let st=(c[si]||'').trim().toLowerCase();st={'متاح':'available','محجوز':'reserved','مباع':'sold','مُباع':'sold','مقفول':'blocked','مقفولة':'blocked','hold':'blocked','locked':'blocked'}[st]||st;const u=ALLU.find(x=>x.code===code);if(u&&STS.includes(st)){OVR[code]={st,note:OVR[code]?.note||'',at:Date.now()};u.st=st;n++;}});saveOVR();draw();rerender();toast(`${nf(n)} ${t('admImported')}`);});};
-  m.querySelector('#fo').onclick=()=>{state.admin=false;close();rerender();};
+    const items=[]; L.slice(1).forEach(l=>{const c=l.split(',');const code=(c[ci]||'').trim().toUpperCase();let st=(c[si]||'').trim().toLowerCase();st={'متاح':'available','محجوز':'reserved','مباع':'sold','مُباع':'sold','مقفول':'blocked','مقفولة':'blocked','hold':'blocked','locked':'blocked'}[st]||st;const u=ALLU.find(x=>x.code===code);if(u&&STS.includes(st)) items.push({code,st,note:OVR[code]?.note||''});});
+    if(!items.length){ toast(`${nf(0)} ${t('admImported')}`); return; }
+    api('/api/staff/inventory',{method:'POST',body:{items}}).then(r=>{ if(r.status===401) return exitSales('expired'); if(!r.ok) return toast(t('admSaveErr')); items.forEach(it=>{ const u=ALLU.find(x=>x.code===it.code); u.st=it.st; OVR[it.code]={st:it.st,note:it.note,at:Date.now()}; }); n=items.length; draw(); rerender(); toast(`${nf(n)} ${t('admImported')}`); }).catch(()=>toast(t('admSaveErr')));});};
+  m.querySelector('#fo').onclick=()=>{ close(); exitSales(); };
 }
 
 /* ---------------- language / theme / boot */
@@ -1654,9 +1679,13 @@ function openView(u){ const side=u.p.r===0?'a':'b'; let f=Math.min(4,u.f); let k
   $('#bf-360').onclick=()=>openWalk3D(u,TOUR_URL,'balcony'); load(); }
 
 /* ================= KIOSK LAYER: modes, idle, leads, walk viewer, project details ================= */
-Object.assign(S2.en,{pricePend:"Price on request",walkT:"Walk through this home",fEndT:"Welcome home, on the lagoons of the North Coast",
+Object.assign(S2.en,{admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
+ smLeadsSrv:"requests received on the server",smLeadsPend:"waiting on this device to sync",lm_sales:"sales",'lm_self-serve':"self-serve",close:"Close",
+ crm_not_configured:"Engaz is not connected yet: requests are stored on the ALAIA server and listed here. Connecting needs Engaz API documentation and credentials.",crm_configured:"Engaz connection configured.",
+ reqPendT:"Saved on this screen",reqPendP:"The connection is down, so your request is saved here and will be sent automatically when it returns. A sales advisor can also help you right away.",
+ pricePend:"Price on request",walkT:"Walk through this home",fEndT:"Welcome home, on the lagoons of the North Coast",
  reqT:"Request details",reqP:"A sales advisor will bring you the price, payment plan and availability for this home.",reqSend:"Send to sales team",unitC:"Unit",
- reqOkT:"Sent to the sales team",reqOkP:"A sales advisor will join you shortly with the details of this home.",reqDone:"Done",reqErr:"Could not send. Please ask a sales advisor.",
+ reqOkT:"Request received",reqOkP:"Your request has reached the ALAIA sales team. An advisor will follow up with the details of this home.",reqDone:"Done",reqErr:"Could not send. Please ask a sales advisor.",
  smT:"Sales mode",smUnits:"Units & status",smLeads:"Leads",smExit:"Exit sales mode",smLeadsN:"leads on this device",
  idleT:"Still there?",idleP:"Returning to the welcome screen in",idleStay:"I'm here",
  d_walk:"Walk the home",d_proj:"Project",d_towers:"Towers",
@@ -1666,9 +1695,13 @@ Object.assign(S2.en,{pricePend:"Price on request",walkT:"Walk through this home"
  pj_eye:"Project details",pj_t:"ALAIA, North Coast",pj_p:"Thirteen low-rise residential towers in four rows around three crystal lagoons, with a boutique hotel and a retail promenade on the coastal-road front.",
  pj_loc:"Location",pj_tw:"Towers",pj_homes:"Homes",pj_lag:"Lagoons",pj_types:"Tower types",pj_mix:"Home types",pj_svc:"Hotel & retail",pj_am:"Amenities",pj_del:"Delivery stages",pj_land:"Land area",
  pj_delP:"Delivery stages and dates have not been issued yet.",pj_units:"Homes",pj_qty:"Towers",pj_h:"Height",pj_ty:"Type",pj_ids:"Tower numbers",pj_map:"Open in Google Maps"});
-Object.assign(S2.ar,{pricePend:"السعر عند الطلب",walkT:"امشي جوه البيت ده",fEndT:"أهلاً بيك في بيتك على بحيرات الساحل الشمالي",
+Object.assign(S2.ar,{admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
+ smLeadsSrv:"طلب وصل للسيرفر",smLeadsPend:"مستني على الجهاز ده لحد ما يتبعت",lm_sales:"مبيعات",'lm_self-serve':"خدمة ذاتية",close:"إغلاق",
+ crm_not_configured:"Engaz لسه مش متوصل: الطلبات بتتحفظ على سيرفر ألايا وبتظهر هنا. الربط محتاج مستندات الـ API وبيانات الدخول من Engaz.",crm_configured:"اتظبط الربط مع Engaz.",
+ reqPendT:"اتحفظ على الشاشة دي",reqPendP:"الاتصال مقطوع، فطلبك اتحفظ هنا وهيتبعت أوتوماتيك أول ما الاتصال يرجع. ومستشار المبيعات يقدر يساعدك دلوقتي.",
+ pricePend:"السعر عند الطلب",walkT:"امشي جوه البيت ده",fEndT:"أهلاً بيك في بيتك على بحيرات الساحل الشمالي",
  reqT:"اطلب التفاصيل",reqP:"مستشار المبيعات هيجيب لك السعر وخطة السداد والإتاحة للوحدة دي.",reqSend:"ابعت لفريق المبيعات",unitC:"الوحدة",
- reqOkT:"اتبعت لفريق المبيعات",reqOkP:"مستشار مبيعات هينضم لك حالاً بتفاصيل الوحدة دي.",reqDone:"تمام",reqErr:"تعذّر الإرسال. اسأل مستشار المبيعات من فضلك.",
+ reqOkT:"طلبك وصل",reqOkP:"طلبك وصل لفريق مبيعات ألايا، ومستشار هيتابع معاك بتفاصيل الوحدة دي.",reqDone:"تمام",reqErr:"تعذّر الإرسال. اسأل مستشار المبيعات من فضلك.",
  smT:"وضع المبيعات",smUnits:"الوحدات والحالة",smLeads:"الطلبات",smExit:"خروج من وضع المبيعات",smLeadsN:"طلب على الجهاز ده",
  idleT:"لسه معانا؟",idleP:"الشاشة هترجع لشاشة الترحيب خلال",idleStay:"أنا هنا",
  d_walk:"امشي جوه البيت",d_proj:"المشروع",d_towers:"الأبراج",
@@ -1706,7 +1739,8 @@ function openReq(u){ if(!u) return;
     const lead={unitCode:u.code,tower:u.b.id,floor:u.f,area:u.area,language:lang,timestamp:new Date().toISOString(),mode:leadMode()};
     let r={ok:false}; try{ r=await (window.ALAIA_CRM?window.ALAIA_CRM.submitLead(lead):Promise.resolve({ok:false})); }catch(e){}
     if(!r.ok){ toast(t('reqErr')); b.disabled=false; b.style.opacity=1; return; }
-    m.querySelector('.bx').innerHTML=`<div class="okmark"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><div><span class="eye">${t('reqT')}</span><h3>${t('reqOkT')}</h3></div><p>${t('reqOkP')}</p>
+    const pend=r.status!=='received';
+    m.querySelector('.bx').innerHTML=`<div class="okmark${pend?' pend':''}"><svg viewBox="0 0 24 24"><path d="${pend?'M12 7v5l3 2':'M5 12.5l4.5 4.5L19 7.5'}"/></svg></div><div><span class="eye">${t('reqT')}</span><h3>${t(pend?'reqPendT':'reqOkT')}</h3></div><p>${t(pend?'reqPendP':'reqOkP')}</p>
       <div class="kv"><span>${t('unitC')}</span><b data-latin>${u.code}</b><span>${t('type')}</span><b>${t(u.kind)}</b><span>${t('building')}</span><b>${u.b.id}</b><span>${t('level')}</span><b>${floorName(u.f)}</b><span>${t('saleArea')}</span><b>${nf(u.area)} ${t('sqm')}</b><span>${t('view')}</span><b>${t('v_'+u.view)}</b></div>${cta('rq-ok',t('reqDone'),'next')}`;
     m.querySelector('#rq-ok').onclick=close; };
 }
@@ -1715,12 +1749,15 @@ function openReq(u){ if(!u) return;
 function modeUI(){ document.body.classList.toggle('sales',!!state.admin); let b=$('#salesbar');
   if(!state.admin){ b&&b.remove(); return; }
   if(!b){ b=document.createElement('div'); b.id='salesbar'; document.body.appendChild(b); }
-  const n=(window.ALAIA_CRM?window.ALAIA_CRM.list().length:0);
+  const n=0;
   b.innerHTML=`<i class="dot"></i><b>${t('smT')}</b><span class="sp"></span><button id="sm-u">${t('smUnits')}</button><button id="sm-l">${t('smLeads')} · ${nf(n)}</button><button class="ex" id="sm-x">${t('smExit')}</button>`;
-  b.querySelector('#sm-u').onclick=()=>openAdmin(); b.querySelector('#sm-x').onclick=()=>{ state.admin=false; rerender(); };
-  b.querySelector('#sm-l').onclick=()=>{ const L=(window.ALAIA_CRM?window.ALAIA_CRM.list():[]).slice().reverse();
-    const {m,close}=sheet(`<div style="display:flex;justify-content:space-between;align-items:flex-start"><div><span class="eye">${t('smT')}</span><h3>${t('smLeads')}</h3></div><button class="iconbtn glass" id="lx">${ICO.x}</button></div><p>${nf(L.length)} ${t('smLeadsN')}</p>
-     <div class="kv">${L.slice(0,40).map(l=>`<span data-latin>${l.unitCode}</span><b>${new Date(l.timestamp).toLocaleString(lang==='ar'?'ar-EG':'en-GB',{dateStyle:'short',timeStyle:'short'})} · ${l.mode}</b>`).join('')}</div>`);
+  b.querySelector('#sm-u').onclick=()=>openAdmin(); b.querySelector('#sm-x').onclick=()=>exitSales();
+  api('/api/staff/leads').then(r=>{ if(r.status===401) return exitSales('expired'); const q=b.querySelector('#sm-l'); if(r.ok&&q) q.textContent=`${t('smLeads')} · ${nf((r.j.leads||[]).length)}`; }).catch(()=>{});
+  b.querySelector('#sm-l').onclick=async ()=>{ let r; try{ r=await api('/api/staff/leads'); }catch(e){ r={ok:false,status:0,j:{}}; } if(r.status===401) return exitSales('expired');
+    const L=r.ok?(r.j.leads||[]):[]; const pend=window.ALAIA_CRM?window.ALAIA_CRM.list().length:0;
+    const {m,close}=sheet(`<div style="display:flex;justify-content:space-between;align-items:flex-start"><div><span class="eye">${t('smT')}</span><h3>${t('smLeads')}</h3></div><button class="iconbtn glass" id="lx" aria-label="${t('close')}">${ICO.x}</button></div>
+     <p>${r.ok?`${nf(L.length)} ${t('smLeadsSrv')}`:t('admOffline')}${pend?` · ${nf(pend)} ${t('smLeadsPend')}`:''}</p><p style="color:var(--mute);font-size:15px;line-height:1.6">${t('crm_'+(r.j.crm||'not_configured'))}</p>
+     <div class="kv">${L.slice(0,60).map(l=>`<span data-latin>${l.unit}</span><b>${new Date(l.ts*1000).toLocaleString(lang==='ar'?'ar-EG':'en-GB',{dateStyle:'short',timeStyle:'short'})} · ${t('lm_'+l.mode)}${l.test?' · TEST':''}</b>`).join('')}</div>`);
     m.querySelector('#lx').onclick=close; };
 }
 (function(){ const br=$('.brand'); let tm=0; const off=()=>{ clearTimeout(tm); br.classList.remove('hold'); };
@@ -1734,7 +1771,7 @@ function idleClose(){ const el=kIdleEl; kIdleEl=null; clearInterval(idleClose.iv
 function toAttract(){ idleClose();
   document.querySelectorAll('#wk,#proj,.ksheet,.modal,.resov,#gal,#lb,#idle').forEach(e=>e.remove()); if(typeof wkStop==='function') wkStop();
   if(vf.el){ cancelAnimationFrame(vf.timer); vf.el.querySelectorAll('video').forEach(v=>{v.pause();v.removeAttribute('src');v.load();}); vf.el.remove(); vf.el=null; document.body.classList.remove('filming'); }
-  state.admin=false; state.amen=false; state.kind=''; modeUI(); try{ go('master'); }catch(e){}
+  if(state.admin) exitSales(); state.admin=false; state.amen=false; state.kind=''; modeUI(); try{ go('master'); }catch(e){}
   const it=$('#intro'); it.style.transition='none'; it.style.opacity=0; it.classList.remove('out'); document.body.classList.add('intro'); it.offsetWidth; it.style.transition=''; it.style.opacity=''; }
 setInterval(()=>{ if(state.scene==='intro'&&document.body.classList.contains('intro')) { kLast=Date.now(); return; }
   if(vf.el&&!vf.paused){ kLast=Date.now(); return; }
@@ -1901,7 +1938,14 @@ function openProj(){ $('#proj')?.remove(); wkClose(true);
   requestAnimationFrame(()=>el.classList.add('on')); el.querySelector('#pj-x').onclick=()=>{ el.classList.remove('on'); setTimeout(()=>{el.remove();dock();},500); }; dock(); }
 
 document.body.dataset.scene=state.scene; setTimeout(()=>{ modeUI(); arDigits(document.body); },0);
-Object.assign(window.__alaiaK={},{openWalk,openProj,openReq,toAttract,wk,modeUI,setAdmin:v=>{state.admin=v;rerender();}});
+/* ---------- staff session (server-side, HttpOnly cookie). Expiry or exit closes every protected surface. */
+function exitSales(reason){ const was=state.admin; state.admin=false; clearInterval(staffStart.iv);
+  document.querySelectorAll('.modal,.ksheet,#salesbar').forEach(e=>e.remove()); api('/api/staff/logout',{method:'POST'}).catch(()=>{});
+  modeUI(); if(was&&state.scene!=='intro') rerender(); if(reason==='expired') toast(t('admExpired')); }
+function staffStart(){ clearInterval(staffStart.iv); staffStart.last=Date.now();
+  staffStart.iv=setInterval(async()=>{ if(!state.admin) return clearInterval(staffStart.iv); try{ const r=await api('/api/staff/session?peek=1'); if(r.status===401) exitSales('expired'); }catch(e){} },30000); }
+addEventListener('pointerdown',()=>{ if(state.admin&&Date.now()-(staffStart.last||0)>120000){ staffStart.last=Date.now(); api('/api/staff/session').then(r=>{ if(r.status===401) exitSales('expired'); }).catch(()=>{}); } },{capture:true,passive:true});
+Object.assign(window.__alaiaK={},{openWalk,openProj,openReq,toAttract,wk,modeUI});
 
 window.__alaia={openView,openGallery,go,state,ALLU,BLD,enter,openAdmin,film,openFilm,closeFilm,unitView,floorName,openWalk3D};
 })();

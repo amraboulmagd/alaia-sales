@@ -1,0 +1,20 @@
+{
+ "dragOnPill": {
+  "scene": "master",
+  "angleChanged": true
+ },
+ "jitterTap": {
+  "expected": "04",
+  "scene": "tower",
+  "sel": "04"
+ },
+ "pinch": {
+  "scene": "master",
+  "zoom": 2.3505318547086316
+ },
+ "cancel": {
+  "scene": "master"
+ },
+ "pass": true,
+ "errors": []
+}
