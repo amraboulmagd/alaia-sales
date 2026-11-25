@@ -790,6 +790,13 @@ body.sales .resf .dhbox{top:200px!important}
  #u-p,#u-n{width:44px!important;height:44px!important}
 }
 .pl rect.hit,.pl.hv rect.hit,.pl.press rect.hit{fill:transparent!important;stroke:none!important;filter:none!important}
+
+/* BUG-005: persistent, readable disclosure for illustrative interiors and views */
+.illus{margin:10px auto 0;max-width:640px;text-align:center;font-size:15px;line-height:1.5;color:#EDE4D4;background:rgba(12,11,10,.62);padding:8px 16px;border-radius:10px;letter-spacing:.01em}
+#wk .top2 .cap small{display:inline-block;margin-top:6px;font-size:15px!important;line-height:1.45;opacity:1!important;color:#F3EEE5!important;background:rgba(12,11,10,.55);padding:6px 12px;border-radius:8px}
+
+/* BUG-006: unit panel header (code + prev/next) stays reachable while the panel scrolls */
+#sc>div:has(#u-n){position:sticky;top:0;z-index:3;background:var(--bg2);margin-inline:-8px;padding:10px 8px;border-radius:12px}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -886,7 +893,7 @@ ar:{resort:"منتجع · الساحل الشمالي",resort2:"منتجع",full
  home:"الوحدة",netRooms:"مساحات الغرف (من مسقط الوحدة)",netTotal:"إجمالي الغرف",netArea:"المساحة الصافية (من الموديل)",saleArea:"المساحة البيعية",saleNote:"الصافي + ٣٥٪ خدمات. أرقام مبدئية لحين تأكيد المطوّر.",areaHead:"المساحات",mixT:"توزيع الوحدات",view:"الإطلالة",level:"الدور",
  v_lagoon:"على البحيرة مباشرة",v_lagoonx:"البحيرة عبر شارع الحديقة",v_blvd:"بوليفار المدخل",
  indicative:"السعر الاسترشادي",pay:"مقدم ١٠٪ · تقسيط حتى ٨ سنوات (توضيحي)",
- d_admin:"المبيعات",blocked:"مقفولة",admT:"تحكم المبيعات",admNote:"اسم العميل / ملاحظة (اختياري)",admEye:"فريق المبيعات",admLogin:"دخول المبيعات",admLoginP:"اكتب الرقم السري للمبيعات علشان تغيّر حالة الوحدات وتقفل أو تفتح أي وحدة.",admEnter:"دخول",admWrong:"الرقم السري غلط",admTitle:"التحكم في الوحدات",admLive:"مباشر — أي شاشة بتشوف التغيير فورًا.",admLocal:"محفوظ على الجهاز ده. اربط قاعدة البيانات المشتركة علشان كل الشاشات تتزامن.",admSearch:"ابحث بالكود مثلًا T06-A-2",admExport:"تصدير CSV",admImport:"استيراد CSV",admLogout:"قفل",admCode:"الكود",admStatus:"الحالة",admNoteH:"ملاحظة",admImported:"وحدة اتحدّثت",admEngaz:"Engaz لسه مش متوصل. حالات الوحدات محفوظة على سيرفر ألايا؛ استخدم التصدير والاستيراد مع شيت Engaz لحد ما Engaz يدّونا مستندات الـ API وبيانات الدخول.",syncFail:"فشل التزامن — اتحفظ على الجهاز",
+ d_admin:"المبيعات",blocked:"مقفولة",admT:"تحكم المبيعات",admNote:"اسم العميل / ملاحظة (اختياري)",admEye:"فريق المبيعات",admLogin:"دخول المبيعات",admLoginP:"اكتب الرقم السري للمبيعات علشان تغيّر حالة الوحدات وتقفل أو تفتح أي وحدة.",admEnter:"دخول",admWrong:"الرقم السري غلط",admTitle:"التحكم في الوحدات",admLive:"مباشر — أي شاشة بتشوف التغيير فورًا.",admLocal:"محفوظ على الجهاز ده. اربط قاعدة البيانات المشتركة علشان كل الشاشات تتزامن.",admSearch:"ابحث بالكود مثلًا T06-A-2",admExport:"تصدير CSV",admImport:"استيراد CSV",admLogout:"قفل",admCode:"الكود",admStatus:"الحالة",admNoteH:"ملاحظة",admImported:"وحدة اتحدّثت",admEngaz:"Engaz لسه مش متوصل. حالات الوحدات محفوظة على سيرفر ألايا؛ استخدم التصدير والاستيراد مع شيت Engaz لحد ما Engaz يدّونا مستندات الربط وبيانات الدخول.",syncFail:"فشل التزامن — اتحفظ على الجهاز",
  step360:"صورة ٣٦٠°",inside:"ادخل الشقة",insEye:"من الداخل",walk:"تجوّل",doll:"مجسّم",finishes:"التشطيب",fin_sand:"رملي وبلوط",fin_coast:"أبيض ساحلي",fin_terra:"ترافرتين وجوز",
  sp_entry:"المدخل",sp_living:"المعيشة",sp_bed:"غرفة النوم",sp_bed1:"الغرفة الرئيسية",sp_bed2:"الغرفة الثانية",sp_view:"منظر الشباك",sp_balcony:"البلكونة",sp_bath:"الحمام",sp_kitchen:"المطبخ",
  insHint:"اسحب للنظر حولك · اضغط على الأرض للتحرك",realModel:"الحيطان والأبواب والشبابيك من موديل المعماري",exitInside:"رجوع للبرج",saleShort:"بيعية",
@@ -927,7 +934,7 @@ const S2={en:{resortL:"Resort · North Coast",themeD:"Night",themeL:"Day",i_eye:
   amenT:"Amenities",amenP:"Eight lagoon-side experiences across the resort.",
   saleShort:"saleable",kindsT:"Homes",admNoteH:"Note",
   r_list_st:"Open studio · kitchen · bathroom",r_list_br1:"Bedroom · living & kitchen · bathroom",r_list_br2:"2 bedrooms · living · kitchen · 2 bathrooms",
-  blocked:"Locked",admT:"Sales control",admNote:"Client / note (optional)",admEye:"Sales team",admLogin:"Sales access",admLoginP:"Enter the sales PIN to change unit status, lock or open units.",admEnter:"Enter",admWrong:"Wrong PIN",admTitle:"Inventory control",admLocal:"Saved on this device. Connect the shared database to sync every screen.",admLive:"Live — every screen sees changes instantly.",admSearch:"Search code e.g. T06-A-2",admExport:"Export CSV",admImport:"Import CSV",admLogout:"Lock",admCode:"Code",admStatus:"Status",admImported:"units updated",admEngaz:"Two-way sync with Engaz CRM connects once Engaz provides the API key and documentation. Until then, use Export / Import with the Engaz inventory sheet.",
+  blocked:"Locked",admT:"Sales control",admNote:"Client / note (optional)",admEye:"Sales team",admLogin:"Sales access",admLoginP:"Enter the sales PIN to change unit status, lock or open units.",admEnter:"Enter",admWrong:"Wrong PIN",admTitle:"Inventory control",admLocal:"Saved on this device. Connect the shared database to sync every screen.",admLive:"Live — every screen sees changes instantly.",admSearch:"Search code e.g. T06-A-2",admExport:"Export CSV",admImport:"Import CSV",admLogout:"Lock",admCode:"Code",admStatus:"Status",admImported:"units updated",admEngaz:"Engaz is not connected yet. Inventory statuses live on the ALAIA server; use Export / Import with the Engaz inventory sheet until Engaz supplies API documentation and credentials.",
   shareP:"Copy and send on WhatsApp or email.",copy:"Copy message",copied:"Copied",planErr:"Could not load the plan",demo:"Prototype — availability is illustrative until connected to sales."},
  ar:{resortL:"منتجع · الساحل الشمالي",themeD:"ليلي",themeL:"نهاري",i_eye:"الكيلو ٨٩٫٥ · الساحل الشمالي",i_go:"المس للاستكشاف",
   d_master:"الماستر بلان",d_towers:"الأبراج",d_3d:"الموديل 3D",d_film:"الفيلم",fHint:"اسحب أو مرّر علشان تتحرك جوه ألايا",fSkip:"استكشف",fEndT:"أهلًا بيك في بيتك",fFind:"اختار وحدتك",fReplay:"إعادة",f1e:"ألايا · الساحل الشمالي",f1:"١٣ برج وثلاث بحيرات كريستالية",f2e:"البحيرة",f2:"حياة على المية",f3e:"من الغروب للنجوم",f3:"كل ليلة، الأبراج بتنوّر",f4e:"غرفة النوم",f4:"صحيان على النور",f5e:"المعيشة",f5:"مساحة تجمعكم",f6e:"المطبخ",f6:"خشب بلوط دافي",f7e:"الغرفة الرئيسية",f7:"راحة مع نسمة البحر",f8e:"الفيو",f8:"بحيرتك كل يوم",d_amen:"المميزات",d_inter:"التصميم الداخلي",d_sales:"المبيعات",towersCount:"برج",lagoons:"بحيرات",
@@ -939,7 +946,7 @@ const S2={en:{resortL:"Resort · North Coast",themeD:"Night",themeL:"Day",i_eye:
   amenT:"المميزات",amenP:"ثماني تجارب على البحيرات في المنتجع.",
   saleShort:"بيعية",kindsT:"الوحدات",admNoteH:"ملاحظة",
   r_list_st:"ستوديو مفتوح · مطبخ · حمام",r_list_br1:"غرفة نوم · معيشة ومطبخ · حمام",r_list_br2:"غرفتين نوم · معيشة · مطبخ · ٢ حمام",
-  blocked:"مقفولة",admT:"تحكم المبيعات",admNote:"اسم العميل / ملاحظة (اختياري)",admEye:"فريق المبيعات",admLogin:"دخول المبيعات",admLoginP:"اكتب الرقم السري للمبيعات علشان تغيّر حالة الوحدات وتقفل أو تفتح أي وحدة.",admEnter:"دخول",admWrong:"الرقم السري غلط",admTitle:"التحكم في الوحدات",admLocal:"محفوظ على الجهاز ده. اربط قاعدة البيانات المشتركة علشان كل الشاشات تتزامن.",admLive:"مباشر — أي شاشة بتشوف التغيير فورًا.",admSearch:"ابحث بالكود مثلًا T06-A-2",admExport:"تصدير CSV",admImport:"استيراد CSV",admLogout:"قفل",admCode:"الكود",admStatus:"الحالة",admImported:"وحدة اتحدّثت",admEngaz:"الربط في الاتجاهين مع Engaz CRM يتوصل أول ما Engaz يدّونا الـ API key والمستندات. لحد كده استخدم التصدير والاستيراد مع شيت Engaz.",
+  blocked:"مقفولة",admT:"تحكم المبيعات",admNote:"اسم العميل / ملاحظة (اختياري)",admEye:"فريق المبيعات",admLogin:"دخول المبيعات",admLoginP:"اكتب الرقم السري للمبيعات علشان تغيّر حالة الوحدات وتقفل أو تفتح أي وحدة.",admEnter:"دخول",admWrong:"الرقم السري غلط",admTitle:"التحكم في الوحدات",admLocal:"محفوظ على الجهاز ده. اربط قاعدة البيانات المشتركة علشان كل الشاشات تتزامن.",admLive:"مباشر — أي شاشة بتشوف التغيير فورًا.",admSearch:"ابحث بالكود مثلًا T06-A-2",admExport:"تصدير CSV",admImport:"استيراد CSV",admLogout:"قفل",admCode:"الكود",admStatus:"الحالة",admImported:"وحدة اتحدّثت",admEngaz:"Engaz لسه مش متوصل. حالات الوحدات محفوظة على سيرفر ألايا؛ استخدم التصدير والاستيراد مع شيت Engaz لحد ما Engaz يدّونا مستندات الربط وبيانات الدخول.",
   shareP:"انسخ وابعت على واتساب أو الإيميل.",copy:"انسخ الرسالة",copied:"اتنسخت",planErr:"تعذّر تحميل المسقط",demo:"نسخة تجريبية — الحالات توضيحية لحد الربط بالمبيعات."}};
 let lang='en'; const t=k=>S2[lang][k]??S[lang][k]??S2.en[k]??S.en[k]??k;
 const nf=(v,d=0)=>Number(v).toLocaleString(lang==='ar'?'ar-EG':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -1557,7 +1564,7 @@ function openAdmin(){
   const {m,close}=modal(head(t('admEye'),t('admTitle'),t('admServer'))+`<div class="stats" style="grid-template-columns:repeat(4,minmax(0,1fr))">${STS.map(s=>`<div class="stat"><b>${nf(c(s))}</b><span><i class="dot d-${s}"></i> ${t(s)}</span></div>`).join('')}</div>
    <div class="adm-bar"><select id="ft"><option value="">${t('all')} · ${t('building')}</option>${BLD.map(b=>`<option value="${b.id}">${t('building')} ${b.id}</option>`).join('')}</select><select id="fs2"><option value="">${t('all')}</option>${STS.map(s=>`<option value="${s}">${t(s)}</option>`).join('')}</select><select id="fk"><option value="">${t('all')}</option>${['st','br1','br2'].map(k=>`<option value="${k}">${t(k)}</option>`).join('')}</select><input class="inp" id="fq" placeholder="${t('admSearch')}"><span class="sp"></span><button class="chip" id="fx">${t('admExport')}</button><label class="chip" for="fi">${t('admImport')}</label><input type="file" id="fi" accept=".csv" hidden><button class="chip" id="fo">${t('admLogout')}</button></div>
    <div class="adm-list"><table class="tbl"><thead><tr><th>${t('admCode')}</th><th>${t('type')}</th><th>${t('level')}</th><th>${t('saleArea')}</th><th>${t('admStatus')}</th><th>${t('admNoteH')}</th></tr></thead><tbody id="fb"></tbody></table></div>
-   <div style="padding:14px;border-radius:16px;background:var(--faint)"><span class="eye">Engaz CRM</span><p style="margin:6px 0 0;color:var(--mute);font-size:13px;line-height:1.6">${t('admEngaz')}</p></div>`);
+   <div style="padding:14px;border-radius:16px;background:var(--faint)"><span class="eye">${t('crmEye')}</span><p style="margin:6px 0 0;color:var(--mute);font-size:13px;line-height:1.6">${t('admEngaz')}</p></div>`);
   const draw=()=>{const ft=m.querySelector('#ft').value,fs=m.querySelector('#fs2').value,fk=m.querySelector('#fk').value,q=m.querySelector('#fq').value.trim().toUpperCase();
     m.querySelector('#fb').innerHTML=ALLU.filter(u=>(!ft||u.b.id===ft)&&(!fs||u.st===fs)&&(!fk||u.kind===fk)&&(!q||u.code.includes(q))).slice(0,400).map(u=>`<tr><td><button data-go="${u.code}" style="font-weight:600;text-decoration:underline">${u.code}</button></td><td>${t(u.kind)}</td><td>${floorName(u.f)}</td><td>${nf(u.area)}</td><td><select data-c="${u.code}">${STS.map(s=>`<option value="${s}" ${u.st===s?'selected':''}>${t(s)}</option>`).join('')}</select></td><td style="color:var(--mute)">${OVR[u.code]?.note||''}</td></tr>`).join('');
     m.querySelectorAll('select[data-c]').forEach(s=>s.onchange=()=>setStatus(ALLU.find(u=>u.code===s.dataset.c),s.value));
@@ -1679,7 +1686,7 @@ function openView(u){ const side=u.p.r===0?'a':'b'; let f=Math.min(4,u.f); let k
   $('#bf-360').onclick=()=>openWalk3D(u,TOUR_URL,'balcony'); load(); }
 
 /* ================= KIOSK LAYER: modes, idle, leads, walk viewer, project details ================= */
-Object.assign(S2.en,{admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
+Object.assign(S2.en,{crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
  smLeadsSrv:"requests received on the server",smLeadsPend:"waiting on this device to sync",lm_sales:"sales",'lm_self-serve':"self-serve",close:"Close",
  crm_not_configured:"Engaz is not connected yet: requests are stored on the ALAIA server and listed here. Connecting needs Engaz API documentation and credentials.",crm_configured:"Engaz connection configured.",
  reqPendT:"Saved on this screen",reqPendP:"The connection is down, so your request is saved here and will be sent automatically when it returns. A sales advisor can also help you right away.",
@@ -1690,14 +1697,14 @@ Object.assign(S2.en,{admServer:"Saved on the ALAIA server. Other screens pick up
  idleT:"Still there?",idleP:"Returning to the welcome screen in",idleStay:"I'm here",
  d_walk:"Walk the home",d_proj:"Project",d_towers:"Towers",
  wkEnter:"Enter this home",wkSoon:"Interior view coming soon",wkHint:"Drag to look around · pinch to zoom · tap an arrow to walk",wkView:"View from this home",wkInfo:"About this room",
- wn_entry:"Entrance",wn_living:"Living room",wn_kitchen:"Kitchen",wn_bed:"Bedroom",wn_master:"Master bedroom",wn_second:"Second bedroom",wn_bath:"Bathroom",
- infoArea:"Home area",infoRoom:"Room size",infoFin:"Finishes",infoView:"View direction",infoNear:"Nearby amenities",tbc:"To be confirmed by the developer",infoTypeOnly:"Interior shown is the typical layout for this home type.",
+ wn_entry:"Entrance",wn_studio:"Studio",wn_sleep:"Sleeping area",wn_kitchenette:"Kitchenette",wn_livkit:"Living & kitchen",wn_living:"Living room",wn_kitchen:"Kitchen",wn_bed:"Bedroom",wn_master:"Master bedroom",wn_second:"Second bedroom",wn_bath:"Bathroom",
+ infoArea:"Home area",infoRoom:"Room size",infoFin:"Finishes",infoView:"View direction",infoNear:"Nearby amenities",tbc:"To be confirmed by the developer",infoTypeOnly:"Interior and view are illustrative, typical for this home type.",
  pj_eye:"Project details",pj_t:"ALAIA, North Coast",pj_p:"Thirteen low-rise residential towers in four rows around three crystal lagoons, with a boutique hotel and a retail promenade on the coastal-road front.",
  pj_loc:"Location",pj_tw:"Towers",pj_homes:"Homes",pj_lag:"Lagoons",pj_types:"Tower types",pj_mix:"Home types",pj_svc:"Hotel & retail",pj_am:"Amenities",pj_del:"Delivery stages",pj_land:"Land area",
  pj_delP:"Delivery stages and dates have not been issued yet.",pj_units:"Homes",pj_qty:"Towers",pj_h:"Height",pj_ty:"Type",pj_ids:"Tower numbers",pj_map:"Open in Google Maps"});
-Object.assign(S2.ar,{admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
+Object.assign(S2.ar,{crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
  smLeadsSrv:"طلب وصل للسيرفر",smLeadsPend:"مستني على الجهاز ده لحد ما يتبعت",lm_sales:"مبيعات",'lm_self-serve':"خدمة ذاتية",close:"إغلاق",
- crm_not_configured:"Engaz لسه مش متوصل: الطلبات بتتحفظ على سيرفر ألايا وبتظهر هنا. الربط محتاج مستندات الـ API وبيانات الدخول من Engaz.",crm_configured:"اتظبط الربط مع Engaz.",
+ crm_not_configured:"Engaz لسه مش متوصل: الطلبات بتتحفظ على سيرفر ألايا وبتظهر هنا. الربط محتاج مستندات الربط وبيانات الدخول من Engaz.",crm_configured:"اتظبط الربط مع Engaz.",
  reqPendT:"اتحفظ على الشاشة دي",reqPendP:"الاتصال مقطوع، فطلبك اتحفظ هنا وهيتبعت أوتوماتيك أول ما الاتصال يرجع. ومستشار المبيعات يقدر يساعدك دلوقتي.",
  pricePend:"السعر عند الطلب",walkT:"امشي جوه البيت ده",fEndT:"أهلاً بيك في بيتك على بحيرات الساحل الشمالي",
  reqT:"اطلب التفاصيل",reqP:"مستشار المبيعات هيجيب لك السعر وخطة السداد والإتاحة للوحدة دي.",reqSend:"ابعت لفريق المبيعات",unitC:"الوحدة",
@@ -1706,8 +1713,8 @@ Object.assign(S2.ar,{admServer:"محفوظ على سيرفر ألايا. الش�
  idleT:"لسه معانا؟",idleP:"الشاشة هترجع لشاشة الترحيب خلال",idleStay:"أنا هنا",
  d_walk:"امشي جوه البيت",d_proj:"المشروع",d_towers:"الأبراج",
  wkEnter:"ادخل البيت",wkSoon:"المنظر الداخلي قريبًا",wkHint:"اسحب علشان تبص حواليك · قرّب بصباعين · اضغط على السهم علشان تمشي",wkView:"المنظر من البيت ده",wkInfo:"عن الأوضة دي",
- wn_entry:"المدخل",wn_living:"المعيشة",wn_kitchen:"المطبخ",wn_bed:"غرفة النوم",wn_master:"غرفة النوم الرئيسية",wn_second:"غرفة النوم التانية",wn_bath:"الحمام",
- infoArea:"مساحة الوحدة",infoRoom:"مقاس الأوضة",infoFin:"التشطيبات",infoView:"اتجاه الفيو",infoNear:"مميزات قريبة",tbc:"يؤكدها المطوّر",infoTypeOnly:"التصميم الداخلي المعروض هو التوزيع المعتاد لنوع الوحدة دي.",
+ wn_entry:"المدخل",wn_studio:"الاستوديو",wn_sleep:"منطقة النوم",wn_kitchenette:"المطبخ الصغير",wn_livkit:"المعيشة والمطبخ",wn_living:"المعيشة",wn_kitchen:"المطبخ",wn_bed:"غرفة النوم",wn_master:"غرفة النوم الرئيسية",wn_second:"غرفة النوم التانية",wn_bath:"الحمام",
+ infoArea:"مساحة الوحدة",infoRoom:"مقاس الأوضة",infoFin:"التشطيبات",infoView:"اتجاه الفيو",infoNear:"مميزات قريبة",tbc:"يؤكدها المطوّر",infoTypeOnly:"التصميم الداخلي والإطلالة توضيحيان لهذا النوع من الوحدات.",
  pj_eye:"تفاصيل المشروع",pj_t:"ألايا، الساحل الشمالي",pj_p:"١٣ برج سكني منخفض في أربع صفوف حوالين ثلاث بحيرات كريستالية، مع فندق بوتيك وممشى تجاري على واجهة الطريق الساحلي.",
  pj_loc:"الموقع",pj_tw:"الأبراج",pj_homes:"الوحدات",pj_lag:"البحيرات",pj_types:"نماذج الأبراج",pj_mix:"أنواع الوحدات",pj_svc:"الفندق والتجاري",pj_am:"المميزات",pj_del:"مراحل التسليم",pj_land:"مساحة الأرض",
  pj_delP:"مراحل التسليم ومواعيدها لسه ماصدرتش.",pj_units:"الوحدات",pj_qty:"عدد الأبراج",pj_h:"الارتفاع",pj_ty:"النموذج",pj_ids:"أرقام الأبراج",pj_map:"افتح على خرائط جوجل"});
@@ -1809,7 +1816,7 @@ const _sUnit=sUnit; sUnit=function(o){ const u=o.u; sideHook=()=>{ const pr=$('#
   const g=$('#u-gal'); if(g) g.onclick=()=>openWalk(u,1); };
   _sUnit(o);
   const box=[...document.querySelectorAll('.dhbox')].pop(); if(box&&!o.plan){ box.querySelectorAll('.dhs').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const j=+b.dataset.j; openWalk(u,DH2N[u.kind][j],`ai/res/${u.kind}_dive_${j}.mp4`); });
-    const hint=box.querySelector('.dhhint'); if(hint){ hint.insertAdjacentHTML('afterend',`<div style="display:flex;justify-content:center;margin-top:14px">${cta('dh-in',t('wkEnter'),'home')}</div>`); const din=box.querySelector('#dh-in'); din.classList.add('pri'); din.dataset.code=u.code; din.onclick=e=>{ e.stopPropagation(); if(din.closest('.frame.dying')) return; openWalk(u,0); }; }
+    const hint=box.querySelector('.dhhint'); if(hint&&!box.querySelector('.illus')) hint.insertAdjacentHTML('beforebegin',`<div class="illus">${t('infoTypeOnly')}</div>`); if(hint){ hint.insertAdjacentHTML('afterend',`<div style="display:flex;justify-content:center;margin-top:14px">${cta('dh-in',t('wkEnter'),'home')}</div>`); const din=box.querySelector('#dh-in'); din.classList.add('pri'); din.dataset.code=u.code; din.onclick=e=>{ e.stopPropagation(); if(din.closest('.frame.dying')) return; openWalk(u,0); }; }
     // warm the first walk node and the dive clips so taps never wait on the network
     [0,1].forEach(i=>{ const im=new Image(); im.src=`ai/walk/${u.kind}_n${i}.jpg`; }); }
 };
@@ -1829,7 +1836,7 @@ try{ const lk=document.createElement('link'); lk.rel='preload'; lk.as='image'; l
   if(innerWidth>=1280){ const pv=document.createElement('video'); pv.preload='auto'; pv.muted=true; pv.src='ai/film.mp4'; pv.style.display='none'; document.body.appendChild(pv); setTimeout(()=>{pv.removeAttribute('src');pv.load();pv.remove();},60000); } }catch(e){}
 
 /* ================= walk-through viewer (item 12) ================= */
-const WN={st:['entry','living','kitchen','bath'],br1:['entry','living','kitchen','bedroom','bath'],br2:['entry','living','master','second','bath']};
+const WN={st:['studio','sleep','kitchenette','bath'],br1:['livkit','kitchen','living','bedroom','bath'],br2:['living','livkit','master','second','bath']};
 const WNL={entry:'wn_entry',living:'wn_living',kitchen:'wn_kitchen',bedroom:'wn_bed',master:'wn_master',second:'wn_second',bath:'wn_bath'};
 const WDIM={st:{living:'d_bedliv',kitchen:'r_kitchen',bath:'d_bath'},br1:{living:'r_living',bedroom:'r_bed',kitchen:'r_kitchen',bath:'d_bath'},br2:{entry:'d_kitent',living:'r_living',master:'d_bed1',second:'d_bed2',bath:'d_bath1'}};
 const WHS={fwd:[.5,.64],back:[.24,.72],info:[.36,.4]};

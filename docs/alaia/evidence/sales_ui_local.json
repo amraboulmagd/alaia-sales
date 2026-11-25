@@ -1,0 +1,72 @@
+{
+ "total": 13,
+ "passed": 13,
+ "results": [
+  {
+   "n": "wrong PIN: no sales bar",
+   "pass": true,
+   "i": ""
+  },
+  {
+   "n": "real long-press + PIN opens sales mode",
+   "pass": true,
+   "i": ""
+  },
+  {
+   "n": "inventory modal opens after login",
+   "pass": true,
+   "i": ""
+  },
+  {
+   "n": "Units & status reopens modal",
+   "pass": true,
+   "i": ""
+  },
+  {
+   "n": "Exit closes inventory modal",
+   "pass": true,
+   "i": ""
+  },
+  {
+   "n": "Exit removes sales bar",
+   "pass": true,
+   "i": ""
+  },
+  {
+   "n": "Exit ends server session",
+   "pass": true,
+   "i": 401
+  },
+  {
+   "n": "Arabic inventory: no English words (except codes/brands)",
+   "pass": true,
+   "i": ""
+  },
+  {
+   "n": "Arabic inventory: Arabic-Indic digits in stats",
+   "pass": true,
+   "i": ""
+  },
+  {
+   "n": "Expired session closes modal and sales bar",
+   "pass": true,
+   "i": ""
+  },
+  {
+   "n": "next arrow reachable while panel scrolled",
+   "pass": true,
+   "i": ""
+  },
+  {
+   "n": "panel scroll reset after next",
+   "pass": true,
+   "i": "{\"top\":0,\"code\":\"T06-B-208\",\"h2\":\"T06-B-208\"}"
+  },
+  {
+   "n": "panel shows the selected unit (no stale data)",
+   "pass": true,
+   "i": "{\"top\":0,\"code\":\"T06-B-208\",\"h2\":\"T06-B-208\"}"
+  }
+ ],
+ "errors": []
+}
