@@ -943,6 +943,10 @@ body.sales .resf .dhbox{top:200px!important}
 .orb-cv{position:absolute;inset:0;width:100%;height:100%;opacity:0;pointer-events:none;transition:opacity .18s linear;z-index:1}
 .orb-cv.on{opacity:1;transition:none}
 .orb-zoom .orb-svg{z-index:2}
+
+/* 360 rooms: repeating strip, no seams on wrap */
+#wk .pan.pano{background-repeat:repeat-x;background-size:auto 100%;background-position:0 0}
+#wk .pan.pano img{visibility:hidden}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -1449,14 +1453,14 @@ function sMaster(){
   const cache={};
   const still=(i,t)=>{ const src=orbSrc(i,t); let im=cache[src]; if(!im){ im=new Image(); im.decoding='async'; im.alt=''; im.className='orb-im'; im.src=src; cache[src]=im; imgs.appendChild(im);} return im; };
   // ---------- smooth scrub: 384 frames (24 per angle) taken from the transition clips; the image follows the hand
-  const OSN=384, OSK=24; const SCRL=['am','noon','pm']; const OSD=()=>{ const tt=TODS[orbT]; const b=tt==='pm'?'ai/os':'ai/os_'+tt; return b+(innerWidth<1000?'_s/':'/'); };
+  const OSN=384, OSK=24; const SCRL=['am','noon','pm']; const OSD=(lo)=>{ const tt=TODS[orbT]; const b=tt==='pm'?'ai/os':'ai/os_'+tt; return b+((lo||innerWidth<1000)?'_s/':'/'); };
   const fcv=document.createElement('canvas'); fcv.className='orb-cv'; imgs.after(fcv); const fx=fcv.getContext('2d');
-  const FRS={}; const FRd=()=>FRS[OSD()]||(FRS[OSD()]=new Array(OSN)); const fw=n=>((n%OSN)+OSN)%OSN;
-  const fload=n=>{ n=fw(n); const FR=FRd(); if(FR[n]) return FR[n]; const im=new Image(); im.decoding='async'; im.src=OSD()+String(n).padStart(3,'0')+'.jpg'; FR[n]=im; im.decode().then(()=>{im._dec=1;}).catch(()=>{}); return im; };
-  const warmed={}; const warm=()=>{ const dk=OSD(); if(warmed[dk]||!SCRL.includes(TODS[orbT])) return; warmed[dk]=true; const c=orbI*OSK; const order=[]; for(let d=1;d<=OSN/2;d++){ order.push(c+d,c-d); }
-    let k=0, live=0; const pump=()=>{ while(live<6&&k<order.length){ const im=fload(order[k++]); if(im.complete){ continue; } live++; const dn=()=>{ live--; if(el.isConnected) pump(); }; im.onload=dn; im.onerror=dn; } }; pump(); };
+  const FRS={}; const FRd=(lo)=>FRS[OSD(lo)]||(FRS[OSD(lo)]=new Array(OSN)); const fw=n=>((n%OSN)+OSN)%OSN;
+  const fload=(n,lo)=>{ n=fw(n); const FR=FRd(lo); if(FR[n]) return FR[n]; const im=new Image(); im.decoding='async'; im.src=OSD(lo)+String(n).padStart(3,'0')+'.jpg'; FR[n]=im; im.decode().then(()=>{im._dec=1;}).catch(()=>{}); return im; };
+  const warmed={}; const warm=()=>{ const dk=OSD(); if(warmed[dk]||!SCRL.includes(TODS[orbT])) return; warmed[dk]=true; const c=orbI*OSK; const order=[]; const two=innerWidth>=1000; for(let d=1;d<=OSN/2;d++){ order.push([c+d,1],[c-d,1]); } if(two) for(let d=1;d<=OSN/2;d++){ order.push([c+d,0],[c-d,0]); }
+    let k=0, live=0; const pump=()=>{ while(live<8&&k<order.length){ const [on,lo]=order[k++]; const im=fload(on,lo&&innerWidth>=1000); if(im.complete){ continue; } live++; const dn=()=>{ live--; if(el.isConnected) pump(); }; im.onload=dn; im.onerror=dn; } }; pump(); };
   const okIm=im=>im&&im.complete&&im.naturalWidth>0&&(im._dec||im.classList.contains('on'));
-  const frameFor=p=>{ const n=fw(Math.round(p*OSK)); if(n%OSK===0){ const st=still(n/OSK,orbT); if(okIm(st)) return st; } for(let d=0;d<OSK;d++){ for(const q of [n-d,n+d]){ const im=FRd()[fw(q)]; if(okIm(im)) return im; if(fw(q)%OSK===0){ const st=cache[orbSrc(fw(q)/OSK,orbT)]; if(okIm(st)) return st; } } } return null; };
+  const frameFor=p=>{ const n=fw(Math.round(p*OSK)); if(n%OSK===0){ const st=still(n/OSK,orbT); if(okIm(st)) return st; } for(let d=0;d<OSK;d++){ for(const q of [n-d,n+d]){ const im=FRd()[fw(q)]; if(okIm(im)) return im; const lo=FRS[OSD(true)]&&FRS[OSD(true)][fw(q)]; if(okIm(lo)) return lo; if(fw(q)%OSK===0){ const st=cache[orbSrc(fw(q)/OSK,orbT)]; if(okIm(st)) return st; } } } return null; };
   const fit=()=>{ const r=el.getBoundingClientRect(); const d=Math.min(2,devicePixelRatio||1); const W=Math.max(2,Math.round(r.width*d)), H=Math.max(2,Math.round(r.height*d)); if(fcv.width!==W||fcv.height!==H){ fcv.width=W; fcv.height=H; } };
   let lastIm=null; const paint=p=>{ const im=frameFor(p); if(!im||im===lastIm) return; lastIm=im; const W=fcv.width,H=fcv.height; const k=Math.max(W/im.naturalWidth,H/im.naturalHeight); const w=im.naturalWidth*k,h=im.naturalHeight*k; fx.imageSmoothingQuality='high'; fx.drawImage(im,(W-w)/2,(H-h)/2,w,h); };
   const SC={on:false,pos:0,vel:0,raf:0,anim:null};
@@ -1464,8 +1468,8 @@ function sMaster(){
   const scEnd=()=>{ const to=fw(Math.round(SC.pos*OSK))/OSK; orbI=((Math.round(to)%ORBN)+ORBN)%ORBN; SC.on=false; const im=still(orbI,orbT); const done=()=>{ show(); requestAnimationFrame(()=>{ fcv.classList.remove('on'); svg.classList.remove('hide'); draw(); prime(); }); }; if(im.complete) done(); else { im.onload=done; setTimeout(done,600); } };
   const scTo=(target,ms)=>{ const p0=SC.pos, t0=performance.now(); cancelAnimationFrame(SC.raf); const tick=now=>{ const k=Math.min(1,(now-t0)/ms), e=1-Math.pow(1-k,3); SC.pos=p0+(target-p0)*e; paint(SC.pos); if(k<1) SC.raf=requestAnimationFrame(tick); else { SC.pos=target; paint(target); scEnd(); } }; SC.raf=requestAnimationFrame(tick); };
   const scGlide=v=>{ // v = angles per ms at release; gentle decay, then settle on the nearest angle
-    const vmax=PHONE_UI()?0.004:0.008; let vel=Math.max(-vmax,Math.min(vmax,v)); let lt=performance.now(); cancelAnimationFrame(SC.raf);
-    const tick=now=>{ const dt=Math.min(40,now-lt); lt=now; SC.pos+=vel*dt; vel*=Math.pow(0.9,dt/16); paint(SC.pos); if(Math.abs(vel)>0.0006) SC.raf=requestAnimationFrame(tick); else { const tgt=Math.round(SC.pos); scTo(tgt,Math.max(180,Math.min(520,Math.abs(tgt-SC.pos)*900))); } }; SC.raf=requestAnimationFrame(tick); };
+    const vmax=PHONE_UI()?0.006:0.014; let vel=Math.max(-vmax,Math.min(vmax,v)); let lt=performance.now(); cancelAnimationFrame(SC.raf);
+    const tick=now=>{ const dt=Math.min(40,now-lt); lt=now; SC.pos+=vel*dt; vel*=Math.pow(0.86,dt/16); paint(SC.pos); if(Math.abs(vel)>0.0006) SC.raf=requestAnimationFrame(tick); else { const tgt=Math.round(SC.pos); scTo(tgt,Math.max(140,Math.min(320,Math.abs(tgt-SC.pos)*600))); } }; SC.raf=requestAnimationFrame(tick); };
   const scrubOK=()=>SCRL.includes(TODS[orbT])&&Z.s<=1.02;
   // ---------- view state
   const Z={s:1,x:0,y:0}; const hiRes=()=>{ const im=imgs.querySelector('.orb-im.on'); if(im&&/_s\.jpg$/.test(im.src)){ const hi=new Image(); hi.src=im.src.replace(/_s\.jpg$/,'.jpg'); hi.decode().then(()=>{ if(im.classList.contains('on')) im.src=hi.src; }).catch(()=>{}); } }; const applyZ=()=>{ zw.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.s})`; el.classList.toggle('zoomed',Z.s>1.02); if(Z.s>1.05) hiRes(); };
@@ -1519,7 +1523,7 @@ function sMaster(){
     if(!g0) return; if(Math.hypot(e.clientX-g0.x,e.clientY-g0.y)>8){ if(!moved) svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press')); moved=true; }
     const now=performance.now(); g0.v=(e.clientX-g0.lx)/Math.max(1,now-g0.lt); g0.lx=e.clientX; g0.lt=now;
     if(Z.s>1.02){ Z.x+=dx; Z.y+=dy; clampZ(); applyZ(); return; }
-    if(scrubOK()&&!busy&&!g0.multi){ if(moved){ scBegin(); const pxA=Math.max(150,el.getBoundingClientRect().width/(PHONE_UI()?2.6:5)); SC.pos-=dx/pxA; g0.av=-(g0.v)/pxA; paint(SC.pos); } return; }
+    if(scrubOK()&&!busy&&!g0.multi){ if(moved){ scBegin(); const pxA=Math.max(70,el.getBoundingClientRect().width/(PHONE_UI()?4:10)); SC.pos-=dx/pxA; g0.av=-(g0.v)/pxA; paint(SC.pos); } return; }
     acc+=dx; if(Z.s<=1.02&&!busy){ imgs.style.transition='none'; imgs.style.transform=`translateX(${Math.max(-60,Math.min(60,acc*0.25)).toFixed(1)}px)`; } if(PHONE_UI()){ if(!g0.stepped&&Math.abs(acc)>=Math.max(60,innerWidth*0.22)){ g0.stepped=true; step(acc>0?-1:1); } return; } const th=Math.max(90,innerWidth/14); while(Math.abs(acc)>=th){ const d=acc>0?-1:1; acc+=d*th; step(d); } });
   const up=e=>{ if(!P.has(e.pointerId)) return; P.delete(e.pointerId); if(P.size<2) pinch0=null; if(P.size){ if(g0) g0.multi=true; return; }
     svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press')); imgs.style.transition='transform .25s ease'; imgs.style.transform='';
@@ -1893,7 +1897,7 @@ Object.assign(S2.en,{wn_wardrobe:"Wardrobe & hallway",wkViewS:"View",reqS:"Reque
  smT:"Sales mode",smUnits:"Units & status",smLeads:"Leads",smExit:"Exit sales mode",smLeadsN:"leads on this device",
  idleT:"Still there?",idleP:"Returning to the welcome screen in",idleStay:"I'm here",
  d_walk:"Walk the home",d_proj:"Project",d_towers:"Towers",
- wkEnter:"Enter this home",wkSoon:"Interior view coming soon",wkHint:"Drag to look around · pinch to zoom · tap an arrow to walk",wkView:"View from this home",wkInfo:"About this room",
+ wkEnter:"Enter this home",wkSoon:"Interior view coming soon",wkHint:"Drag to look around 360° · pinch or scroll to zoom in and out",wkView:"View from this home",wkInfo:"About this room",
  wn_entry:"Entrance",wn_room:"Room",wn_studio:"Studio",wn_sleep:"Sleeping area",wn_kitchenette:"Kitchenette",wn_livkit:"Living & kitchen",wn_living:"Living room",wn_kitchen:"Kitchen",wn_bed:"Bedroom",wn_master:"Master bedroom",wn_second:"Second bedroom",wn_bath:"Bathroom",
  infoArea:"Home area",infoRoom:"Room size",infoFin:"Finishes",infoView:"View direction",infoNear:"Nearby amenities",tbc:"To be confirmed by the developer",infoTypeOnly:"Interior and view are illustrative, typical for this home type.",
  pj_eye:"Project details",pj_t:"ALAIA, North Coast",pj_p:"Thirteen low-rise residential towers in four rows around three crystal lagoons, with a boutique hotel and a retail promenade on the coastal-road front.",
@@ -1909,7 +1913,7 @@ Object.assign(S2.ar,{wn_wardrobe:"الدولاب والممر",wkViewS:"الفي
  smT:"وضع المبيعات",smUnits:"الوحدات والحالة",smLeads:"الطلبات",smExit:"خروج من وضع المبيعات",smLeadsN:"طلب على الجهاز ده",
  idleT:"لسه معانا؟",idleP:"الشاشة هترجع لشاشة الترحيب خلال",idleStay:"أنا هنا",
  d_walk:"امشي جوه البيت",d_proj:"المشروع",d_towers:"الأبراج",
- wkEnter:"ادخل البيت",wkSoon:"المنظر الداخلي قريبًا",wkHint:"اسحب علشان تبص حواليك · قرّب بصباعين · اضغط على السهم علشان تمشي",wkView:"المنظر من البيت ده",wkInfo:"عن الأوضة دي",
+ wkEnter:"ادخل البيت",wkSoon:"المنظر الداخلي قريبًا",wkHint:"اسحب علشان تلف ٣٦٠° · قرّب أو بعّد بصباعين أو بالعجلة",wkView:"المنظر من البيت ده",wkInfo:"عن الأوضة دي",
  wn_entry:"المدخل",wn_room:"غرفة",wn_studio:"الاستوديو",wn_sleep:"منطقة النوم",wn_kitchenette:"المطبخ الصغير",wn_livkit:"المعيشة والمطبخ",wn_living:"المعيشة",wn_kitchen:"المطبخ",wn_bed:"غرفة النوم",wn_master:"غرفة النوم الرئيسية",wn_second:"غرفة النوم التانية",wn_bath:"الحمام",
  infoArea:"مساحة الوحدة",infoRoom:"مقاس الأوضة",infoFin:"التشطيبات",infoView:"اتجاه الفيو",infoNear:"مميزات قريبة",tbc:"يؤكدها المطوّر",infoTypeOnly:"التصميم الداخلي والإطلالة توضيحيان لهذا النوع من الوحدات.",
  pj_eye:"تفاصيل المشروع",pj_t:"ألايا، الساحل الشمالي",pj_p:"١٣ برج سكني منخفض في أربع صفوف حوالين ثلاث بحيرات كريستالية، مع فندق بوتيك وممشى تجاري على واجهة الطريق الساحلي.",
@@ -2007,7 +2011,7 @@ function planLabels(root,byI,selU){ const svg=root.querySelector('svg'); if(!svg
   svg.appendChild(g); }
 let sideHook=null; const _side=side; side=function(html,bind){ const hk=sideHook; sideHook=null; _side(html,html==null?bind:()=>{ bind&&bind(); try{ hk&&hk(); }catch(e){ console.error(e); } }); };
 const _pUP=panelUnitPreview; panelUnitPreview=function(u){ sideHook=()=>{ const pr=$('#sc .price'); if(pr&&!$('#k-req0')){ pr.insertAdjacentHTML('afterend',cta('k-req0',t('reqT'),'send',true)); $('#k-req0').onclick=()=>openReq(u); } $('#u-open')?.classList.add('pri'); }; _pUP(u); };
-const DH2N={st:[1,2],br1:[1,3,0],br2:[1,2,3]};
+const DH2N=/[?&]pano=1/.test(location.search)?{st:[0,0],br1:[0,1,0],br2:[1,2,3]}:{st:[1,2],br1:[1,3,0],br2:[1,2,3]};
 const _sUnit=sUnit; sUnit=function(o){ const u=o.u; sideHook=()=>{ const pr=$('#sc .price'); if(pr){ pr.insertAdjacentHTML('afterend',cta('k-req',t('reqT'),'send')); $('#k-req').onclick=()=>openReq(u); }
   const w=$('#u-360'); if(w){ w.querySelector('span').textContent=t('walkT'); w.classList.remove('ghost'); w.onclick=()=>openWalk(u,0); }
   const g=$('#u-gal'); if(g) g.onclick=()=>openWalk(u,1); };
@@ -2034,7 +2038,7 @@ try{ const lk=document.createElement('link'); lk.rel='preload'; lk.as='image'; l
   if(innerWidth>=1280){ const pv=document.createElement('video'); pv.preload='auto'; pv.muted=true; pv.src=innerWidth<1000?'ai/film_m.mp4':'ai/film.mp4'; pv.style.display='none'; document.body.appendChild(pv); setTimeout(()=>{pv.removeAttribute('src');pv.load();pv.remove();},60000); } }catch(e){}
 
 /* ================= walk-through viewer (item 12) ================= */
-const WN={st:['studio','sleep','kitchenette'],br1:['living','kitchen','entry','bedroom','wardrobe'],br2:['living','livkit','master','second','bath']};
+const WN={st:/[?&]pano=1/.test(location.search)?['studio']:['studio','sleep','kitchenette'],br1:/[?&]pano=1/.test(location.search)?['living','bedroom']:['living','kitchen','entry','bedroom','wardrobe'],br2:['living','livkit','master','second','bath']};
 const WNL=new Proxy({entry:'wn_entry',living:'wn_living',kitchen:'wn_kitchen',bedroom:'wn_bed',master:'wn_master',second:'wn_second',bath:'wn_bath',studio:'wn_studio',sleep:'wn_sleep',kitchenette:'wn_kitchenette',livkit:'wn_livkit',wardrobe:'wn_wardrobe'},{get:(o,k)=>o[k]||'wn_room'});
 const WDIM={st:{studio:'d_bedliv',sleep:'d_bedliv',kitchenette:'r_kitchen'},br1:{living:'r_living',bedroom:'r_bed',wardrobe:'r_bed',kitchen:'r_kitchen'},br2:{entry:'d_kitent',living:'r_living',master:'d_bed1',second:'d_bed2',bath:'d_bath1'}};
 const WHS={fwd:[.5,.64],back:[.24,.72],info:[.36,.4]};
@@ -2070,15 +2074,16 @@ function openWalk(u,node,intro,kind){ kind=u?u.kind:(kind||'br1'); wkStop(); $('
 function wkIntro(src){ const v=wk.el.querySelector('video.tv'); let fin=false; const land=()=>{ if(fin) return; fin=true; kLoad(false); v.classList.remove('on'); setTimeout(()=>{ v.pause(); },300); };
   v.src=src; kLoad(true); v.onplaying=()=>{ kLoad(false); v.classList.add('on'); }; v.ontimeupdate=()=>{ if(v.duration&&v.currentTime>v.duration-.6) land(); }; v.onended=land; v.onerror=land;
   v.play().catch(land); setTimeout(()=>{ if(!v.classList.contains('on')) land(); },2500); setTimeout(land,9000); }
-function wkFit(){ const W=innerWidth,H=innerHeight; return Math.max(W/wk.iw,H/wk.ih); }
-function wkClamp(){ const W=innerWidth,H=innerHeight,S=wkFit()*wk.tz; wk.tx=Math.min(0,Math.max(W-wk.iw*S,wk.tx)); wk.ty=Math.min(0,Math.max(H-wk.ih*S,wk.ty)); }
+function wkFit(){ const W=innerWidth,H=innerHeight; return wk.pano?H/wk.ih:Math.max(W/wk.iw,H/wk.ih); }
+const WKZMIN=()=>wk.pano?0.6:Math.min(1,Math.min(innerWidth/wk.iw,innerHeight/wk.ih)/Math.max(innerWidth/wk.iw,innerHeight/wk.ih));
+function wkClamp(){ const W=innerWidth,H=innerHeight,S=wkFit()*wk.tz; if(wk.pano){ const PW=wk.iw*S; while(wk.tx>0){ wk.tx-=PW; wk.x-=PW; } while(wk.tx<-PW){ wk.tx+=PW; wk.x+=PW; } wk.ty=wk.ih*S<=H?(H-wk.ih*S)/2:Math.min(0,Math.max(H-wk.ih*S,wk.ty)); return; } wk.tx=wk.iw*S<=W?(W-wk.iw*S)/2:Math.min(0,Math.max(W-wk.iw*S,wk.tx)); wk.ty=wk.ih*S<=H?(H-wk.ih*S)/2:Math.min(0,Math.max(H-wk.ih*S,wk.ty)); }
 function wkCenter(){ const W=innerWidth,H=innerHeight,S=wkFit()*wk.tz; wk.tx=(W-wk.iw*S)/2; wk.ty=(H-wk.ih*S)/2; }
-function wkZoom(f,cx,cy){ cx=cx??innerWidth/2; cy=cy??innerHeight/2; const S0=wkFit()*wk.tz; const nz=Math.max(1,Math.min(2.6,wk.tz*f)); const S1=wkFit()*nz; wk.tx=cx-(cx-wk.tx)*S1/S0; wk.ty=cy-(cy-wk.ty)*S1/S0; wk.tz=nz; wkClamp(); }
+function wkZoom(f,cx,cy){ cx=cx??innerWidth/2; cy=cy??innerHeight/2; const S0=wkFit()*wk.tz; const nz=Math.max(WKZMIN(),Math.min(2.6,wk.tz*f)); const S1=wkFit()*nz; wk.tx=cx-(cx-wk.tx)*S1/S0; wk.ty=cy-(cy-wk.ty)*S1/S0; wk.tz=nz; wkClamp(); }
 function wkFrame(){ if(!wk.el){ wk.raf=0; return; }
   if(!wk.drag){ wk.tx+=wk.vx; wk.ty+=wk.vy; wk.vx*=.92; wk.vy*=.92; if(Math.abs(wk.vx)<.05) wk.vx=0; if(Math.abs(wk.vy)<.05) wk.vy=0; wkClamp(); }
   wk.x+=(wk.tx-wk.x)*.2; wk.y+=(wk.ty-wk.y)*.2; wk.z+=(wk.tz-wk.z)*.2; const S=wkFit()*wk.z;
-  const pan=wk.el.querySelector('.pan'); if(pan){ pan.style.width=wk.iw+'px'; pan.style.height=wk.ih+'px'; pan.style.transform=`translate3d(${wk.x}px,${wk.y}px,0) scale(${S})`; }
-  wk.el.querySelectorAll('.lay .hs').forEach(h=>{ const fx=+h.dataset.x, fy=+h.dataset.y; let X=wk.x+fx*wk.iw*S, Y=wk.y+fy*wk.ih*S; const SA=wkSafe(); X=Math.max(SA.l,Math.min(SA.r,X)); Y=Math.max(SA.t,Math.min(SA.b,Y)); if(SA.mm&&X>SA.mm.left-40&&X<SA.mm.right+40&&Y>SA.mm.top-40&&Y<SA.mm.bottom+40) Y=SA.mm.top-48; h.style.left=X+'px'; h.style.top=Y+'px'; const hb=h.getBoundingClientRect(); let dx=0, dy=0; if(hb.left<12) dx=12-hb.left; else if(hb.right>innerWidth-12) dx=innerWidth-12-hb.right; if(hb.top<SA.t-36) dy=SA.t-36-hb.top; else if(hb.bottom>SA.b+36) dy=SA.b+36-hb.bottom; if(dx||dy){ h.style.left=(X+dx)+'px'; h.style.top=(Y+dy)+'px'; }
+  const pan=wk.el.querySelector('.pan'); if(pan){ pan.style.width=(wk.pano?wk.iw*3:wk.iw)+'px'; pan.style.height=wk.ih+'px'; pan.style.transform=`translate3d(${wk.x}px,${wk.y}px,0) scale(${S})`; }
+  wk.el.querySelectorAll('.lay .hs').forEach(h=>{ const fx=+h.dataset.x, fy=+h.dataset.y; let X=wk.x+fx*wk.iw*S, Y=wk.y+fy*wk.ih*S; if(wk.pano){ X=fx*innerWidth; Y=fy*innerHeight; } const SA=wkSafe(); X=Math.max(SA.l,Math.min(SA.r,X)); Y=Math.max(SA.t,Math.min(SA.b,Y)); if(SA.mm&&X>SA.mm.left-40&&X<SA.mm.right+40&&Y>SA.mm.top-40&&Y<SA.mm.bottom+40) Y=SA.mm.top-48; h.style.left=X+'px'; h.style.top=Y+'px'; const hb=h.getBoundingClientRect(); let dx=0, dy=0; if(hb.left<12) dx=12-hb.left; else if(hb.right>innerWidth-12) dx=innerWidth-12-hb.right; if(hb.top<SA.t-36) dy=SA.t-36-hb.top; else if(hb.bottom>SA.b+36) dy=SA.b+36-hb.bottom; if(dx||dy){ h.style.left=(X+dx)+'px'; h.style.top=(Y+dy)+'px'; }
       const zc=document.querySelector('#wk-zi'); const obs=[SA.mm, zc&&zc.parentElement&&zc.parentElement.getBoundingClientRect()].filter(Boolean); for(const o of obs){ const b2=h.getBoundingClientRect(); if(b2.right>o.left-6&&b2.left<o.right+6&&b2.bottom>o.top-6&&b2.top<o.bottom+6){ const cur=parseFloat(h.style.top)||Y; h.style.top=(cur-(b2.bottom-o.top+10))+'px'; } } });
   wk.raf=requestAnimationFrame(wkFrame); }
 function wkBind(el){ const st=el.querySelector('.st'); const P=new Map(); let last=null, pinch=null, moved=0;
@@ -2098,7 +2103,7 @@ function wkPreload(){ const n=WN[wk.k].length, keep={}; [wk.i+1,wk.i-1].forEach(
   Object.keys(wk.pre).forEach(s=>{ if(!keep[s]){ try{ wk.pre[s].removeAttribute('src'); wk.pre[s].load(); }catch(e){} } }); wk.pre=keep; }
 function wkShow(i,first){ const el=wk.el; if(!el) return; wk.i=i; const k=wk.k, nodes=WN[k], id=nodes[i], src=wk.it.walk.nodes[i].src;
   const img=el.querySelector('.pan img'); if(img.getAttribute('src')!==src){ img.src=src; }
-  img.onload=()=>{ wk.iw=img.naturalWidth||2600; wk.ih=img.naturalHeight||1103; if(first){ wk.tz=wk.z=1; wkCenter(); wk.x=wk.tx; wk.y=wk.ty; } else wkClamp(); };
+  img.onload=()=>{ wk.iw=img.naturalWidth||2600; wk.ih=img.naturalHeight||1103; wk.pano=wk.iw/wk.ih>3.2; const pan=el.querySelector('.pan'); pan.classList.toggle('pano',wk.pano); pan.style.backgroundImage=wk.pano?`url('${src}')`:''; wk.tz=wk.z=1; wkCenter(); wk.x=wk.tx; wk.y=wk.ty; };
   if(first||!img.complete){ wk.tz=1; wkCenter(); wk.x=wk.tx; wk.y=wk.ty; }
   el.querySelector('.cap .eye').textContent=`${t(k)}${wk.u?' · '+wk.u.code:''} · ${nf(i+1)}/${nf(nodes.length)}`; el.querySelector('.cap h3').textContent=t(WNL[id]);
   const n=nodes.length, hs=[];

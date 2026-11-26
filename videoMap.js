@@ -19,11 +19,17 @@
     };
     return o;
   };
+  // full 360 rooms (photoreal from the real 360 model renders); switched on when the files are in ai/walk/
+  var PANO_READY = /[?&]pano=1/.test(location.search);
+  var P360 = function(kind, rooms){ return {
+    dollhouse: {src:'ai/res/'+kind+'_dh.jpg', source:MODEL+' of the '+kind+' unit plan'},
+    walk: { nodes: rooms.map(function(n,i){ return {id:n, src:'ai/walk/r_'+kind+'_pano'+i+'.jpg', pano:true, source:MODEL+' 360 render of the '+kind+' unit (real windows, doors, view), finished photoreal with Higgsfield'}; }), forward:[], back:[] } }; };
   var INTERIOR = {
     st:  T('st',  ['studio','sleep','kitchenette'], true),
     br1: T('br1', ['living','kitchen','entry','bedroom','wardrobe'], true),
     br2: T('br2', ['entry','living','master','second','bath'])
   };
+  if(PANO_READY){ INTERIOR.st = P360('st',['studio']); INTERIOR.br1 = P360('br1',['living','bedroom']); }
   var TOWERS = ['01','02','03','04','05','06','07','08','09','10','11','12','13'];
   function view(tower, side, floor){
     if(TOWERS.indexOf(tower) < 0) return null;
