@@ -938,6 +938,11 @@ body.sales .resf .dhbox{top:200px!important}
  #wk .wkbar #wk-view > :not(span),#wk .wkbar #wk-req > :not(span),#wk .wkbar .cta svg,#wk .wkbar .cta .ic{display:none!important}
  #wk .top2 .cap h3{font-size:26px!important} #wk .top2 .cap .eye{font-size:11px!important}
 }
+
+/* smooth master-plan scrub */
+.orb-cv{position:absolute;inset:0;width:100%;height:100%;opacity:0;pointer-events:none;transition:opacity .18s linear;z-index:1}
+.orb-cv.on{opacity:1;transition:none}
+.orb-zoom .orb-svg{z-index:2}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -1443,11 +1448,30 @@ function sMaster(){
   const clip=(i,dir)=>dir>0?`ai/oc/f_${pad(i)}.mp4`:`ai/oc/r_${pad(wrap(i-1))}.mp4`;
   const cache={};
   const still=(i,t)=>{ const src=orbSrc(i,t); let im=cache[src]; if(!im){ im=new Image(); im.decoding='async'; im.alt=''; im.className='orb-im'; im.src=src; cache[src]=im; imgs.appendChild(im);} return im; };
+  // ---------- smooth scrub: 384 frames (24 per angle) taken from the transition clips; the image follows the hand
+  const OSN=384, OSK=24; const SCRL=['am','noon','pm']; const OSD=()=>{ const tt=TODS[orbT]; const b=tt==='pm'?'ai/os':'ai/os_'+tt; return b+(innerWidth<1000?'_s/':'/'); };
+  const fcv=document.createElement('canvas'); fcv.className='orb-cv'; imgs.after(fcv); const fx=fcv.getContext('2d');
+  const FRS={}; const FRd=()=>FRS[OSD()]||(FRS[OSD()]=new Array(OSN)); const fw=n=>((n%OSN)+OSN)%OSN;
+  const fload=n=>{ n=fw(n); const FR=FRd(); if(FR[n]) return FR[n]; const im=new Image(); im.decoding='async'; im.src=OSD()+String(n).padStart(3,'0')+'.jpg'; FR[n]=im; im.decode().then(()=>{im._dec=1;}).catch(()=>{}); return im; };
+  const warmed={}; const warm=()=>{ const dk=OSD(); if(warmed[dk]||!SCRL.includes(TODS[orbT])) return; warmed[dk]=true; const c=orbI*OSK; const order=[]; for(let d=1;d<=OSN/2;d++){ order.push(c+d,c-d); }
+    let k=0, live=0; const pump=()=>{ while(live<6&&k<order.length){ const im=fload(order[k++]); if(im.complete){ continue; } live++; const dn=()=>{ live--; if(el.isConnected) pump(); }; im.onload=dn; im.onerror=dn; } }; pump(); };
+  const okIm=im=>im&&im.complete&&im.naturalWidth>0&&(im._dec||im.classList.contains('on'));
+  const frameFor=p=>{ const n=fw(Math.round(p*OSK)); if(n%OSK===0){ const st=still(n/OSK,orbT); if(okIm(st)) return st; } for(let d=0;d<OSK;d++){ for(const q of [n-d,n+d]){ const im=FRd()[fw(q)]; if(okIm(im)) return im; if(fw(q)%OSK===0){ const st=cache[orbSrc(fw(q)/OSK,orbT)]; if(okIm(st)) return st; } } } return null; };
+  const fit=()=>{ const r=el.getBoundingClientRect(); const d=Math.min(2,devicePixelRatio||1); const W=Math.max(2,Math.round(r.width*d)), H=Math.max(2,Math.round(r.height*d)); if(fcv.width!==W||fcv.height!==H){ fcv.width=W; fcv.height=H; } };
+  let lastIm=null; const paint=p=>{ const im=frameFor(p); if(!im||im===lastIm) return; lastIm=im; const W=fcv.width,H=fcv.height; const k=Math.max(W/im.naturalWidth,H/im.naturalHeight); const w=im.naturalWidth*k,h=im.naturalHeight*k; fx.imageSmoothingQuality='high'; fx.drawImage(im,(W-w)/2,(H-h)/2,w,h); };
+  const SC={on:false,pos:0,vel:0,raf:0,anim:null};
+  const scBegin=()=>{ if(SC.on) return; SC.on=true; SC.pos=orbI; cancelAnimationFrame(SC.raf); SC.anim=null; fit(); lastIm=null; paint(SC.pos); fcv.classList.add('on'); svg.classList.add('hide'); tip(null); $('#orbcard')?.remove(); warm(); };
+  const scEnd=()=>{ const to=fw(Math.round(SC.pos*OSK))/OSK; orbI=((Math.round(to)%ORBN)+ORBN)%ORBN; SC.on=false; const im=still(orbI,orbT); const done=()=>{ show(); requestAnimationFrame(()=>{ fcv.classList.remove('on'); svg.classList.remove('hide'); draw(); prime(); }); }; if(im.complete) done(); else { im.onload=done; setTimeout(done,600); } };
+  const scTo=(target,ms)=>{ const p0=SC.pos, t0=performance.now(); cancelAnimationFrame(SC.raf); const tick=now=>{ const k=Math.min(1,(now-t0)/ms), e=1-Math.pow(1-k,3); SC.pos=p0+(target-p0)*e; paint(SC.pos); if(k<1) SC.raf=requestAnimationFrame(tick); else { SC.pos=target; paint(target); scEnd(); } }; SC.raf=requestAnimationFrame(tick); };
+  const scGlide=v=>{ // v = angles per ms at release; gentle decay, then settle on the nearest angle
+    const vmax=PHONE_UI()?0.004:0.008; let vel=Math.max(-vmax,Math.min(vmax,v)); let lt=performance.now(); cancelAnimationFrame(SC.raf);
+    const tick=now=>{ const dt=Math.min(40,now-lt); lt=now; SC.pos+=vel*dt; vel*=Math.pow(0.9,dt/16); paint(SC.pos); if(Math.abs(vel)>0.0006) SC.raf=requestAnimationFrame(tick); else { const tgt=Math.round(SC.pos); scTo(tgt,Math.max(180,Math.min(520,Math.abs(tgt-SC.pos)*900))); } }; SC.raf=requestAnimationFrame(tick); };
+  const scrubOK=()=>SCRL.includes(TODS[orbT])&&Z.s<=1.02;
   // ---------- view state
-  const Z={s:1,x:0,y:0}; const applyZ=()=>{ zw.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.s})`; el.classList.toggle('zoomed',Z.s>1.02); };
+  const Z={s:1,x:0,y:0}; const hiRes=()=>{ const im=imgs.querySelector('.orb-im.on'); if(im&&/_s\.jpg$/.test(im.src)){ const hi=new Image(); hi.src=im.src.replace(/_s\.jpg$/,'.jpg'); hi.decode().then(()=>{ if(im.classList.contains('on')) im.src=hi.src; }).catch(()=>{}); } }; const applyZ=()=>{ zw.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.s})`; el.classList.toggle('zoomed',Z.s>1.02); if(Z.s>1.05) hiRes(); };
   const clampZ=()=>{ const r=el.getBoundingClientRect(); const mx=(Z.s-1)*r.width/2, my=(Z.s-1)*r.height/2; Z.x=Math.max(-mx,Math.min(mx,Z.x)); Z.y=Math.max(-my,Math.min(my,Z.y)); };
   let busy=false, queue=0;
-  const prime=()=>{ if(!PHONE_UI()){ vA.src=clip(orbI,1); vB.src=clip(orbI,-1); vA.load(); vB.load(); } [1,-1,2,-2].forEach(d=>still(wrap(orbI+d),orbT)); };
+  const prime=()=>{ if(typeof warm==='function') warm(); [1,-1,2,-2].forEach(d=>still(wrap(orbI+d),orbT)); };
   const show=()=>{ const im=still(orbI,orbT); const on=()=>{ imgs.querySelectorAll('.orb-im').forEach(x=>x.classList.toggle('on',x===im)); }; if(im.complete) on(); else im.onload=on; draw(); el.querySelector('.orb-dial i')?.style.setProperty('--k',orbI); const cc=el.querySelector('.orbctl'); if(cc&&cc.scrollWidth>cc.clientWidth+2){ const pr=cc.querySelector('.orb-t[aria-pressed="true"]'); if(pr) cc.scrollLeft=pr.offsetLeft+pr.offsetWidth/2-cc.clientWidth/2; } };
   const step=dir=>{ imgs.style.transition='transform .2s ease'; imgs.style.transform=''; if(busy){ if(!PHONE_UI()) queue=Math.max(-4,Math.min(4,queue+dir)); return; } busy=true; tip(null); $('#orbcard')?.remove(); svg.classList.add('hide');
     const to=wrap(orbI+dir), rate=1+Math.min(1.4,Math.abs(queue)*0.5);
@@ -1487,6 +1511,7 @@ function sMaster(){
   const towerAt=e=>{ const hit=document.elementFromPoint(e.clientX,e.clientY); const t=hit&&hit.closest&&hit.closest('.frame.orb [data-b]'); return t?BLD.find(x=>x.id===t.dataset.b):null; };
   const P=new Map(); let g0=null, moved=false, acc=0, pinch0=null;
   el.addEventListener('pointerdown',e=>{ if(e.target.closest('.orbctl,.orbinfo')) return; el.setPointerCapture?.(e.pointerId); P.set(e.pointerId,{x:e.clientX,y:e.clientY}); OV_idle=0;
+    if(P.size===1&&SC.on){ cancelAnimationFrame(SC.raf); g0={x:e.clientX,y:e.clientY,t:performance.now(),lx:e.clientX,lt:performance.now(),v:0,b:null,multi:false}; moved=true; return; }
     if(P.size===1){ g0={x:e.clientX,y:e.clientY,t:performance.now(),lx:e.clientX,lt:performance.now(),v:0,b:null,multi:false}; moved=false; acc=0; const b=towerAt(e); g0.b=b; if(b){ const tw=`ai/tw_${b.id}.jpg`; if(!cache[tw]){ const im=new Image(); im.src=tw; cache[tw]=im; } svg.querySelectorAll(`[data-b="${b.id}"]`).forEach(x=>x.classList.add('press')); } }
     if(P.size===2){ const [a,b]=[...P.values()]; pinch0={d:Math.hypot(a.x-b.x,a.y-b.y),s:Z.s}; if(g0) g0.multi=true; svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press')); } });
   el.addEventListener('pointermove',e=>{ if(!P.has(e.pointerId)) return; const p=P.get(e.pointerId); const dx=e.clientX-p.x, dy=e.clientY-p.y; p.x=e.clientX; p.y=e.clientY;
@@ -1494,6 +1519,7 @@ function sMaster(){
     if(!g0) return; if(Math.hypot(e.clientX-g0.x,e.clientY-g0.y)>8){ if(!moved) svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press')); moved=true; }
     const now=performance.now(); g0.v=(e.clientX-g0.lx)/Math.max(1,now-g0.lt); g0.lx=e.clientX; g0.lt=now;
     if(Z.s>1.02){ Z.x+=dx; Z.y+=dy; clampZ(); applyZ(); return; }
+    if(scrubOK()&&!busy&&!g0.multi){ if(moved){ scBegin(); const pxA=Math.max(150,el.getBoundingClientRect().width/(PHONE_UI()?2.6:5)); SC.pos-=dx/pxA; g0.av=-(g0.v)/pxA; paint(SC.pos); } return; }
     acc+=dx; if(Z.s<=1.02&&!busy){ imgs.style.transition='none'; imgs.style.transform=`translateX(${Math.max(-60,Math.min(60,acc*0.25)).toFixed(1)}px)`; } if(PHONE_UI()){ if(!g0.stepped&&Math.abs(acc)>=Math.max(60,innerWidth*0.22)){ g0.stepped=true; step(acc>0?-1:1); } return; } const th=Math.max(90,innerWidth/14); while(Math.abs(acc)>=th){ const d=acc>0?-1:1; acc+=d*th; step(d); } });
   const up=e=>{ if(!P.has(e.pointerId)) return; P.delete(e.pointerId); if(P.size<2) pinch0=null; if(P.size){ if(g0) g0.multi=true; return; }
     svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press')); imgs.style.transition='transform .25s ease'; imgs.style.transform='';
@@ -1502,6 +1528,7 @@ function sMaster(){
     // pointer-down position and confirm it at the release point; cancelled / multi-touch / moved gestures never select.
     if(e.type==='pointercancel'||g.multi) return;
     if(!moved){ if(busy) return; const b=g.b, b2=towerAt(e); if(b&&(!b2||b2.id===b.id)){ state.sel=b; orbDive(b); } return; }
+    if(SC.on){ scGlide(Math.abs(g.v)>0.15?(g.av||0):0); return; }
     if(!PHONE_UI() && Z.s<=1.02 && Math.abs(g.v)>0.45){ const n=Math.min(3,Math.round(Math.abs(g.v)*2.2)); for(let i=0;i<n;i++) step(g.v>0?-1:1); } };
   el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up);
   el.addEventListener('wheel',e=>{ e.preventDefault(); const r=el.getBoundingClientRect(); const s0=Z.s; Z.s=Math.max(1,Math.min(2.6,Z.s*Math.exp(-e.deltaY*0.0015))); const k=Z.s/s0; const cx=e.clientX-r.left-r.width/2, cy=e.clientY-r.top-r.height/2; Z.x=cx-(cx-Z.x)*k; Z.y=cy-(cy-Z.y)*k; clampZ(); applyZ(); draw(); },{passive:false});
@@ -1517,7 +1544,7 @@ function sMaster(){
   const ctl=document.createElement('div'); ctl.className='orbctl'; ctl.innerHTML=`<button class="orb-r" data-d="-1" aria-label="rotate left">${ICO.back}</button><span class="orb-dial"><i style="--k:${orbI}"></i></span><button class="orb-r" data-d="1" aria-label="rotate right" style="transform:scaleX(-1)">${ICO.back}</button>
     <span class="orb-sep"></span>${TODS.map((x,k)=>`<button class="orb-t" data-t="${k}" aria-pressed="${k===orbT}">${t('vt_'+x)}</button>`).join('')}<span class="orb-sep"></span><button class="orb-plan">${t('planView')}</button>`;
   el.appendChild(ctl); requestAnimationFrame(()=>{ const pr=ctl.querySelector('.orb-t[aria-pressed="true"]'); if(pr&&ctl.scrollWidth>ctl.clientWidth+2){ const c=pr.offsetLeft+pr.offsetWidth/2-ctl.clientWidth/2; ctl.scrollLeft=c; } });
-  ctl.querySelectorAll('.orb-r').forEach(b=>b.onclick=e=>{e.stopPropagation(); step(+b.dataset.d);});
+  ctl.querySelectorAll('.orb-r').forEach(b=>b.onclick=e=>{e.stopPropagation(); if(scrubOK()&&!busy){ if(!SC.on) scBegin(); scTo(Math.round(SC.pos)+(+b.dataset.d),700); } else step(+b.dataset.d);});
   ctl.querySelectorAll('.orb-t').forEach(b=>b.onclick=e=>{e.stopPropagation(); orbT=+b.dataset.t; ctl.querySelectorAll('.orb-t').forEach(x=>x.setAttribute('aria-pressed',x===b)); show(); prime();});
   ctl.querySelector('.orb-plan').onclick=e=>{e.stopPropagation(); go('plan');};
   ctl.addEventListener('pointerdown',e=>e.stopPropagation());
