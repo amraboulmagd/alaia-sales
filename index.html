@@ -900,6 +900,18 @@ body.sales .resf .dhbox{top:200px!important}
 
 #wk .soon b{font-size:clamp(20px,2.2vw,28px)!important;font-weight:500;color:#F3EEE5}
 #wk .soon small{font-size:clamp(14px,1.2vw,17px)!important;color:rgba(243,238,229,.75)}
+
+/* B5: film buffering states */
+#vfilm .vf-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:1;transition:opacity .4s;pointer-events:none}
+#vfilm.started .vf-poster{opacity:0}
+#vfilm.buf.started .vf-poster{opacity:0}
+#vfilm .vf-spin{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px;z-index:3;opacity:0;transition:opacity .2s;pointer-events:none}
+#vfilm .vf-spin i{display:block;width:100%;height:100%;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;animation:vfspin .9s linear infinite}
+#vfilm.buf .vf-spin,#vfilm:not(.started) .vf-spin{opacity:1}
+#vfilm.buf .vf-sh{opacity:0!important}
+#vfilm.done .vf-spin{opacity:0}
+@keyframes vfspin{to{transform:rotate(360deg)}}
+#vfilm .slowt{display:none} #vfilm.slow .slowt{display:block} #vfilm.slow .endt{display:none}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -1720,22 +1732,31 @@ const vf={el:null,i:0,a:null,b:null,sound:false,timer:0};
 const FILMCH={"dur": 84.0, "ch": [{"s": 0.0, "e": "vf_e1", "t": "vf_t1"}, {"s": 6.4, "e": "vf_e7", "t": "vf_t7"}, {"s": 12.8, "e": "vf_e2", "t": "vf_t2"}, {"s": 19.2, "e": "vf_e3", "t": "vf_t3"}, {"s": 25.6, "e": "vf_e4", "t": "vf_t4"}, {"s": 32.0, "e": "vf_e9", "t": "vf_t9"}, {"s": 38.4, "e": "vf_e10", "t": "vf_t10"}, {"s": 44.8, "e": "vf_e11", "t": "vf_t11"}, {"s": 51.2, "e": "vf_e12", "t": "vf_t12"}, {"s": 57.6, "e": "vf_e13", "t": "vf_t13"}, {"s": 64.0, "e": "vf_e5", "t": "vf_t5"}, {"s": 70.4, "e": "vf_e8", "t": "vf_t8"}, {"s": 76.8, "e": "vf_e6", "t": "vf_t6"}]};
 function openFilm(){ if(vf.el) vf.el.remove(); const el=document.createElement('div'); el.id='vfilm';
   const D=FILMCH.dur;
-  el.innerHTML=`<video playsinline preload="auto" src="ai/film.mp4"></video><div class="vf-sh"></div>
+  const FSRC=innerWidth<1000?"ai/film_m.mp4":"ai/film.mp4";
+  el.innerHTML=`<video playsinline muted preload="auto" poster="ai/film_poster.jpg" src="${FSRC}"></video><img class="vf-poster" alt="" src="ai/film_poster.jpg"><div class="vf-spin"><i></i></div><div class="vf-sh"></div>
    <div class="vf-seg">${FILMCH.ch.map((c,k)=>{const e=(k+1<FILMCH.ch.length?FILMCH.ch[k+1].s:D);return `<i style="flex:${(e-c.s).toFixed(2)}"><b></b></i>`;}).join('')}</div>
    <div class="vf-cap"><span class="eye" id="vf-e"></span><h2 id="vf-t"></h2></div>
    <div class="vf-ctl"><div class="vf-tr"><button id="vf-prev" aria-label="previous">${VFI.prev}</button><button id="vf-pp" class="pp" aria-label="play/pause">${VFI.pause}</button><button id="vf-next" aria-label="next">${VFI.next}</button><button id="vf-rate" class="rt">1×</button></div><button class="chip glass" id="vf-snd" aria-pressed="true">${t('vfSound')}</button><span class="sp"></span><button class="chip glass" id="vf-skip">${t('fSkip')}</button></div>
-   <div class="f-end" id="vf-end"><span class="eye">ALAIA</span><h2>${t('fEndT')}</h2><div class="f-endb">${cta('ve-mp',t('d_master'),'map')}${cta('ve-home',t('fFind'),'home',true)}${cta('ve-re',t('fReplay'),'back',true)}</div></div>`;
+   <div class="f-end" id="vf-end"><span class="eye">ALAIA</span><h2 class="endt">${t('fEndT')}</h2><h2 class="slowt">${t('vfSlow')}</h2><div class="f-endb">${cta('ve-mp',t('d_master'),'map')}${cta('ve-home',t('fFind'),'home',true)}${cta('ve-re',t('fReplay'),'back',true)}</div></div>`;
   document.body.appendChild(el); vf.el=el; const v=el.querySelector('video'); vf.v=v; document.body.classList.add('filming');
   requestAnimationFrame(()=>el.classList.add('on'));
-  vf.paused=false; vf.rate=1; vf.sound=true; vf.ci=-1;
+  vf.paused=false; vf.rate=1; vf.sound=false; vf.ci=-1; v.muted=true;
   const start=()=>{ v.muted=!vf.sound; const p=v.play(); if(p&&p.catch) p.catch(()=>{ vf.sound=false; v.muted=true; $('#vf-snd').setAttribute('aria-pressed','false'); v.play().catch(()=>{}); }); };
-  $('#vf-skip').onclick=()=>closeFilm('master'); $('#ve-mp').onclick=()=>closeFilm('master'); $('#ve-home').onclick=()=>closeFilm('tower'); $('#ve-re').onclick=()=>{el.classList.remove('done');v.currentTime=0;vfPause(false);};
+  $('#vf-skip').onclick=()=>closeFilm('master'); $('#ve-mp').onclick=()=>closeFilm('master'); $('#ve-home').onclick=()=>closeFilm('tower'); $('#ve-re').onclick=()=>{el.classList.remove('done','slow');v.currentTime=0;vfPause(false);};
   $('#vf-snd').onclick=()=>{vf.sound=!vf.sound;$('#vf-snd').setAttribute('aria-pressed',vf.sound);v.muted=!vf.sound;};
   $('#vf-pp').onclick=()=>vfPause(!vf.paused); $('#vf-prev').onclick=()=>vfPlay(Math.max(0,(v.currentTime-FILMCH.ch[Math.max(0,vf.ci)].s<1.5)?vf.ci-1:vf.ci)); $('#vf-next').onclick=()=>vfPlay(vf.ci+1); $('#vf-rate').onclick=vfRate;
   el.querySelector('.vf-seg').addEventListener('click',e=>{ const sg=e.target.closest('i'); if(!sg) return; const k=[...sg.parentNode.children].indexOf(sg); const r=sg.getBoundingClientRect(); const c=FILMCH.ch[k], e2=(k+1<FILMCH.ch.length?FILMCH.ch[k+1].s:D); v.currentTime=c.s+(e2-c.s)*Math.max(0,Math.min(.98,(e.clientX-r.left)/r.width)); el.classList.remove('done'); });
   el.addEventListener('click',e=>{ if(e.target.tagName==='VIDEO'||e.target.classList.contains('vf-sh')) vfPause(!vf.paused); });
   vf.key=e=>{ if(!vf.el) return; if(e.key===' '){e.preventDefault();vfPause(!vf.paused);} if(e.key==='ArrowRight')vfPlay(vf.ci+1); if(e.key==='ArrowLeft')vfPlay(vf.ci-1); }; addEventListener('keydown',vf.key);
   v.onended=()=>{ el.classList.add('done'); };
+  // buffering: bright poster + spinner, never a dim frozen frame; no motion in 3 s -> offer Explore
+  let played=false, lastT=-1; const buf=on=>{ el.classList.toggle('buf',on); };
+  ['waiting','stalled','seeking'].forEach(ev=>v.addEventListener(ev,()=>buf(true)));
+  ['playing','seeked','canplaythrough'].forEach(ev=>v.addEventListener(ev,()=>{ if(!v.paused||ev==='seeked') buf(false); }));
+  v.addEventListener('playing',()=>{ played=true; el.classList.add('started'); });
+  v.addEventListener('timeupdate',()=>{ if(v.currentTime!==lastT){ lastT=v.currentTime; if(v.currentTime>0.05){ played=true; el.classList.add('started'); buf(false); } } });
+  v.addEventListener('error',()=>{ el.classList.add('done','slow'); });
+  vf.slowT=setTimeout(()=>{ if(!played&&vf.el===el){ el.classList.add('done','slow'); } },3000);
   const vin=()=>v.classList.add('on'); v.addEventListener('playing',vin); v.addEventListener('loadeddata',vin); if(v.readyState>=2) vin();
   const tick=()=>{ if(!vf.el) return; const ct=v.currentTime; let k=0; for(let j=0;j<FILMCH.ch.length;j++) if(ct>=FILMCH.ch[j].s-0.05) k=j;
     if(k!==vf.ci){ vf.ci=k; const c=FILMCH.ch[k]; const cap=el.querySelector('.vf-cap'); cap.classList.remove('in'); setTimeout(()=>{ if(vf.ci!==k) return; $('#vf-e').textContent=t(c.e); $('#vf-t').textContent=t(c.t); cap.classList.add('in'); },350); }
@@ -1798,7 +1819,7 @@ function openView(u){ const side=u.p.r===0?'a':'b'; let f=Math.min(4,u.f); let k
   $('#bf-360').onclick=()=>openWalk3D(u,TOUR_URL,'balcony'); load(); }
 
 /* ================= KIOSK LAYER: modes, idle, leads, walk viewer, project details ================= */
-Object.assign(S2.en,{back:"Back",sheetMore:"Show more",sheetLess:"Show less",crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
+Object.assign(S2.en,{vfSlow:"The film is still loading. Explore ALAIA now?",back:"Back",sheetMore:"Show more",sheetLess:"Show less",crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
  smLeadsSrv:"requests received on the server",smLeadsPend:"waiting on this device to sync",lm_sales:"sales",'lm_self-serve':"self-serve",close:"Close",
  crm_not_configured:"Engaz is not connected yet: requests are stored on the ALAIA server and listed here. Connecting needs Engaz API documentation and credentials.",crm_configured:"Engaz connection configured.",
  reqPendT:"Saved on this screen",reqPendP:"The connection is down, so your request is saved here and will be sent automatically when it returns. A sales advisor can also help you right away.",
@@ -1814,7 +1835,7 @@ Object.assign(S2.en,{back:"Back",sheetMore:"Show more",sheetLess:"Show less",crm
  pj_eye:"Project details",pj_t:"ALAIA, North Coast",pj_p:"Thirteen low-rise residential towers in four rows around three crystal lagoons, with a boutique hotel and a retail promenade on the coastal-road front.",
  pj_loc:"Location",pj_tw:"Towers",pj_homes:"Homes",pj_lag:"Lagoons",pj_types:"Tower types",pj_mix:"Home types",pj_svc:"Hotel & retail",pj_am:"Amenities",pj_del:"Delivery stages",pj_land:"Land area",
  pj_delP:"Delivery stages and dates have not been issued yet.",pj_units:"Homes",pj_qty:"Towers",pj_h:"Height",pj_ty:"Type",pj_ids:"Tower numbers",pj_map:"Open in Google Maps"});
-Object.assign(S2.ar,{back:"رجوع",sheetMore:"عرض المزيد",sheetLess:"عرض أقل",crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
+Object.assign(S2.ar,{vfSlow:"الفيلم لسه بيحمّل. تحب تستكشف ألايا دلوقتي؟",back:"رجوع",sheetMore:"عرض المزيد",sheetLess:"عرض أقل",crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
  smLeadsSrv:"طلب وصل للسيرفر",smLeadsPend:"مستني على الجهاز ده لحد ما يتبعت",lm_sales:"مبيعات",'lm_self-serve':"خدمة ذاتية",close:"إغلاق",
  crm_not_configured:"Engaz لسه مش متوصل: الطلبات بتتحفظ على سيرفر ألايا وبتظهر هنا. الربط محتاج مستندات الربط وبيانات الدخول من Engaz.",crm_configured:"اتظبط الربط مع Engaz.",
  reqPendT:"اتحفظ على الشاشة دي",reqPendP:"الاتصال مقطوع، فطلبك اتحفظ هنا وهيتبعت أوتوماتيك أول ما الاتصال يرجع. ومستشار المبيعات يقدر يساعدك دلوقتي.",
@@ -1946,7 +1967,7 @@ resLift=function(u,done){ const ov=document.createElement('div'); ov.className='
 /* film: poster frame (never black) + hide sound/speed in self-serve (CSS) */
 const _openFilm=openFilm; openFilm=function(){ _openFilm(); const v=vf.el&&vf.el.querySelector('video'); if(v){ v.poster='ai/film_poster.jpg'; v.style.backgroundImage="url('ai/film_poster.jpg')"; v.classList.add('on'); } };
 try{ const lk=document.createElement('link'); lk.rel='preload'; lk.as='image'; lk.href='ai/film_poster.jpg'; document.head.appendChild(lk);
-  if(innerWidth>=1280){ const pv=document.createElement('video'); pv.preload='auto'; pv.muted=true; pv.src='ai/film.mp4'; pv.style.display='none'; document.body.appendChild(pv); setTimeout(()=>{pv.removeAttribute('src');pv.load();pv.remove();},60000); } }catch(e){}
+  if(innerWidth>=1280){ const pv=document.createElement('video'); pv.preload='auto'; pv.muted=true; pv.src=innerWidth<1000?'ai/film_m.mp4':'ai/film.mp4'; pv.style.display='none'; document.body.appendChild(pv); setTimeout(()=>{pv.removeAttribute('src');pv.load();pv.remove();},60000); } }catch(e){}
 
 /* ================= walk-through viewer (item 12) ================= */
 const WN={st:['studio'],br1:['livkit','bedroom'],br2:[]};
