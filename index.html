@@ -1374,7 +1374,7 @@ function sPlan2D(){
   const svg=`<svg viewBox="0 0 2056 2172">${BLD.map(b=>{const P=towerPoly(b);const a=av(b)/b.units.length;return `<polygon class="tw" data-b="${b.id}" style="--a:${a.toFixed(2)}" points="${P.map(p=>p.join(',')).join(' ')}"/>`;}).join('')}
     ${BLD.map(b=>`<g class="lab" data-b="${b.id}" transform="translate(${b.px*2},${b.py*2-b.D-26})"><rect x="-62" y="-26" width="124" height="52" rx="26"/><text text-anchor="middle" y="8">${b.id}</text></g>`).join('')}
     ${AMEN.map(a=>`<g class="pin${state.amen?'':' off'}" data-a="${a.n}" transform="translate(${a.px*2},${a.py*2})"><circle r="24"/><text text-anchor="middle" y="7">${a.n}</text></g>`).join('')}</svg>`;
-  const f=newFrame({img:IMG.masterplan,relight:[IMG.masterplan,IMG.mp_m1,IMG.mp_m2],rk:1,w:2056,h:2172,mode:'contain',pad:()=>mir({t:90,r:innerWidth>980?420:14,b:110,l:innerWidth>980?Math.max(40,Math.min(330,innerWidth*.2)):14}),svg});
+  const f=newFrame({img:IMG.masterplan,relight:[IMG.masterplan,IMG.mp_m1,IMG.mp_m2],rk:1,w:2056,h:2172,mode:'contain',pad:()=>mir({t:innerHeight<800?72:90,r:innerWidth>980?420:14,b:innerHeight<800?((parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dockH'))||60)+12):110,l:innerWidth>980?Math.max(40,Math.min(330,innerWidth*.2)):14}),svg});
   const sel=b=>{state.sel=b;f.querySelectorAll('.tw,.lab').forEach(el=>el.classList.toggle('hl',el.dataset.b===b?.id));if(b)panelTowerPreview(b);else panelMaster();};
   f.querySelectorAll('.tw,.lab').forEach(el=>{const b=BLD.find(x=>x.id===el.dataset.b);
     el.onmouseenter=e=>{f.querySelectorAll(`[data-b="${b.id}"]`).forEach(x=>x.classList.add('hl'));tip(`<b>${t('building')} ${b.id}</b><span>${t('type')} ${b.ty} · ${nf(av(b))} ${t('avShort')}</span>`,e);};
