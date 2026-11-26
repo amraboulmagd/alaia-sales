@@ -2,6 +2,16 @@
 
 DONE = test output + screenshot in `docs/alaia/evidence/` (images in `Downloads\ALAIA\evidence\`). Real Chrome (H.264, video on), Chromium + WebKit 27.2 for layout. Touch = CDP touch emulation, not physical devices.
 
+## 26 Nov: media restored at the owner's request
+
+The owner rejected removing the generated media. Restored from `efe0b23` (before B4/C7 removals): master-plan orbit (stills + transition clips, 4 times of day), dollhouses, lift/dive, 360 walk for studio / 1BR / 2BR, gallery, amenity and view images. Film sound is on by default again (falls back to muted only if the browser blocks it).
+
+Kept on top of the restored media: A1 sheet, A2 keep selection, A3 hooks localhost-only, server auth/leads, B5 film Range/206 + 1 s keyframes + buffering states, master-plan uncrossed markers / clamped anchors / image follows finger, D9 A-/B- labels, D10 gallery never blank, D11, D13 44 px pins + amenity list, D14 active tab, D15 spelling, compact phone walk bar, compact site-plan margins, full-width phone title.
+
+Local checks after restore: layout audit 192 scenes (6 sizes x EN/AR): 0 covered / 0 off-screen primary / 0 undefined / 0 Latin digits in AR / 0 clipped / 0 errors. Phone 390: one swipe = one step, no auto-rotate, Enter by tap, 360 drag, pinch 2.6x, walk forward, zoom button: pass. Touch flow tower -> floor -> unit: pass (390 EN, 1180 AR). Tower taps 64/64 mouse 1920, 64/64 touch 390. Master plan at 4 sizes: every on-screen tower has a pill, 0 crossings, 0 overlaps. Every media file referenced by the page exists.
+
+The table below describes the removal pass and is superseded where it says media was removed.
+
 | Item | Status | Evidence |
 |---|---|---|
 | A1 Dock/sheet/primary action | DONE | Coverage audit after last commit: 160 large + 160 small scenes and 160 phone re-run, 0 covered / 0 off-screen primary / 0 unscrollable (`final_audit_a.json`, `final_audit_b.json`, `fa_ph`); touch flow tower→Floor 1→unit→Open this home 10/10 (5 sizes × EN/AR, `final_flows.jsonl`); sheet drag/tap 3/3 (`final_sheet_drag.jsonl`) |
