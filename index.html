@@ -2064,7 +2064,9 @@ document.body.dataset.scene=state.scene; setTimeout(()=>{ modeUI(); arDigits(doc
   let lw=innerWidth, lh=innerHeight, raf=0, tm=0;
   const relayout=()=>{ dockVar(); const s=state.scene; if(document.querySelector('#wk')||document.querySelector('.resov')){ relayout.pending=true; return; } relayout.pending=false; if(!s||s==='intro') return;
     if(s==='master'){ if(typeof HOOK.__orbShow==='function') HOOK.__orbShow(); crumbs&&crumbs(); return; }
-    state._liftSkip=true; try{ rerender(); } finally { setTimeout(()=>{ state._liftSkip=false; },50); } };
+    const keepSel=(s==='floor'&&state.sel&&state.sel.b===state.b&&state.sel.f===state.f)?state.sel:null;
+    state._liftSkip=true; try{ rerender(); } finally { setTimeout(()=>{ state._liftSkip=false; },50); }
+    if(keepSel){ let n=0; const re=()=>{ const host=[...document.querySelectorAll('.frame:not(.dying) #plan')].pop(); if(host&&host.querySelector('.u path')&&state.scene==='floor'){ state.sel=keepSel; colorPlan(host,keepSel.b,keepSel.f,keepSel); panelUnitPreview(keepSel); } else if(n++<60) requestAnimationFrame(re); }; requestAnimationFrame(re); } };
   const onRz=()=>{ const dw=Math.abs(innerWidth-lw), dh=Math.abs(innerHeight-lh); const typing=document.activeElement&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
     if(dw<2&&(dh<140||typing)) { dockVar(); return; } lw=innerWidth; lh=innerHeight; cancelAnimationFrame(raf); clearTimeout(tm); tm=setTimeout(()=>{ raf=requestAnimationFrame(relayout); },120); };
   addEventListener('resize',onRz); addEventListener('orientationchange',()=>setTimeout(onRz,200));
