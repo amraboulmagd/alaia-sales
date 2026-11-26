@@ -947,6 +947,37 @@ body.sales .resf .dhbox{top:200px!important}
 /* 360 rooms: repeating strip, no seams on wrap */
 #wk .pan.pano{background-repeat:repeat-x;background-size:auto 100%;background-position:0 0}
 #wk .pan.pano img{visibility:hidden}
+
+/* ===== phone/tablet pass 3 ===== */
+.planbox .plan{inset:var(--pins,24px)!important}
+.ulab g.only text.n{font-weight:600}
+@media (max-width:980px){
+ /* expanded sheet stops at ~70% so the plan header and the dock stay visible */
+ .side.exp{height:min(70dvh, calc(100dvh - var(--dockH,0px) - 120px))!important}
+ /* edge cue only where content is actually hidden */
+ .hfade{-webkit-mask-image:none!important;mask-image:none!important}
+ .hfade.hf-r{-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 36px),transparent 100%)!important;mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 36px),transparent 100%)!important}
+ .hfade.hf-l{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 36px,#000 100%)!important;mask-image:linear-gradient(90deg,transparent 0,#000 36px,#000 100%)!important}
+ .hfade.hf-l.hf-r{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 36px,#000 calc(100% - 36px),transparent 100%)!important;mask-image:linear-gradient(90deg,transparent 0,#000 36px,#000 calc(100% - 36px),transparent 100%)!important}
+ .dock.hasmore{justify-content:space-between;overflow-x:hidden!important}
+ .dock.hasmore{gap:4px!important;padding-inline:8px!important}
+ .dock.hasmore button{flex:1 1 0;min-width:0!important;justify-content:center;flex-direction:column;gap:4px!important;padding:8px 2px!important;white-space:normal!important;text-align:center}
+ .dock.hasmore button span{display:block!important;font-size:10px!important;letter-spacing:.06em!important;line-height:1.2;max-width:100%}
+ html[dir=rtl] .dock.hasmore button span{font-size:12px!important;letter-spacing:0!important}
+ .dock.hasmore button svg{display:block!important;width:18px;height:18px}
+ body.sheetexp .resf .dhbox{opacity:0!important;visibility:hidden!important;transition:opacity .25s,visibility 0s .25s}
+ #sc .stk{position:sticky;bottom:0;z-index:4;display:flex;gap:8px;align-items:stretch;background:var(--bg2);box-shadow:0 -10px 24px 6px var(--bg2);margin-top:12px}
+ #sc .stk #u-open{flex:1 1 auto;position:static!important;box-shadow:none!important;margin:0!important}
+ #sc .stk #k-req0{flex:0 0 56px;width:56px;position:static!important;box-shadow:none!important;margin:0!important;padding:0!important;justify-content:center}
+ #sc .stk #k-req0 span:first-child{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+ #dmore{position:fixed;z-index:60;inset-inline-end:12px;bottom:calc(var(--dockH,60px) + 8px);display:flex;flex-direction:column;min-width:200px;padding:6px;border-radius:16px;background:var(--bg2);border:1px solid var(--line);box-shadow:0 20px 50px -10px rgba(0,0,0,.5)}
+ #dmore button{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 14px;border-radius:10px;color:var(--ink);font-size:13px;letter-spacing:.12em;text-transform:uppercase;text-align:start}
+ html[dir=rtl] #dmore button{letter-spacing:0;text-transform:none;font-size:15px}
+ #dmore button[aria-pressed=true]{background:var(--line)}
+ #dmore svg{width:18px;height:18px;flex:0 0 18px}
+ /* floor scene: Floor up/down always visible, pinned at the bottom of the sheet, right above the dock */
+ #sc .row2.flnav{position:sticky;bottom:0;z-index:4;margin-top:12px;padding-top:8px;background:var(--bg2);box-shadow:0 -10px 24px 6px var(--bg2)}
+}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -1608,11 +1639,13 @@ function sTower({b}){
 }
 function colorPlan(root,b,f,selU){ const byI={}; b.units.filter(u=>u.f===f).forEach(u=>byI[u.p.i]=u);
   root.querySelectorAll('.u path').forEach(p=>{const u=byI[+p.dataset.i];p.setAttribute('class',u?('st-'+u.st+(selU===u?' sel':'')+(state.kind&&u.kind!==state.kind?' dim':'')):'na');}); return byI; }
-function sFloor({b,f}){
+function sFloor({b,f,sel}){
   state.b=b;state.f=f;state.u=null; const P=PLANS[b.plan];
   const fr=newFrame({full:true,html:`<div class="planbox" id="pbox"><div class="plan" id="plan"></div></div>`});
   const box=fr.querySelector('#pbox'); const pad=PAD(); const aw=innerWidth-pad.l-pad.r, ah=innerHeight-pad.t-pad.b-40;
-  const ar=P.w/(P.h+(b.single?40:0)); let w=aw,h=w/ar; if(h>ah){h=ah;w=h*ar;} const swipe=innerWidth<700&&w<900; if(swipe){ w=900; h=w/ar; fr.classList.add('fswipe'); } Object.assign(box.style,{left:(swipe?12:pad.l+(aw-w)/2-24)+'px',top:(swipe?Math.max(170,pad.t+20+(ah-h)/2-24):pad.t+20+(ah-h)/2-24)+'px',width:w+48+'px',height:h+48+'px'});
+  const ar=P.w/(P.h+(b.single?40:0));
+  if(innerWidth<=980){ const ins=innerWidth<700?8:16; box.style.setProperty('--pins',ins+'px'); let w=aw-2*ins,h=w/ar; if(h>ah-2*ins){h=ah-2*ins;w=h*ar;} Object.assign(box.style,{left:(pad.l+(aw-w-2*ins)/2)+'px',top:(pad.t+20+(ah-h-2*ins)/2)+'px',width:(w+2*ins)+'px',height:(h+2*ins)+'px'}); }
+  else { let w=aw,h=w/ar; if(h>ah){h=ah;w=h*ar;} Object.assign(box.style,{left:(pad.l+(aw-w)/2-24)+'px',top:(pad.t+20+(ah-h)/2-24)+'px',width:w+48+'px',height:h+48+'px'}); }
   asset('plan_'+b.plan+'.svg').then(txt=>{ const host=fr.querySelector('#plan'); host.innerHTML=txt; const svg=host.querySelector('svg'); svg.setAttribute('preserveAspectRatio','xMidYMid meet');
     const ex=P.ext,cy=(ex[1]+ex[3])/2; svg.insertAdjacentHTML('beforeend',[['A',ex[0]+(ex[2]-ex[0])*.13],['B',ex[2]-(ex[2]-ex[0])*.13]].map(([e,x])=>`<g class="ent"><circle cx="${x}" cy="${b.single?ex[3]+22:cy}" r="22"/><text x="${x}" y="${(b.single?ex[3]+22:cy)+8}" text-anchor="middle">${e}</text></g>`).join(''));
     if(b.single) svg.setAttribute('viewBox',`0 0 ${P.w} ${P.h+40}`);
@@ -1620,14 +1653,15 @@ function sFloor({b,f}){
     host.querySelectorAll('.u path').forEach(p=>{const u=byI[+p.dataset.i]; if(!u) return;
       p.onmouseenter=null;
       p.onmousemove=e=>tip($('#tip').innerHTML,e); p.onmouseleave=()=>tip(null);
-      p.onclick=()=>{ if(state.sel===u) go('unit',{u}); else {state.sel=u;colorPlan(host,b,f,u);panelUnitPreview(u);} };}); }).catch(()=>toast(t('planErr')));
+      p.onclick=()=>{ if(state.sel===u) go('unit',{u}); else {state.sel=u;colorPlan(host,b,f,u);panelUnitPreview(u);} };});
+    if(sel&&fr.isConnected){ const su=Object.values(byI).find(x=>x.code===sel.code); if(su){ state.sel=su; colorPlan(host,b,f,su); panelUnitPreview(su); } } }).catch(()=>toast(t('planErr')));
   setTitle(`${t('building')} ${b.id} · ${t('flEye')}`,floorName(f),'',true);
   state.sel=null; panelFloor(b,f);
 }
 function panelFloor(b,f){ const us=b.units.filter(u=>u.f===f);
   side(`<span class="eye">${t('building')} ${b.id} · ${t('type')} ${b.ty}</span><h2>${floorName(f)}</h2><p>${t('pickHome')}</p>${sbar(us)}${legend()}
    <div class="kv">${['st','br1','br2'].map(k=>`<span>${t(k)} · ${nf(AREA[k])} ${t('sqm')}</span><b>${nf(us.filter(u=>u.kind===k&&u.st==='available').length)} / ${nf(us.filter(u=>u.kind===k).length)}</b>`).join('')}</div>
-   <div class="row2">${cta('f-up',`${t('floor')} ↑`,'next',true)}${cta('f-dn',`${t('floor')} ↓`,'next',true)}</div>`,()=>{
+   <div class="row2 flnav">${cta('f-up',`${t('floor')} ↑`,'next',true)}${cta('f-dn',`${t('floor')} ↓`,'next',true)}</div>`,()=>{
    $('#f-up').onclick=()=>go('floor',{b,f:Math.min(b.levels-1,f+1)});$('#f-dn').onclick=()=>go('floor',{b,f:Math.max(0,f-1)});});
 }
 function panelUnitPreview(u){
@@ -1775,7 +1809,7 @@ function applyStatic(){ document.documentElement.lang=lang; document.documentEle
   $('#t-resort').textContent=t('resortL'); $('#i-eye').textContent=t('i_eye'); $('#i-p').textContent=t('intro_p'); $('#i-go').textContent=t('i_go');
   $('#th-d').innerHTML='<svg class="i" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>'; $('#th-l').innerHTML='<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'; $('#th-d').title=t('themeD'); $('#th-l').title=t('themeL'); $('#l-en').setAttribute('aria-pressed',lang==='en'); $('#l-ar').setAttribute('aria-pressed',lang==='ar'); }
 function rerender(){ applyStatic(); if(state.scene==='intro') return; const s=state.scene;
-  if(s==='master')go('master'); else if(s==='tower')go('tower',{b:state.b}); else if(s==='floor')go('floor',{b:state.b,f:state.f}); else if(s==='unit')go('unit',{u:state.u}); else if(s==='walk')go('walk',{u:state.u,kind:state.u?null:'br2'}); else if(s==='amenview')go('master'); }
+  if(s==='master')go('master'); else if(s==='tower')go('tower',{b:state.b}); else if(s==='floor')go('floor',{b:state.b,f:state.f,sel:state.sel}); else if(s==='unit')go('unit',{u:state.u}); else if(s==='walk')go('walk',{u:state.u,kind:state.u?null:'br2'}); else if(s==='amenview')go('master'); }
 $('#l-en').onclick=()=>{lang='en';try{localStorage.setItem('alaia-lang','en')}catch(e){}rerender();}; $('#l-ar').onclick=()=>{lang='ar';try{localStorage.setItem('alaia-lang','ar')}catch(e){}rerender();};
 $$('[data-theme-b]').forEach(b=>b.onclick=()=>{document.documentElement.dataset.theme=b.dataset.themeB; if(state.b&&!state.f&&state.f!==0&&document.querySelector('.band')) go('tower',{b:state.b});$$('[data-theme-b]').forEach(x=>x.setAttribute('aria-pressed',x===b));try{localStorage.setItem('alaia-theme17',b.dataset.themeB)}catch(e){}});
 $('#fs').onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{});}catch(e){}};
@@ -1896,7 +1930,7 @@ Object.assign(S2.en,{wn_wardrobe:"Wardrobe & hallway",wkViewS:"View",reqS:"Reque
  reqOkT:"Request received",reqOkP:"Your request has reached the ALAIA sales team. An advisor will follow up with the details of this home.",reqDone:"Done",reqErr:"Could not send. Please ask a sales advisor.",
  smT:"Sales mode",smUnits:"Units & status",smLeads:"Leads",smExit:"Exit sales mode",smLeadsN:"leads on this device",
  idleT:"Still there?",idleP:"Returning to the welcome screen in",idleStay:"I'm here",
- d_walk:"Walk the home",d_proj:"Project",d_towers:"Towers",
+ d_walk:"Walk the home",d_more:"More",d_proj:"Project",d_towers:"Towers",
  wkEnter:"Enter this home",wkSoon:"Interior view coming soon",wkHint:"Drag to look around 360° · pinch or scroll to zoom in and out",wkView:"View from this home",wkInfo:"About this room",
  wn_entry:"Entrance",wn_room:"Room",wn_studio:"Studio",wn_sleep:"Sleeping area",wn_kitchenette:"Kitchenette",wn_livkit:"Living & kitchen",wn_living:"Living room",wn_kitchen:"Kitchen",wn_bed:"Bedroom",wn_master:"Master bedroom",wn_second:"Second bedroom",wn_bath:"Bathroom",
  infoArea:"Home area",infoRoom:"Room size",infoFin:"Finishes",infoView:"View direction",infoNear:"Nearby amenities",tbc:"To be confirmed by the developer",infoTypeOnly:"Interior and view are illustrative, typical for this home type.",
@@ -1912,7 +1946,7 @@ Object.assign(S2.ar,{wn_wardrobe:"الدولاب والممر",wkViewS:"الفي
  reqOkT:"طلبك وصل",reqOkP:"طلبك وصل لفريق مبيعات ألايا، ومستشار هيتابع معاك بتفاصيل الوحدة دي.",reqDone:"تمام",reqErr:"تعذّر الإرسال. اسأل مستشار المبيعات من فضلك.",
  smT:"وضع المبيعات",smUnits:"الوحدات والحالة",smLeads:"الطلبات",smExit:"خروج من وضع المبيعات",smLeadsN:"طلب على الجهاز ده",
  idleT:"لسه معانا؟",idleP:"الشاشة هترجع لشاشة الترحيب خلال",idleStay:"أنا هنا",
- d_walk:"امشي جوه البيت",d_proj:"المشروع",d_towers:"الأبراج",
+ d_walk:"امشي جوه البيت",d_more:"المزيد",d_proj:"المشروع",d_towers:"الأبراج",
  wkEnter:"ادخل البيت",wkSoon:"المنظر الداخلي قريبًا",wkHint:"اسحب علشان تلف ٣٦٠° · قرّب أو بعّد بصباعين أو بالعجلة",wkView:"المنظر من البيت ده",wkInfo:"عن الأوضة دي",
  wn_entry:"المدخل",wn_room:"غرفة",wn_studio:"الاستوديو",wn_sleep:"منطقة النوم",wn_kitchenette:"المطبخ الصغير",wn_livkit:"المعيشة والمطبخ",wn_living:"المعيشة",wn_kitchen:"المطبخ",wn_bed:"غرفة النوم",wn_master:"غرفة النوم الرئيسية",wn_second:"غرفة النوم التانية",wn_bath:"الحمام",
  infoArea:"مساحة الوحدة",infoRoom:"مقاس الأوضة",infoFin:"التشطيبات",infoView:"اتجاه الفيو",infoNear:"مميزات قريبة",tbc:"يؤكدها المطوّر",infoTypeOnly:"التصميم الداخلي والإطلالة توضيحيان لهذا النوع من الوحدات.",
@@ -1993,10 +2027,23 @@ setInterval(()=>{ if(state.scene==='intro'&&document.body.classList.contains('in
 /* ---------- dock: SALES removed from public nav; walk + project added */
 DOCK.length=0; DOCK.push(['master','map','d_master'],['towers','tower','d_towers'],['walk','home','d_walk'],['film','walk','d_film'],['gal','plan','d_gallery'],['amen','leaf','d_amen'],['proj','stack','d_proj']);
 dock=function(){ const wkOn=!!$('#wk.on'), pj=!!$('#proj'); const act=k=>(k==='master'&&state.scene==='master'&&!wkOn&&!pj)||(k==='amen'&&state.amen&&state.scene==='plan'&&!wkOn&&!pj)||(k==='towers'&&['tower','floor','unit'].includes(state.scene)&&!wkOn&&!pj)||(k==='walk'&&wkOn)||(k==='proj'&&pj);
-  $('#dock').innerHTML=DOCK.map(([k,i,l])=>`<button data-d="${k}" aria-pressed="${act(k)}">${ICO[i]}<span>${t(l)}</span></button>`).join('');
-  $$('#dock button').forEach(b=>b.onclick=()=>{ const k=b.dataset.d; if(k!=='walk') wkClose(true); if(k!=='proj') $('#proj')?.remove();
+  const dk=$('#dock'); dk.innerHTML=DOCK.map(([k,i,l])=>`<button data-d="${k}" aria-pressed="${act(k)}">${ICO[i]}<span>${t(l)}</span></button>`).join('');
+  $('#dmore')?.remove(); dk.classList.remove('hasmore');
+  if(innerWidth<=980&&!LANDPHONE()&&dk.scrollWidth>dk.clientWidth+2){ const keep=3, rest=DOCK.slice(keep); [...dk.children].slice(keep).forEach(b=>b.remove()); dk.classList.add('hasmore');
+    dk.insertAdjacentHTML('beforeend',`<button data-d="more" aria-haspopup="true" aria-expanded="false" aria-pressed="${rest.some(([k])=>act(k))}"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg><span>${t('d_more')}</span></button>`);
+    const mb=dk.querySelector('[data-d=more]'); mb.onclick=e=>{ e.stopPropagation(); let m=$('#dmore'); if(m){ m.remove(); mb.setAttribute('aria-expanded','false'); return; }
+      m=document.createElement('div'); m.id='dmore'; m.setAttribute('role','menu'); m.innerHTML=rest.map(([k,i,l])=>`<button role="menuitem" data-d="${k}" aria-pressed="${act(k)}">${ICO[i]}<span>${t(l)}</span></button>`).join(''); document.body.appendChild(m); mb.setAttribute('aria-expanded','true');
+      m.querySelectorAll('button').forEach(b=>b.onclick=()=>{ m.remove(); mb.setAttribute('aria-expanded','false'); dockAct(b.dataset.d); });
+      setTimeout(()=>{ const off=ev=>{ if(!m.contains(ev.target)&&ev.target!==mb){ m.remove(); mb.setAttribute('aria-expanded','false'); removeEventListener('pointerdown',off,true); } }; addEventListener('pointerdown',off,true); },0); }; }
+  $$('#dock button:not([data-d=more])').forEach(b=>b.onclick=()=>dockAct(b.dataset.d)); };
+function dockAct(k){ $('#dmore')?.remove(); if(k!=='walk') wkClose(true); if(k!=='proj') $('#proj')?.remove();
     if(k==='master'){state.amen=false;go('master');} if(k==='amen'){state.amen=true;go('plan');} if(k==='towers')go('tower',{b:state.b||BLD.find(x=>x.feat)});
-    if(k==='walk') openWalk(state.u||null,0,null,state.u?null:'br1'); if(k==='film')openFilm(); if(k==='gal')openGallery(); if(k==='proj')openProj(); }); };
+    if(k==='walk') openWalk(state.u||null,0,null,state.u?null:'br1'); if(k==='film')openFilm(); if(k==='gal')openGallery(); if(k==='proj')openProj(); }
+(function(){ const SEL='.dock,.orbinfo .chips,.orbctl,#sc .chips,#sc .chiprow,.gal-cats,.am-chips';
+  const upd=()=>document.querySelectorAll(SEL).forEach(el=>{ const over=el.scrollWidth>el.clientWidth+2; const x=Math.abs(el.scrollLeft), max=el.scrollWidth-el.clientWidth; const rtl=getComputedStyle(el).direction==='rtl';
+    const startHidden=over&&x>2, endHidden=over&&x<max-2; el.classList.add('hfade'); el.classList.toggle('hf-l',rtl?endHidden:startHidden); el.classList.toggle('hf-r',rtl?startHidden:endHidden); });
+  addEventListener('scroll',e=>{ if(e.target&&e.target.matches&&e.target.matches(SEL)) upd(); },true); addEventListener('resize',upd); setInterval(upd,500); upd();
+  let rw=innerWidth; addEventListener('resize',()=>{ if(Math.abs(innerWidth-rw)>40){ rw=innerWidth; try{ dock(); }catch(e){} } }); })();
 
 /* ---------- scene wrappers */
 const _goK=go; go=function(scene,o){ if(scene!=='walk') wkClose(true); $('#proj')?.remove(); $$('.ksheet').forEach(e=>e.remove()); kLoad(false); _goK(scene,o||{}); document.body.dataset.scene=scene; };
@@ -2005,12 +2052,19 @@ const _colorPlan=colorPlan; colorPlan=function(root,b,f,selU){ const byI=_colorP
 function planLabels(root,byI,selU){ const svg=root.querySelector('svg'); if(!svg) return; svg.querySelector('.ulab')?.remove();
   const ctm=svg.getScreenCTM(); const sc=ctm?Math.abs(ctm.a):1; const g=document.createElementNS('http://www.w3.org/2000/svg','g'); g.setAttribute('class','ulab');
   root.querySelectorAll('.u path').forEach(p=>{ const u=byI[+p.dataset.i]; if(!u||p.classList.contains('na')) return; let bb; try{ bb=p.getBBox(); }catch(e){ return; }
-    const fs=Math.max(14,Math.min(20,bb.width*sc/7))/sc, cx=bb.x+bb.width/2, cy=bb.y+bb.height/2; const num=u.ent+'-'+u.code.split('-').pop();
+    const cx=bb.x+bb.width/2, cy=bb.y+bb.height/2; const num=u.ent+'-'+u.code.split('-').pop(); const L=String(num).length;
     const gg=document.createElementNS('http://www.w3.org/2000/svg','g'); if(u===selU) gg.setAttribute('class','sel');
-    const bw=Math.max(String(num).length*.62*fs*1.1,(String(u.area).length+3)*.55*fs)+fs*.9; gg.innerHTML=`<rect x="${cx-bw/2}" y="${cy-fs*1.45}" width="${bw}" height="${fs*2.9}" rx="${fs*.5}"/><text class="n" data-latin x="${cx}" y="${cy-fs*.62}" font-size="${fs*1.1}">${num}</text><text class="a" x="${cx}" y="${cy+fs*.7}" font-size="${fs}">${nf(u.area)} ${t('sqm')}</text>`; g.appendChild(gg); });
+    let fs=Math.max(14,Math.min(20,bb.width*sc/7))/sc; const bwF=f=>Math.max(L*.62*f*1.1,(String(u.area).length+3)*.55*f)+f*.9;
+    if(bwF(fs)<=bb.width*.92&&fs*2.9<=bb.height*.86){ const bw=bwF(fs); gg.innerHTML=`<rect x="${cx-bw/2}" y="${cy-fs*1.45}" width="${bw}" height="${fs*2.9}" rx="${fs*.5}"/><text class="n" data-latin x="${cx}" y="${cy-fs*.62}" font-size="${fs*1.1}">${num}</text><text class="a" x="${cx}" y="${cy+fs*.7}" font-size="${fs}">${nf(u.area)} ${t('sqm')}</text>`; }
+    else { const cap=Math.min(fs*1.1,12/sc); const fitH=k=>Math.min(cap,bb.width*.9/(k*.62+.7),bb.height*.8/1.6), fitV=k=>Math.min(cap,bb.height*.9/(k*.62+.7),bb.width*.8/1.6);
+      let best=null; for(const lab of [num,u.code.split('-').pop()]){ const k=lab.length; for(const rot of [false,true]){ const f=rot?fitV(k):fitH(k); if(!best||f>best.f*1.15||(f>=best.f&&!rot&&best.rot)) best={lab,k,f,rot}; } if(best.f*sc>=9) break; }
+      if(!best||best.f*sc<7) return; fs=best.f; const bw=best.k*.62*fs+fs*.7; gg.setAttribute('class',(u===selU?'sel ':'')+'only'); if(best.rot) gg.setAttribute('transform',`rotate(-90 ${cx} ${cy})`);
+      gg.innerHTML=`<rect x="${cx-bw/2}" y="${cy-fs*.8}" width="${bw}" height="${fs*1.6}" rx="${fs*.4}"/><text class="n" data-latin x="${cx}" y="${cy}" font-size="${fs}">${best.lab}</text>`; }
+    g.appendChild(gg); });
   svg.appendChild(g); }
 let sideHook=null; const _side=side; side=function(html,bind){ const hk=sideHook; sideHook=null; _side(html,html==null?bind:()=>{ bind&&bind(); try{ hk&&hk(); }catch(e){ console.error(e); } }); };
-const _pUP=panelUnitPreview; panelUnitPreview=function(u){ sideHook=()=>{ const pr=$('#sc .price'); if(pr&&!$('#k-req0')){ pr.insertAdjacentHTML('afterend',cta('k-req0',t('reqT'),'send',true)); $('#k-req0').onclick=()=>openReq(u); } $('#u-open')?.classList.add('pri'); }; _pUP(u); };
+const _pUP=panelUnitPreview; panelUnitPreview=function(u){ sideHook=()=>{ const pr=$('#sc .price'); if(pr&&!$('#k-req0')){ pr.insertAdjacentHTML('afterend',cta('k-req0',t('reqT'),'send',true)); $('#k-req0').onclick=()=>openReq(u); } const uo=$('#u-open'); uo?.classList.add('pri');
+    if(uo&&innerWidth<=980&&!uo.parentElement.classList.contains('stk')){ const k=$('#k-req0'); const w=document.createElement('div'); w.className='stk'; uo.before(w); w.append(uo); if(k){ k.setAttribute('aria-label',t('reqT')); w.append(k); } } }; _pUP(u); };
 const DH2N=!/[?&]pano=0/.test(location.search)?{st:[0,0],br1:[0,1,0],br2:[1,2,3]}:{st:[1,2],br1:[1,3,0],br2:[1,2,3]};
 const _sUnit=sUnit; sUnit=function(o){ const u=o.u; sideHook=()=>{ const pr=$('#sc .price'); if(pr){ pr.insertAdjacentHTML('afterend',cta('k-req',t('reqT'),'send')); $('#k-req').onclick=()=>openReq(u); }
   const w=$('#u-360'); if(w){ w.querySelector('span').textContent=t('walkT'); w.classList.remove('ghost'); w.onclick=()=>openWalk(u,0); }
@@ -2154,7 +2208,7 @@ document.body.dataset.scene=state.scene; setTimeout(()=>{ modeUI(); arDigits(doc
 
 /* ---------- bottom sheet handle (<=980px): collapsed 38dvh, tap or drag the handle to expand */
 (function(){ const sd=$('#side'); if(!sd) return; const h=document.createElement('button'); h.className='shandle'; h.type='button'; h.setAttribute('aria-label',t('sheetMore')); h.innerHTML='<i></i>'; sd.insertBefore(h,sd.firstChild);
-  const setExp=v=>{ sd.style.removeProperty('height'); sd.classList.remove('dragging'); sd.classList.toggle('exp',v); h.setAttribute('aria-expanded',v); h.setAttribute('aria-label',t(v?'sheetLess':'sheetMore')); };
+  const setExp=v=>{ sd.style.removeProperty('height'); sd.classList.remove('dragging'); sd.classList.toggle('exp',v); document.body.classList.toggle('sheetexp',!!v); h.setAttribute('aria-expanded',v); h.setAttribute('aria-label',t(v?'sheetLess':'sheetMore')); };
   const isSheet=()=>getComputedStyle(h).display!=='none';
   let g=null; h.addEventListener('pointerdown',e=>{ if(!isSheet()) return; e.preventDefault(); g={y:e.clientY,h:sd.getBoundingClientRect().height,id:e.pointerId,moved:false}; try{ h.setPointerCapture(e.pointerId); }catch(_){} });
   h.addEventListener('pointermove',e=>{ if(!g||e.pointerId!==g.id) return; const dy=e.clientY-g.y; if(Math.abs(dy)>6) g.moved=true; if(!g.moved) return; sd.classList.add('dragging'); const max=innerHeight-(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dockH'))||0)-60; sd.style.setProperty('height',Math.max(innerHeight*0.2,Math.min(max,g.h-dy))+'px','important'); });
