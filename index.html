@@ -1490,7 +1490,7 @@ function sMaster(){
   const towerAt=e=>{ const hit=document.elementFromPoint(e.clientX,e.clientY); const t=hit&&hit.closest&&hit.closest('.frame.orb [data-b]'); return t?BLD.find(x=>x.id===t.dataset.b):null; };
   const P=new Map(); let g0=null, moved=false, acc=0, pinch0=null;
   el.addEventListener('pointerdown',e=>{ if(e.target.closest('.orbctl,.orbinfo')) return; el.setPointerCapture?.(e.pointerId); P.set(e.pointerId,{x:e.clientX,y:e.clientY}); OV_idle=0;
-    if(P.size===1){ g0={x:e.clientX,y:e.clientY,t:performance.now(),lx:e.clientX,lt:performance.now(),v:0,b:null,multi:false}; moved=false; acc=0; const b=towerAt(e); g0.b=b; if(b){ const tw=`ai/tw_${b.id}.jpg`; if(!cache[tw]){ const im=new Image(); im.src=tw; cache[tw]=im; } svg.querySelectorAll(`[data-b="${b.id}"]`).forEach(x=>x.classList.add('press')); } }
+    if(P.size===1){ g0={x:e.clientX,y:e.clientY,t:performance.now(),lx:e.clientX,lt:performance.now(),v:0,b:null,multi:false}; moved=false; acc=0; const b=towerAt(e); g0.b=b; if(b){ const tw=orbSrc(orbI,orbT); if(!cache[tw]){ const im=new Image(); im.src=tw; cache[tw]=im; } svg.querySelectorAll(`[data-b="${b.id}"]`).forEach(x=>x.classList.add('press')); } }
     if(P.size===2){ const [a,b]=[...P.values()]; pinch0={d:Math.hypot(a.x-b.x,a.y-b.y),s:Z.s}; if(g0) g0.multi=true; svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press')); } });
   el.addEventListener('pointermove',e=>{ if(!P.has(e.pointerId)) return; const p=P.get(e.pointerId); const dx=e.clientX-p.x, dy=e.clientY-p.y; p.x=e.clientX; p.y=e.clientY;
     if(P.size===2&&pinch0){ const [a,b]=[...P.values()]; Z.s=Math.max(1,Math.min(2.6,pinch0.s*Math.hypot(a.x-b.x,a.y-b.y)/pinch0.d)); clampZ(); applyZ(); moved=true; return; }
@@ -1513,7 +1513,7 @@ function sMaster(){
   const orbDive=b=>{ const v=(ORB[orbI]||{})[b.id]; tip(null); if(!v){go('tower',{b});return;} const r=el.getBoundingClientRect(); const sc=Math.max(r.width/1920,r.height/1080);
     const ox=r.width/2+(v.base[0]*1920-960)*sc, oy=r.height/2+((v.top[1]+v.base[1])/2*1080-540)*sc;
     el.style.transformOrigin=`${ox}px ${oy}px`; el.classList.add('dive'); $('#orbcard')?.remove();
-    const tw=`ai/tw_${b.id}.jpg`; const ov=document.createElement('div'); ov.className='twdive'; ov.innerHTML=`<img alt="" src="${tw}"><div class="twcap"><span class="eye">${t('building')}</span><b class="serif">${dg(b.id)}</b></div>`; document.body.appendChild(ov);
+    const tw=orbSrc(orbI,orbT); const ov=document.createElement('div'); ov.className='twdive'; ov.innerHTML=`<img alt="" src="${tw}"><div class="twcap"><span class="eye">${t('building')}</span><b class="serif">${dg(b.id)}</b></div>`; document.body.appendChild(ov);
     const go2=()=>{ ov.classList.add('on'); setTimeout(()=>{ go('tower',{b}); setTimeout(()=>{ov.classList.add('out'); setTimeout(()=>ov.remove(),900);},250); },900); };
     const im=ov.querySelector('img'); if(im.complete) requestAnimationFrame(go2); else { const lt=setTimeout(go2,350); im.onload=()=>{clearTimeout(lt); go2();}; im.onerror=()=>{clearTimeout(lt); ov.remove(); go('tower',{b});}; } };
   // ---------- controls
@@ -1648,7 +1648,7 @@ function sUnit({u,plan}){
 const RES={st:2,br1:3,br2:3}; const RESDH={st:[[.33,.50,0],[.68,.47,1]],br1:[[.68,.62,0],[.62,.26,1],[.53,.73,2]],br2:[[.62,.58,0],[.75,.43,1],[.47,.75,2]]};
 function resVideo(src,{loop=false,poster=''}={}){ const v=document.createElement('video'); v.muted=true; v.playsInline=true; v.setAttribute('playsinline',''); v.preload='auto'; if(loop)v.loop=true; if(poster)v.poster=poster; v.src=src; return v; }
 function resLift(u,done){ const ov=document.createElement('div'); ov.className='resov'; document.body.appendChild(ov);
-  const tw=document.createElement('div'); tw.className='rimg rtw'; tw.style.backgroundImage=`url('ai/tw_${u.b.id}.jpg')`; ov.appendChild(tw);
+  const tw=document.createElement('div'); tw.className='rimg rtw'; tw.style.backgroundImage=`url('ai/real/orb_00.jpg')`; ov.appendChild(tw);
   const v=resVideo(`ai/res/${u.kind}_lift.mp4`); v.style.opacity=0; ov.appendChild(v); v.pause();
   setTimeout(()=>{ v.style.opacity=1; v.currentTime=0; v.play().catch(end); setTimeout(()=>tw.remove(),800); },1700); ov.insertAdjacentHTML('beforeend',`<button class="rskip">${t('resSkip')}</button>`);
   let fin=false; const end=()=>{ if(fin)return; fin=true; ov.classList.remove('on'); setTimeout(()=>ov.remove(),650); done&&done(); };
@@ -2002,7 +2002,7 @@ const _sUnit=sUnit; sUnit=function(o){ const u=o.u; sideHook=()=>{ const pr=$('#
 };
 /* tower → home lift: no dead wait; play as soon as the clip can play, never block more than 3 s */
 resLift=function(u,done){ const ov=document.createElement('div'); ov.className='resov'; document.body.appendChild(ov);
-  const tw=document.createElement('div'); tw.className='rimg rtw'; tw.style.backgroundImage=`url('ai/tw_${u.b.id}.jpg')`; ov.appendChild(tw);
+  const tw=document.createElement('div'); tw.className='rimg rtw'; tw.style.backgroundImage=`url('ai/real/orb_00.jpg')`; ov.appendChild(tw);
   const v=resVideo(`ai/res/${u.kind}_lift.mp4`); v.style.opacity=0; v.style.transition='opacity .35s'; ov.appendChild(v);
   ov.insertAdjacentHTML('beforeend',`<button class="rskip">${t('resSkip')}</button>`);
   let fin=false, started=false; const end=()=>{ if(fin)return; fin=true; kLoad(false); ov.style.pointerEvents='none'; ov.classList.remove('on'); setTimeout(()=>ov.remove(),650); done&&done(); };
