@@ -1,0 +1,63 @@
+{
+ "vp": "844x390",
+ "lang": "en",
+ "pass": true,
+ "final": {
+  "scene": "unit",
+  "code": "T06-A-101",
+  "dhin": true
+ },
+ "steps": [
+  {
+   "step": "tap Towers tab",
+   "r": {
+    "x": 229.296875,
+    "y": 356,
+    "inView": true,
+    "ok": true,
+    "hitName": "SPAN"
+   }
+  },
+  {
+   "step": "tap tower 06 chip",
+   "r": {
+    "x": 773.765625,
+    "y": 118,
+    "inView": true,
+    "ok": true,
+    "hitName": "chip"
+   },
+   "scene": "tower"
+  },
+  {
+   "step": "tap Floor 1 row",
+   "r": {
+    "x": 649.8828125,
+    "y": 108,
+    "inView": true,
+    "ok": true,
+    "hitName": "SPAN"
+   }
+  },
+  {
+   "step": "tap a unit on the plan",
+   "r": {
+    "x": 47.292362213134766,
+    "y": 153.0743637084961,
+    "w": 43.369834899902344,
+    "ok": true
+   }
+  },
+  {
+   "step": "tap Open this home",
+   "r": {
+    "x": 649.8828125,
+    "y": 175.796875,
+    "inView": true,
+    "ok": true,
+    "hitName": "SPAN"
+   }
+  }
+ ],
+ "errors": []
+}
