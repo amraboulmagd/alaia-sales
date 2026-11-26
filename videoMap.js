@@ -7,21 +7,21 @@
 (function(){
   'use strict';
   var MODEL = "Architect's Revit/3D model (MAJD) → Blender cutaway render";
-  var T = function(kind, nodes){
+  var T = function(kind, nodes, real){
     var o = {
       dollhouse: {src:'ai/res/'+kind+'_dh.jpg', source:MODEL+' of the '+kind+' unit plan, finished with nano_banana_2 (Higgsfield)'},
       lift:      {src:'ai/res/'+kind+'_lift.mp4', source:'seedance_2_0 (Higgsfield) between the tower render and the '+kind+' dollhouse'},
       walk: {
-        nodes: nodes.map(function(n,i){ return {id:n, src:'ai/walk/'+kind+'_n'+i+'.jpg', source:'nano_banana_2 (Higgsfield) from the '+kind+' furnished plan and interior design study'}; }),
-        forward: nodes.slice(0,-1).map(function(n,i){ return {from:i, to:i+1, src:'ai/walk/'+kind+'_t'+i+'.mp4', source:'seedance_2_0 (Higgsfield) start/end frames = walk nodes '+i+'→'+(i+1)}; }),
-        back:    nodes.slice(0,-1).map(function(n,i){ return {from:i+1, to:i, src:'ai/walk/'+kind+'_r'+i+'.mp4', source:'time-reversed copy of '+kind+'_t'+i}; })
+        nodes: nodes.map(function(n,i){ return real ? {id:n, src:'ai/walk/r_'+kind+'_n'+i+'.jpg', source:MODEL+' 360 render of the '+kind+' unit (real windows, doors and view), finished photoreal with Higgsfield'} : {id:n, src:'ai/walk/'+kind+'_n'+i+'.jpg', source:'nano_banana_2 (Higgsfield) from the '+kind+' furnished plan and interior design study'}; }),
+        forward: real ? [] : nodes.slice(0,-1).map(function(n,i){ return {from:i, to:i+1, src:'ai/walk/'+kind+'_t'+i+'.mp4', source:'seedance_2_0 (Higgsfield) start/end frames = walk nodes '+i+'→'+(i+1)}; }),
+        back:    real ? [] : nodes.slice(0,-1).map(function(n,i){ return {from:i+1, to:i, src:'ai/walk/'+kind+'_r'+i+'.mp4', source:'time-reversed copy of '+kind+'_t'+i}; })
       }
     };
     return o;
   };
   var INTERIOR = {
-    st:  T('st',  ['entry','living','kitchen','bath']),
-    br1: T('br1', ['entry','living','kitchen','bedroom','bath']),
+    st:  T('st',  ['studio','sleep','kitchenette'], true),
+    br1: T('br1', ['living','kitchen','entry','bedroom','wardrobe'], true),
     br2: T('br2', ['entry','living','master','second','bath'])
   };
   var TOWERS = ['01','02','03','04','05','06','07','08','09','10','11','12','13'];

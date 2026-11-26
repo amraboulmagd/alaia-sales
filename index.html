@@ -1883,7 +1883,7 @@ function openView(u){ const side=u.p.r===0?'a':'b'; let f=Math.min(4,u.f); let k
   $('#bf-360').onclick=()=>openWalk3D(u,TOUR_URL,'balcony'); load(); }
 
 /* ================= KIOSK LAYER: modes, idle, leads, walk viewer, project details ================= */
-Object.assign(S2.en,{wkViewS:"View",reqS:"Request",amenListT:"Eight places to use every day",pj_hotelRooms:"Hotel rooms",vfSlow:"The film is still loading. Explore ALAIA now?",back:"Back",sheetMore:"Show more",sheetLess:"Show less",crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
+Object.assign(S2.en,{wn_wardrobe:"Wardrobe & hallway",wkViewS:"View",reqS:"Request",amenListT:"Eight places to use every day",pj_hotelRooms:"Hotel rooms",vfSlow:"The film is still loading. Explore ALAIA now?",back:"Back",sheetMore:"Show more",sheetLess:"Show less",crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
  smLeadsSrv:"requests received on the server",smLeadsPend:"waiting on this device to sync",lm_sales:"sales",'lm_self-serve':"self-serve",close:"Close",
  crm_not_configured:"Engaz is not connected yet: requests are stored on the ALAIA server and listed here. Connecting needs Engaz API documentation and credentials.",crm_configured:"Engaz connection configured.",
  reqPendT:"Saved on this screen",reqPendP:"The connection is down, so your request is saved here and will be sent automatically when it returns. A sales advisor can also help you right away.",
@@ -1899,7 +1899,7 @@ Object.assign(S2.en,{wkViewS:"View",reqS:"Request",amenListT:"Eight places to us
  pj_eye:"Project details",pj_t:"ALAIA, North Coast",pj_p:"Thirteen low-rise residential towers in four rows around three crystal lagoons, with a boutique hotel and a retail promenade on the coastal-road front.",
  pj_loc:"Location",pj_tw:"Towers",pj_homes:"Homes",pj_lag:"Lagoons",pj_types:"Tower types",pj_mix:"Home types",pj_svc:"Hotel & retail",pj_am:"Amenities",pj_del:"Delivery stages",pj_land:"Land area",
  pj_delP:"Delivery stages and dates have not been issued yet.",pj_units:"Homes",pj_qty:"Towers",pj_h:"Height",pj_ty:"Type",pj_ids:"Tower numbers",pj_map:"Open in Google Maps"});
-Object.assign(S2.ar,{wkViewS:"الفيو",reqS:"اطلب",amenListT:"ثمانية أماكن للاستخدام اليومي",pj_hotelRooms:"غرفة فندقية",vfSlow:"الفيلم لسه بيحمّل. تحب تستكشف ألايا دلوقتي؟",back:"رجوع",sheetMore:"عرض المزيد",sheetLess:"عرض أقل",crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
+Object.assign(S2.ar,{wn_wardrobe:"الدولاب والممر",wkViewS:"الفيو",reqS:"اطلب",amenListT:"ثمانية أماكن للاستخدام اليومي",pj_hotelRooms:"غرفة فندقية",vfSlow:"الفيلم لسه بيحمّل. تحب تستكشف ألايا دلوقتي؟",back:"رجوع",sheetMore:"عرض المزيد",sheetLess:"عرض أقل",crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
  smLeadsSrv:"طلب وصل للسيرفر",smLeadsPend:"مستني على الجهاز ده لحد ما يتبعت",lm_sales:"مبيعات",'lm_self-serve':"خدمة ذاتية",close:"إغلاق",
  crm_not_configured:"Engaz لسه مش متوصل: الطلبات بتتحفظ على سيرفر ألايا وبتظهر هنا. الربط محتاج مستندات الربط وبيانات الدخول من Engaz.",crm_configured:"اتظبط الربط مع Engaz.",
  reqPendT:"اتحفظ على الشاشة دي",reqPendP:"الاتصال مقطوع، فطلبك اتحفظ هنا وهيتبعت أوتوماتيك أول ما الاتصال يرجع. ومستشار المبيعات يقدر يساعدك دلوقتي.",
@@ -2007,16 +2007,16 @@ function planLabels(root,byI,selU){ const svg=root.querySelector('svg'); if(!svg
   svg.appendChild(g); }
 let sideHook=null; const _side=side; side=function(html,bind){ const hk=sideHook; sideHook=null; _side(html,html==null?bind:()=>{ bind&&bind(); try{ hk&&hk(); }catch(e){ console.error(e); } }); };
 const _pUP=panelUnitPreview; panelUnitPreview=function(u){ sideHook=()=>{ const pr=$('#sc .price'); if(pr&&!$('#k-req0')){ pr.insertAdjacentHTML('afterend',cta('k-req0',t('reqT'),'send',true)); $('#k-req0').onclick=()=>openReq(u); } $('#u-open')?.classList.add('pri'); }; _pUP(u); };
-const DH2N={st:[1,2],br1:[1,3,2],br2:[1,2,3]};
+const DH2N={st:[1,2],br1:[1,3,0],br2:[1,2,3]};
 const _sUnit=sUnit; sUnit=function(o){ const u=o.u; sideHook=()=>{ const pr=$('#sc .price'); if(pr){ pr.insertAdjacentHTML('afterend',cta('k-req',t('reqT'),'send')); $('#k-req').onclick=()=>openReq(u); }
   const w=$('#u-360'); if(w){ w.querySelector('span').textContent=t('walkT'); w.classList.remove('ghost'); w.onclick=()=>openWalk(u,0); }
   const g=$('#u-gal'); if(g) g.onclick=()=>openWalk(u,1); };
   _sUnit(o);
-  const box=[...document.querySelectorAll('.dhbox')].pop(); if(box&&!o.plan){ box.querySelectorAll('.dhs').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const j=+b.dataset.j; openWalk(u,DH2N[u.kind][j],`ai/res/${u.kind}_dive_${j}.mp4`); });
+  const box=[...document.querySelectorAll('.dhbox')].pop(); if(box&&!o.plan){ box.querySelectorAll('.dhs').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const j=+b.dataset.j; openWalk(u,DH2N[u.kind][j],u.kind==='br2'?`ai/res/${u.kind}_dive_${j}.mp4`:null); });
     const hint=box.querySelector('.dhhint'); if(hint&&!box.querySelector('.illus')) hint.insertAdjacentHTML('beforebegin',`<div class="illus">${t('infoTypeOnly')}</div>`); if(hint){ hint.insertAdjacentHTML('afterend',`<div style="display:flex;justify-content:center;margin-top:14px">${cta('dh-in',t('wkEnter'),'home')}</div>`); const din=box.querySelector('#dh-in'); din.classList.add('pri'); din.dataset.code=u.code; din.onclick=e=>{ e.stopPropagation(); if(din.closest('.frame.dying')) return; openWalk(u,0); }; }
     requestAnimationFrame(()=>dispatchEvent(new Event('alaia:fit')));
     // warm the first walk node and the dive clips so taps never wait on the network
-    [0,1].forEach(i=>{ const im=new Image(); im.src=`ai/walk/${u.kind}_n${i}.jpg`; }); }
+    [0,1].forEach(i=>{ const im=new Image(); im.src=u.kind==='br2'?`ai/walk/${u.kind}_n${i}.jpg`:`ai/walk/r_${u.kind}_n${i}.jpg`; }); }
 };
 /* tower → home lift: no dead wait; play as soon as the clip can play, never block more than 3 s */
 resLift=function(u,done){ const ov=document.createElement('div'); ov.className='resov'; document.body.appendChild(ov);
@@ -2034,9 +2034,9 @@ try{ const lk=document.createElement('link'); lk.rel='preload'; lk.as='image'; l
   if(innerWidth>=1280){ const pv=document.createElement('video'); pv.preload='auto'; pv.muted=true; pv.src=innerWidth<1000?'ai/film_m.mp4':'ai/film.mp4'; pv.style.display='none'; document.body.appendChild(pv); setTimeout(()=>{pv.removeAttribute('src');pv.load();pv.remove();},60000); } }catch(e){}
 
 /* ================= walk-through viewer (item 12) ================= */
-const WN={st:['studio','sleep','kitchenette','bath'],br1:['livkit','kitchen','living','bedroom','bath'],br2:['living','livkit','master','second','bath']};
-const WNL=new Proxy({entry:'wn_entry',living:'wn_living',kitchen:'wn_kitchen',bedroom:'wn_bed',master:'wn_master',second:'wn_second',bath:'wn_bath',studio:'wn_studio',sleep:'wn_sleep',kitchenette:'wn_kitchenette',livkit:'wn_livkit'},{get:(o,k)=>o[k]||'wn_room'});
-const WDIM={st:{living:'d_bedliv',kitchen:'r_kitchen',bath:'d_bath'},br1:{living:'r_living',bedroom:'r_bed',kitchen:'r_kitchen',bath:'d_bath'},br2:{entry:'d_kitent',living:'r_living',master:'d_bed1',second:'d_bed2',bath:'d_bath1'}};
+const WN={st:['studio','sleep','kitchenette'],br1:['living','kitchen','entry','bedroom','wardrobe'],br2:['living','livkit','master','second','bath']};
+const WNL=new Proxy({entry:'wn_entry',living:'wn_living',kitchen:'wn_kitchen',bedroom:'wn_bed',master:'wn_master',second:'wn_second',bath:'wn_bath',studio:'wn_studio',sleep:'wn_sleep',kitchenette:'wn_kitchenette',livkit:'wn_livkit',wardrobe:'wn_wardrobe'},{get:(o,k)=>o[k]||'wn_room'});
+const WDIM={st:{studio:'d_bedliv',sleep:'d_bedliv',kitchenette:'r_kitchen'},br1:{living:'r_living',bedroom:'r_bed',wardrobe:'r_bed',kitchen:'r_kitchen'},br2:{entry:'d_kitent',living:'r_living',master:'d_bed1',second:'d_bed2',bath:'d_bath1'}};
 const WHS={fwd:[.5,.64],back:[.24,.72],info:[.36,.4]};
 const wk={el:null,u:null,k:null,i:0,iw:2600,ih:1103,x:0,y:0,z:1,tx:0,ty:0,tz:1,vx:0,vy:0,raf:0,busy:false,pre:{}};
 function wkStop(){ cancelAnimationFrame(wk.raf); wk.raf=0; Object.values(wk.pre).forEach(v=>{try{v.pause();v.removeAttribute('src');v.load();}catch(e){}}); wk.pre={}; }
