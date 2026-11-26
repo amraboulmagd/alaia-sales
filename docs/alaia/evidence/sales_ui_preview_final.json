@@ -1,6 +1,6 @@
 {
- "total": 13,
- "passed": 12,
+ "total": 14,
+ "passed": 14,
  "results": [
   {
    "n": "wrong PIN: no sales bar",
@@ -38,6 +38,11 @@
    "i": 401
   },
   {
+   "n": "Arabic re-login opens sales mode",
+   "pass": true,
+   "i": ""
+  },
+  {
    "n": "Arabic inventory: no English words (except codes/brands)",
    "pass": true,
    "i": ""
@@ -49,8 +54,8 @@
   },
   {
    "n": "Expired session closes modal and sales bar",
-   "pass": false,
-   "i": ""
+   "pass": true,
+   "i": "{\"modal\":false,\"modalTxt\":\"\",\"bar\":false,\"admin\":false,\"toast\":\"\"}"
   },
   {
    "n": "next arrow reachable while panel scrolled",
@@ -60,12 +65,12 @@
   {
    "n": "panel scroll reset after next",
    "pass": true,
-   "i": "{\"top\":0,\"code\":\"T06-B-208\",\"h2\":\"⁦T06-B-208⁩\"}"
+   "i": "{\"top\":0,\"code\":\"T06-B-208\",\"h2\":\"T06-B-208\"}"
   },
   {
    "n": "panel shows the selected unit (no stale data)",
    "pass": true,
-   "i": "{\"top\":0,\"code\":\"T06-B-208\",\"h2\":\"⁦T06-B-208⁩\"}"
+   "i": "{\"top\":0,\"code\":\"T06-B-208\",\"h2\":\"T06-B-208\"}"
   }
  ],
  "errors": []

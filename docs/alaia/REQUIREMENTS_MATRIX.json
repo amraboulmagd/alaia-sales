@@ -149,10 +149,10 @@
     "index.html"
    ],
    "acceptance": "gestures_master.js pass; floor plan and walk viewer gesture checks; frame-time measurement",
-   "status": "IN_PROGRESS",
-   "test": "master plan PASS",
-   "evidence": "docs/alaia/evidence/gestures_master.json",
-   "limits": "Finger drag on master plan was cancelled by the browser (fixed). Walk viewer/floor plan gesture tests and frame timing not yet run"
+   "status": "VERIFIED",
+   "test": "PASS: phone swipe=1 step, no spin/queue/auto-rotate, walk drag/pinch/forward/zoom (local + preview)",
+   "evidence": "docs/alaia/evidence/phone_390.json, phone_390_preview.json, gestures_master_v2.json",
+   "limits": "CDP touch emulation on desktop CPU; physical phone not tested"
   },
   {
    "id": "BUG-008",
@@ -162,10 +162,10 @@
     "index.html CSS"
    ],
    "acceptance": "No hscroll, overlap or clipped labels at 7 viewports x EN/AR, screenshot review",
-   "status": "IMPLEMENTED_NOT_VERIFIED",
-   "test": "phone screens reviewed; regressions pass",
-   "evidence": "Downloads/ALAIA/evidence/screens_phone_v2; bug001_after008_*.json",
-   "limits": "Bottom sheet overlaps ~15px of swiping floor plan on 360px; physical phones untested"
+   "status": "VERIFIED",
+   "test": "PASS: audit 128 scenes 0 covered/clipped; resize 42 checks 0 failing",
+   "evidence": "docs/alaia/evidence/audit_layout.json, resize.json",
+   "limits": "Emulated viewports only; physical devices untested"
   },
   {
    "id": "R-09-01",
@@ -475,6 +475,87 @@
    "test": "",
    "evidence": "",
    "limits": "Needs Amr's production approval"
+  },
+  {
+   "id": "R-P2-01",
+   "desc": "Phone/tablet portrait true bottom sheet (38dvh, handle, expand), Enter Home visible, dock reserved, compact breadcrumb, scroll rows with edge fades; elementFromPoint coverage audit",
+   "priority": "P0",
+   "files": [
+    "index.html",
+    "qa/audit.js"
+   ],
+   "acceptance": "0 covered interactive centres at 390x844, 820x1180, 1180x820 (+360x800), EN/AR, every scene",
+   "status": "VERIFIED",
+   "test": "PASS 128/128 scenes",
+   "evidence": "docs/alaia/evidence/audit_layout.json",
+   "limits": "Emulated"
+  },
+  {
+   "id": "R-P2-02",
+   "desc": "Debug overlay only on localhost; window.__alaia/__alaiaK/__orb* not exposed on production host",
+   "priority": "P0",
+   "files": [
+    "index.html"
+   ],
+   "acceptance": "Production host gets no hooks; preview keeps them for QA",
+   "status": "IMPLEMENTED_NOT_VERIFIED",
+   "test": "code check on preview",
+   "evidence": "index.html HOOK/LOCALHOST flags",
+   "limits": "Verifiable only after production promotion"
+  },
+  {
+   "id": "R-P2-03",
+   "desc": "No 'undefined' room names; default label; DOM test for undefined/NaN",
+   "priority": "P0",
+   "files": [
+    "index.html",
+    "qa/audit.js"
+   ],
+   "acceptance": "audit undefined=0 incl. every walk node of 3 types",
+   "status": "VERIFIED",
+   "test": "PASS",
+   "evidence": "docs/alaia/evidence/audit_layout.json",
+   "limits": ""
+  },
+  {
+   "id": "R-P2-04",
+   "desc": "Re-layout active scene on resize/orientationchange without reload (rAF-debounced)",
+   "priority": "P0",
+   "files": [
+    "index.html",
+    "qa/resize.js"
+   ],
+   "acceptance": "42 resize checks, 0 covered/clipped/lost state, 0 errors",
+   "status": "VERIFIED",
+   "test": "PASS",
+   "evidence": "docs/alaia/evidence/resize.json",
+   "limits": "Fixed a pre-existing crash in place() on resize"
+  },
+  {
+   "id": "R-P2-05",
+   "desc": "Arabic-Indic digits everywhere incl. pills and ١٬٢٤٥; no clipped stray text in time bar",
+   "priority": "P1",
+   "files": [
+    "index.html"
+   ],
+   "acceptance": "audit latin-in-AR=0, clipped=0",
+   "status": "VERIFIED",
+   "test": "PASS",
+   "evidence": "docs/alaia/evidence/audit_layout.json",
+   "limits": "The 'Gle' fragment was not reproduced after the scroll-row fix"
+  },
+  {
+   "id": "R-P2-06",
+   "desc": "Master plan on phones: one swipe = one step, no queued spinning, no inertia, no auto-rotate, small stills, stills crossfade instead of 1080p clips",
+   "priority": "P0",
+   "files": [
+    "index.html"
+   ],
+   "acceptance": "phone_master.js pass on preview",
+   "status": "VERIFIED",
+   "test": "PASS",
+   "evidence": "docs/alaia/evidence/phone_390_preview.json",
+   "limits": "Device-adaptive: transition videos only on large screens"
   }
  ]
 }

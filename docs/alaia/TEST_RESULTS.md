@@ -16,4 +16,10 @@
 | All scenes, 7 viewports × EN/AR (140) | — | 0 undersized, 0 h-scroll, 0 errors | `screens/report.json` |
 | After phone fixes: tower taps 390 touch / 1920 mouse; Enter Home touch | — | **64/64**, **64/64**, **32/32** | `bug001_after008_*`, `bug002_after008_touch.json` |
 
+| Phone pass 2 — layout audit 390/820/1180/360 × EN/AR (128 scenes) | 79 scenes with covered controls | 0 covered, 0 clipped, 0 undefined, 0 Latin digits in AR | `audit_layout.json` |
+| Live resize / rotation, 5 scenes × 4 sizes × EN/AR | crash in `place()` on resize | 42/42, 0 errors | `resize.json` |
+| Phone master plan + walk viewer (preview) | swipe queued up to 4 extra steps + inertia + auto-rotate | 1 step per swipe, no spin, Enter reachable, drag/pinch/forward/zoom work | `phone_390_preview.json` |
+| Regressions after pass 2 | — | taps 64/64 (390 touch), 64/64 (1920 mouse), Enter 32/32, gestures pass | `bug001_v2_*`, `bug002_v2_touch.json`, `gestures_master_v2.json` |
+| Sales UI on preview 7d9713da | intermittent fail = lockout from repeated test runs | 14/14 | `sales_ui_preview_final.json` |
+
 Not yet run: preview-URL runs (push waiting on GitHub sign-in), full 7-viewport × EN/AR screenshot review, walk-viewer gesture/frame timing, idle timers, performance, soak.
