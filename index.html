@@ -941,6 +941,28 @@ svg.elev .eground{fill:#C9BBA3}
 svg.elev .elab{fill:#F3EEE5;font:600 44px var(--f-b,sans-serif)}
 svg.elev .ecap{fill:#F3EEE5;opacity:.8;font:500 38px var(--f-b,sans-serif)}
 [data-theme=light] svg.elev .elab,[data-theme=light] svg.elev .ecap{fill:#2b2520}
+
+/* 360px: long Enter label wraps; walk zoom controls move clear of the bar */
+@media (max-width:600px){
+ .resf .dhbox #dh-in{max-width:calc(100vw - 24px);white-space:normal;text-align:center;line-height:1.25}
+ #wk .zm{bottom:auto!important;top:50%!important;transform:translateY(-50%)}
+}
+
+/* phones/tablets: compact walk bar (one row of actions) + room switcher row above it (mini-map plan hidden) */
+@media (max-width:980px){
+ #wk .mm{display:block!important;position:absolute!important;inset-inline:12px!important;top:auto!important;width:auto!important;bottom:calc(var(--wkbarH,132px) + 30px + env(safe-area-inset-bottom,0px))!important;background:none!important;border:0!important;overflow:visible!important}
+ #wk .mm .dh{display:none!important}
+ #wk .mm .rt{display:flex!important;flex-wrap:nowrap;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0!important}
+ #wk .mm .rt button{flex:0 0 auto;min-height:44px;padding:0 16px;border-radius:999px;background:rgba(12,11,9,.72);border:1px solid rgba(255,255,255,.22);color:#F3EEE5;font-size:15px}
+ #wk .mm .rt button[aria-pressed=true]{background:#F3EEE5;color:#14120F}
+}
+@media (max-width:600px){
+ #wk .wkbar{left:10px!important;right:10px!important;padding:10px!important;gap:6px 8px!important;border-radius:18px!important}
+ #wk .wkbar .u{font-size:15px} #wk .wkbar .m{font-size:13px;flex:1 1 60%} #wk .wkbar .pr{font-size:13px} #wk .wkbar .sp{display:none}
+ #wk .wkbar #wk-info,#wk .wkbar #wk-view,#wk .wkbar #wk-req{flex:1 1 28%;min-width:0;text-overflow:clip!important;min-height:44px!important;height:44px;padding:0 8px!important;font-size:12px!important;letter-spacing:.02em!important;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #wk .wkbar #wk-view > :not(span),#wk .wkbar #wk-req > :not(span),#wk .wkbar .cta svg{display:none!important}
+ #wk .top2 .cap h3{font-size:26px!important} #wk .top2 .cap .eye{font-size:11px!important}
+}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -1865,7 +1887,7 @@ function openView(u){ const side=u.p.r===0?'a':'b'; let f=Math.min(4,u.f); let k
   $('#bf-360').onclick=()=>openWalk3D(u,TOUR_URL,'balcony'); load(); }
 
 /* ================= KIOSK LAYER: modes, idle, leads, walk viewer, project details ================= */
-Object.assign(S2.en,{partFloor:"part floor",elevSchem:"schematic from the developer's floor data",amenListT:"Eight places to use every day",pj_hotelRooms:"Hotel rooms",vfSlow:"The film is still loading. Explore ALAIA now?",back:"Back",sheetMore:"Show more",sheetLess:"Show less",crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
+Object.assign(S2.en,{wkInfoS:"Room info",wkViewS:"View",reqS:"Request",partFloor:"part floor",elevSchem:"schematic from the developer's floor data",amenListT:"Eight places to use every day",pj_hotelRooms:"Hotel rooms",vfSlow:"The film is still loading. Explore ALAIA now?",back:"Back",sheetMore:"Show more",sheetLess:"Show less",crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
  smLeadsSrv:"requests received on the server",smLeadsPend:"waiting on this device to sync",lm_sales:"sales",'lm_self-serve':"self-serve",close:"Close",
  crm_not_configured:"Engaz is not connected yet: requests are stored on the ALAIA server and listed here. Connecting needs Engaz API documentation and credentials.",crm_configured:"Engaz connection configured.",
  reqPendT:"Saved on this screen",reqPendP:"The connection is down, so your request is saved here and will be sent automatically when it returns. A sales advisor can also help you right away.",
@@ -1881,7 +1903,7 @@ Object.assign(S2.en,{partFloor:"part floor",elevSchem:"schematic from the develo
  pj_eye:"Project details",pj_t:"ALAIA, North Coast",pj_p:"Thirteen low-rise residential towers in four rows around three crystal lagoons, with a boutique hotel and a retail promenade on the coastal-road front.",
  pj_loc:"Location",pj_tw:"Towers",pj_homes:"Homes",pj_lag:"Lagoons",pj_types:"Tower types",pj_mix:"Home types",pj_svc:"Hotel & retail",pj_am:"Amenities",pj_del:"Delivery stages",pj_land:"Land area",
  pj_delP:"Delivery stages and dates have not been issued yet.",pj_units:"Homes",pj_qty:"Towers",pj_h:"Height",pj_ty:"Type",pj_ids:"Tower numbers",pj_map:"Open in Google Maps"});
-Object.assign(S2.ar,{partFloor:"دور جزئي",elevSchem:"مخطط مبسّط من بيانات أدوار المطوّر",amenListT:"ثمانية أماكن للاستخدام اليومي",pj_hotelRooms:"غرفة فندقية",vfSlow:"الفيلم لسه بيحمّل. تحب تستكشف ألايا دلوقتي؟",back:"رجوع",sheetMore:"عرض المزيد",sheetLess:"عرض أقل",crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
+Object.assign(S2.ar,{wkInfoS:"عن الأوضة",wkViewS:"الفيو",reqS:"اطلب",partFloor:"دور جزئي",elevSchem:"مخطط مبسّط من بيانات أدوار المطوّر",amenListT:"ثمانية أماكن للاستخدام اليومي",pj_hotelRooms:"غرفة فندقية",vfSlow:"الفيلم لسه بيحمّل. تحب تستكشف ألايا دلوقتي؟",back:"رجوع",sheetMore:"عرض المزيد",sheetLess:"عرض أقل",crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
  smLeadsSrv:"طلب وصل للسيرفر",smLeadsPend:"مستني على الجهاز ده لحد ما يتبعت",lm_sales:"مبيعات",'lm_self-serve':"خدمة ذاتية",close:"إغلاق",
  crm_not_configured:"Engaz لسه مش متوصل: الطلبات بتتحفظ على سيرفر ألايا وبتظهر هنا. الربط محتاج مستندات الربط وبيانات الدخول من Engaz.",crm_configured:"اتظبط الربط مع Engaz.",
  reqPendT:"اتحفظ على الشاشة دي",reqPendP:"الاتصال مقطوع، فطلبك اتحفظ هنا وهيتبعت أوتوماتيك أول ما الاتصال يرجع. ومستشار المبيعات يقدر يساعدك دلوقتي.",
@@ -2041,7 +2063,7 @@ function openWalk(u,node,intro,kind){ kind=u?u.kind:(kind||'br1'); const hadWk=!
    <div class="icard" id="wk-ic"></div>
    <div class="wkbar">${u?`<span class="u" data-latin>${u.code}</span>`:''}<span class="m">${t(kind)} · ${nf(area)} ${t('sqm')}${u?` · ${t('v_'+u.view)}`:''}</span><span class="pr">${t('pricePend')}</span><span class="sp"></span>
     <button class="chip glass" id="wk-info">${t('wkInfo')}</button>${u?cta('wk-view',t('wkView'),'walk',true):''}${u?cta('wk-req',t('reqT'),'send'):''}</div>`;
-  if(hadWk){ el.style.transition='none'; el.classList.add('on'); requestAnimationFrame(()=>{ el.style.transition=''; }); } else requestAnimationFrame(()=>el.classList.add('on')); setTimeout(()=>{ const h=el.querySelector('.hint'); if(h) h.style.opacity=0; },6000);
+  if(hadWk){ el.style.transition='none'; el.classList.add('on'); requestAnimationFrame(()=>{ el.style.transition=''; }); } else requestAnimationFrame(()=>el.classList.add('on')); const shortL=()=>{ const ph=innerWidth<600; [['#wk-info','wkInfo','wkInfoS'],['#wk-view','wkView','wkViewS'],['#wk-req','reqT','reqS']].forEach(([q,lk,sk])=>{ const b2=el.querySelector(q); if(!b2) return; const sp=b2.querySelector('span')||b2; sp.textContent=t(ph?sk:lk); }); }; shortL(); addEventListener('resize',()=>{ if(el.isConnected) shortL(); }); const wbar=el.querySelector('.wkbar'); const setBH=()=>{ if(wbar&&wbar.isConnected) el.style.setProperty('--wkbarH',wbar.offsetHeight+'px'); }; setBH(); try{ new ResizeObserver(setBH).observe(wbar); }catch(e){} setTimeout(()=>{ const h=el.querySelector('.hint'); if(h) h.style.opacity=0; },6000);
   el.querySelector('#wk-x').onclick=()=>wkClose(); if(u){ el.querySelector('#wk-req').onclick=()=>openReq(u); el.querySelector('#wk-view').onclick=()=>openView(u); }
   el.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>openWalk(null,0,null,b.dataset.wk));
   const wif=el.querySelector('#wk-info'); if(wif) wif.onclick=()=>wkInfo();

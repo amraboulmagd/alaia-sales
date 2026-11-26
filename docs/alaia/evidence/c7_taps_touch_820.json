@@ -1,0 +1,13 @@
+{
+ "mode": "touch",
+ "W": 820,
+ "H": 1180,
+ "taps": 64,
+ "ok": 64,
+ "fail": [],
+ "errors": [
+  "console: Failed to load resource: the server responded with a status of 404 (File not found)",
+  "console: Failed to load resource: the server responded with a status of 404 (File not found)",
+  "console: Failed to load resource: the server responded with a status of 404 (File not found)"
+ ]
+}

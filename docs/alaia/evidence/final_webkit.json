@@ -1,0 +1,66 @@
+{
+ "launched": true,
+ "version": "27.2",
+ "out": [
+  {
+   "vp": "390x844",
+   "master": {
+    "covered": 0,
+    "offPrimary": 0,
+    "clipped": 0
+   },
+   "floor": {
+    "covered": 0,
+    "offPrimary": 0,
+    "clipped": 0
+   },
+   "unit": {
+    "covered": 0,
+    "offPrimary": 0,
+    "clipped": 0
+   },
+   "details": [],
+   "errors": []
+  },
+  {
+   "vp": "820x1180",
+   "master": {
+    "covered": 0,
+    "offPrimary": 0,
+    "clipped": 0
+   },
+   "floor": {
+    "covered": 0,
+    "offPrimary": 0,
+    "clipped": 0
+   },
+   "unit": {
+    "covered": 0,
+    "offPrimary": 0,
+    "clipped": 0
+   },
+   "details": [],
+   "errors": []
+  },
+  {
+   "vp": "1180x820",
+   "master": {
+    "covered": 0,
+    "offPrimary": 0,
+    "clipped": 0
+   },
+   "floor": {
+    "covered": 0,
+    "offPrimary": 0,
+    "clipped": 0
+   },
+   "unit": {
+    "covered": 0,
+    "offPrimary": 0,
+    "clipped": 0
+   },
+   "details": [],
+   "errors": []
+  }
+ ]
+}

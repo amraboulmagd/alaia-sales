@@ -1,0 +1,1 @@
+scenes 160 | covered 2 | offPrimary 4 | unscrollable 0 | undefined 0 | latin-in-AR 0 | clipped 0 | errors 0
