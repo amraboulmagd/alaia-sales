@@ -20,7 +20,7 @@
     return o;
   };
   // full 360 rooms (photoreal from the real 360 model renders); switched on when the files are in ai/walk/
-  var PANO_READY = /[?&]pano=1/.test(location.search);
+  var PANO_READY = !/[?&]pano=0/.test(location.search);
   var P360 = function(kind, rooms){ return {
     dollhouse: {src:'ai/res/'+kind+'_dh.jpg', source:MODEL+' of the '+kind+' unit plan'},
     walk: { nodes: rooms.map(function(n,i){ return {id:n, src:'ai/walk/r_'+kind+'_pano'+i+'.jpg', pano:true, source:MODEL+' 360 render of the '+kind+' unit (real windows, doors, view), finished photoreal with Higgsfield'}; }), forward:[], back:[] } }; };
