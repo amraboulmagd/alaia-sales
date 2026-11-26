@@ -1,0 +1,42 @@
+{
+ "swipe": {
+  "steps": 1,
+  "settleMs": 78,
+  "frames": {
+   "n": 510,
+   "p95": 6.2,
+   "max": 6.6,
+   "over100": 0
+  }
+ },
+ "rapid": {
+  "stepsTotal": 2,
+  "stillSpinningAfterwards": false
+ },
+ "autoRotate": false,
+ "enterByTap": {
+  "reachable": true,
+  "opened": true
+ },
+ "walkDrag": {
+  "moved": true,
+  "frames": {
+   "n": 214,
+   "p95": 6.4,
+   "max": 6.6,
+   "over100": 0
+  }
+ },
+ "walkPinchZoom": 2.599999999999999,
+ "walkForward": {
+  "from": 0,
+  "to": 1,
+  "label": "Kitchen"
+ },
+ "zoomButton": {
+  "before": 1,
+  "after": 1.4
+ },
+ "errors": [],
+ "pass": true
+}

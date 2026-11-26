@@ -2051,7 +2051,7 @@ function exitSales(reason){ const was=state.admin; state.admin=false; clearInter
   document.querySelectorAll('.modal,.ksheet,#salesbar').forEach(e=>e.remove()); api('/api/staff/logout',{method:'POST'}).catch(()=>{});
   modeUI(); if(was&&state.scene!=='intro') rerender(); if(reason==='expired') toast(t('admExpired')); }
 function staffStart(){ clearInterval(staffStart.iv); staffStart.last=Date.now();
-  staffStart.iv=setInterval(async()=>{ if(!state.admin) return clearInterval(staffStart.iv); try{ const r=await api('/api/staff/session?peek=1'); if(r.status===401) exitSales('expired'); }catch(e){} },30000); }
+  staffStart.iv=setInterval(async()=>{ if(!state.admin) return clearInterval(staffStart.iv); try{ const r=await api('/api/staff/session?peek=1'); if(r.status===401) exitSales('expired'); }catch(e){} },20000); }
 addEventListener('pointerdown',()=>{ if(state.admin&&Date.now()-(staffStart.last||0)>120000){ staffStart.last=Date.now(); api('/api/staff/session').then(r=>{ if(r.status===401) exitSales('expired'); }).catch(()=>{}); } },{capture:true,passive:true});
 Object.assign(HOOK.__alaiaK={},{openWalk,openProj,openReq,toAttract,wk,modeUI});
 
