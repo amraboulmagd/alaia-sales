@@ -912,6 +912,35 @@ body.sales .resf .dhbox{top:200px!important}
 #vfilm.done .vf-spin{opacity:0}
 @keyframes vfspin{to{transform:rotate(360deg)}}
 #vfilm .slowt{display:none} #vfilm.slow .slowt{display:block} #vfilm.slow .endt{display:none}
+
+/* C7: real renders, 200 ms crossfade, single lighting */
+.orb-im{transition:opacity .2s linear!important}
+.xf .orb-im.on{transition:opacity .2s linear!important;transform:none!important}
+.orbctl .orb-t,.orbctl .orb-sep:first-of-type{display:none!important}
+
+/* D11: no bleed between scenes */
+.frame{transition:opacity .45s var(--ease) .18s!important}
+.frame.dying{transition:opacity .18s linear 0s!important}
+
+/* D10: gallery tiles never blank */
+.gal-grid figure{background:linear-gradient(135deg,#2a2622,#1a1815)}
+.gal-grid img{opacity:0;transition:opacity .25s}
+.gal-grid img.ld{opacity:1}
+
+/* D13: amenity list + large pins */
+.amlist{display:flex;flex-direction:column;gap:6px}
+.amrow{display:flex;align-items:center;gap:14px;min-height:56px;padding:8px 14px;border-radius:12px;background:var(--faint);border:1px solid var(--line);text-align:start;color:inherit;font:inherit;cursor:pointer}
+.amrow b{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--ink,#1c1a17);color:#F3EEE5;font-size:15px;flex:0 0 34px}
+.amrow span{font-size:17px}
+@media (max-width:1599px){ .amrow{min-height:48px} }
+
+/* D8: schematic elevation per type */
+svg.elev .emass{fill:#EDE4D4;stroke:#C9BBA3;stroke-width:3}
+svg.elev .ewin{fill:#8E9A9B;opacity:.55}
+svg.elev .eground{fill:#C9BBA3}
+svg.elev .elab{fill:#F3EEE5;font:600 44px var(--f-b,sans-serif)}
+svg.elev .ecap{fill:#F3EEE5;opacity:.8;font:500 38px var(--f-b,sans-serif)}
+[data-theme=light] svg.elev .elab,[data-theme=light] svg.elev .ecap{fill:#2b2520}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -1334,7 +1363,7 @@ const LANDPHONE=()=>innerWidth<=980&&innerHeight<=500; const railW=()=>Math.min(
 const PAD=()=>mir(innerWidth>980?{t:200,r:420,b:110,l:40}:LANDPHONE()?{t:64,r:railW()+12,b:(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dockH'))||56)+8,l:12}:{t:130,r:14,b:sheetTop()+12,l:14});
 
 /* ---------------- scenes */
-function go(scene,o={}){ state._prevScene=state.scene; state.scene=scene; tip(null); if(scene!=='master'){document.body.classList.remove('orbit'); if(typeof m3dHide==='function') m3dHide(); document.querySelectorAll('.frame.orb').forEach(x=>{x.classList.add('dive');setTimeout(()=>x.remove(),1000);});} document.getElementById('orbcard')?.remove(); todUI(false); $('#scrim').style.opacity=['intro','tower','walk','amenview'].includes(scene)?1:.0;
+function go(scene,o={}){ state._prevScene=state.scene; state.scene=scene; if(scene!=='plan') state.amen=false; tip(null); if(scene!=='master'){document.body.classList.remove('orbit'); if(typeof m3dHide==='function') m3dHide(); document.querySelectorAll('.frame.orb').forEach(x=>{x.classList.add('dive');setTimeout(()=>x.remove(),1000);});} document.getElementById('orbcard')?.remove(); todUI(false); $('#scrim').style.opacity=['intro','tower','walk','amenview'].includes(scene)?1:.0;
   document.querySelectorAll('.istrip').forEach(e=>e.remove()); setPhoto(scene==='unit'?PHOTO[o.u.kind]:(PHOTO[scene]||null)); ({master:sMaster,plan:sPlan2D,tower:sTower,floor:sFloor,unit:sUnit,walk:sWalk,amenview:sAmen})[scene](o); crumbs(); dock(); }
 
 function towerPoly(b){ const c=Math.cos(b.a*Math.PI/180),s=Math.sin(b.a*Math.PI/180); return [[-1,-1],[1,-1],[1,1],[-1,1]].map(([sx,sy])=>{const x=sx*b.L/2,y=sy*b.D/2;return [(b.px+x*c-y*s)*2,(b.py+x*s+y*c)*2];}); }
@@ -1355,6 +1384,9 @@ function sPlan2D(){
   if(state.kind) f.querySelectorAll('.tw').forEach(el=>el.classList.add('av'));
   setTitle(state.amen?t('amenT'):t('mp_eye'),state.amen?t('amenT'):t('mp_t'),state.amen?t('amenP'):t('mp_p'),true);
   state.sel=null; panelMaster();
+  const pinFit=()=>{ const sv=f.querySelector('svg'); if(!sv||!f.isConnected) return; const r=sv.getBoundingClientRect(); if(!r.width) return; const k=2056/r.width; const S=(22*k)/24; f.querySelectorAll('.pin').forEach(g=>{ const a=AMEN.find(x=>x.n===+g.dataset.a); g.setAttribute('transform',`translate(${a.px*2},${a.py*2}) scale(${S.toFixed(3)})`); }); };
+  requestAnimationFrame(pinFit); setTimeout(pinFit,400); addEventListener('resize',pinFit);
+  if(state.amen) side(`<span class="eye">${t('amenT')}</span><h2>${t('amenListT')}</h2><div class="amlist">${AMEN.map(a=>`<button class="amrow" data-a="${a.n}"><b>${nf(a.n)}</b><span>${t('a'+a.n)}</span></button>`).join('')}</div>`,()=>{ $$('#sc .amrow').forEach(b=>b.onclick=()=>go('amenview',{n:+b.dataset.a})); });
 }
 function diveTo(f,b){ const w=parseFloat(f.style.width),h=parseFloat(f.style.height); const ox=b.px*2/2056*w, oy=b.py*2/2172*h;
   f.style.transformOrigin=`${ox}px ${oy}px`; f.style.transition='transform 1s cubic-bezier(.7,0,.2,1), opacity 1s'; f.style.transform='scale(3.2)'; f.style.opacity='0';
@@ -1365,7 +1397,7 @@ const ORB={"2": {"01": {"top": [0.4745, 0.7326], "base": [0.4753, 0.821], "d": 2
 let orbI=2, orbT=2;
 function hullOf(pts){ const P=pts.map(p=>[p[0]*1920,p[1]*1080]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]); const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
   const lo=[],up=[]; for(const q of P){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],q)<=0)lo.pop();lo.push(q);} for(const q of P.slice().reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],q)<=0)up.pop();up.push(q);} return lo.slice(0,-1).concat(up.slice(0,-1)); }
-function orbSrc(i,t){ return `ai/orb_${String(i).padStart(2,'0')}_${TODS[t]}${innerWidth<1000?'_s':''}.jpg`; }
+function orbSrc(i,t){ return `ai/real/orb_${String(i).padStart(2,'0')}${innerWidth<1000?'_s':''}.jpg`; }
 
 /* ---------------- real-time 3D masterplan (persistent iframe) */
 const M3D_OK=(()=>{try{const c=document.createElement('canvas');return !!(c.getContext('webgl2'));}catch(e){return false;}})() && !/[?&]no3d/.test(location.search);
@@ -1406,10 +1438,10 @@ function sMaster(){
   $$('.frame').forEach(x=>{x.classList.remove('on');setTimeout(()=>x.remove(),900);});
   const DBG=LOCALHOST&&/[?&]debug=1/.test(location.search);
   const el=document.createElement('div'); el.className='frame orb on'+(DBG?' dbg':'');
-  el.innerHTML=`<div class="orb-zoom"><div class="orb-imgs"></div><video class="orb-tv" muted playsinline preload="auto"></video><video class="orb-tv" muted playsinline preload="auto"></video><svg class="orb-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"><g class="hits"></g><g class="lead"></g><g class="pills"></g></svg></div><div class="orb-sh"></div><div class="orb-load" hidden></div>`;
+  el.innerHTML=`<div class="orb-zoom"><div class="orb-imgs"></div><svg class="orb-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"><g class="hits"></g><g class="lead"></g><g class="pills"></g></svg></div><div class="orb-sh"></div><div class="orb-load" hidden></div>`;
   stage.appendChild(el);
   const zw=el.querySelector('.orb-zoom'), imgs=el.querySelector('.orb-imgs'), svg=el.querySelector('.orb-svg'), gH=svg.querySelector('.hits'), gL=svg.querySelector('.lead'), gP=svg.querySelector('.pills');
-  const [vA,vB]=[...el.querySelectorAll('.orb-tv')];
+  const NOV={classList:{add(){},remove(){},contains(){return false}},load(){},pause(){},play(){return Promise.reject()},src:'',readyState:0}; const vA=NOV, vB=NOV;
   const pad=n=>String(n).padStart(2,'0'); const wrap=i=>((i%ORBN)+ORBN)%ORBN;
   const clip=(i,dir)=>dir>0?`ai/oc/f_${pad(i)}.mp4`:`ai/oc/r_${pad(wrap(i-1))}.mp4`;
   const cache={};
@@ -1418,14 +1450,14 @@ function sMaster(){
   const Z={s:1,x:0,y:0}; const applyZ=()=>{ zw.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.s})`; el.classList.toggle('zoomed',Z.s>1.02); };
   const clampZ=()=>{ const r=el.getBoundingClientRect(); const mx=(Z.s-1)*r.width/2, my=(Z.s-1)*r.height/2; Z.x=Math.max(-mx,Math.min(mx,Z.x)); Z.y=Math.max(-my,Math.min(my,Z.y)); };
   let busy=false, queue=0;
-  const prime=()=>{ if(!PHONE_UI()){ vA.src=clip(orbI,1); vB.src=clip(orbI,-1); vA.load(); vB.load(); } [1,-1,2,-2].forEach(d=>still(wrap(orbI+d),orbT)); };
+  const prime=()=>{ [1,-1,2,-2].forEach(d=>still(wrap(orbI+d),orbT)); };
   const show=()=>{ const im=still(orbI,orbT); const on=()=>{ imgs.querySelectorAll('.orb-im').forEach(x=>x.classList.toggle('on',x===im)); }; if(im.complete) on(); else im.onload=on; draw(); el.querySelector('.orb-dial i')?.style.setProperty('--k',orbI); const cc=el.querySelector('.orbctl'); if(cc&&cc.scrollWidth>cc.clientWidth+2){ const pr=cc.querySelector('.orb-t[aria-pressed="true"]'); if(pr) cc.scrollLeft=pr.offsetLeft+pr.offsetWidth/2-cc.clientWidth/2; } };
-  const step=dir=>{ if(busy){ if(!PHONE_UI()) queue=Math.max(-4,Math.min(4,queue+dir)); return; } busy=true; tip(null); $('#orbcard')?.remove(); svg.classList.add('hide');
+  const step=dir=>{ imgs.style.transition='transform .2s ease'; imgs.style.transform=''; if(busy){ if(!PHONE_UI()) queue=Math.max(-4,Math.min(4,queue+dir)); return; } busy=true; tip(null); $('#orbcard')?.remove(); svg.classList.add('hide');
     const to=wrap(orbI+dir), rate=1+Math.min(1.4,Math.abs(queue)*0.5);
     const fin=()=>{ orbI=to; show(); requestAnimationFrame(()=>{ vA.classList.remove('on'); vB.classList.remove('on'); }); busy=false; if(queue){ const d=Math.sign(queue); queue-=d; step(d); } else { svg.classList.remove('hide'); prime(); } };
     const tgt=still(to,orbT);
-    if(orbT!==TODS.indexOf('pm')||PHONE_UI()){ // other times of day: still-to-still crossfade (no video for these lights)
-      imgs.classList.add('xf'); imgs.style.setProperty('--dx',dir>0?'-1.5%':'1.5%'); setTimeout(()=>{ imgs.classList.remove('xf'); fin(); },380); return; }
+    if(true){ // other times of day: still-to-still crossfade (no video for these lights)
+      imgs.classList.add('xf'); imgs.style.setProperty('--dx',dir>0?'-1.5%':'1.5%'); setTimeout(()=>{ imgs.classList.remove('xf'); fin(); },200); return; }
     const v=dir>0?vA:vB; v.playbackRate=rate; v.currentTime=0;
     const go2=()=>{ v.classList.add('on'); let done=false; const end=()=>{ if(done) return; done=true; v.onended=null; fin(); };
       v.onended=end; v.ontimeupdate=()=>{ if(v.duration&&v.currentTime>=v.duration-0.05) end(); }; v.play().catch(end); setTimeout(end,4000/rate); };
@@ -1438,11 +1470,18 @@ function sMaster(){
     const ctm=svg.getScreenCTM(); const inv=ctm?ctm.inverse():null; const zones=[];
     if(inv) document.querySelectorAll('.orbinfo,.orbctl,header,#dock,#crumbs').forEach(z=>{ const q=z.getBoundingClientRect(); if(!q.width||!q.height) return; const pt=svg.createSVGPoint(); pt.x=q.left-8; pt.y=q.top-8; const a=pt.matrixTransform(inv); pt.x=q.right+8; pt.y=q.bottom+8; const c=pt.matrixTransform(inv); zones.push([a.x,a.y,c.x,c.y]); });
     const inZ=(x,y)=>zones.some(z=>x+PW/2>z[0]&&x-PW/2<z[2]&&y+PH/2>z[1]&&y-PH/2<z[3]);
-    const placed=[]; const out=[]; const lead=[];
+    const placed=[]; const out=[]; const lead=[]; const PL=[];
     let VR=[0,0,1920,1080]; if(inv){ const pt=svg.createSVGPoint(); pt.x=0; pt.y=0; const a=pt.matrixTransform(inv); pt.x=innerWidth; pt.y=innerHeight; const c=pt.matrixTransform(inv); VR=[a.x,a.y,c.x,c.y]; }
-    [...fr].reverse().forEach(([id,v])=>{ const ax=v.top[0]*1920, ay=v.top[1]*1080; if(ax<VR[0]+8||ax>VR[2]-8||ay<VR[1]+8||ay>VR[3]-8) return; let px=ax, py=ay-PH*0.9; const ok=(x,y)=>x-PW/2>VR[0]+4&&x+PW/2<VR[2]-4&&y-PH/2>VR[1]+4&&y+PH/2<VR[3]-4&&!inZ(x,y)&&placed.every(p=>Math.abs(p[0]-x)>Math.max(PW,HMIN)*1.06||Math.abs(p[1]-y)>Math.max(PH,HMIN)*1.06);
-      const tries=[[0,0],[0,-1],[1,0],[-1,0],[1,-1],[-1,-1],[0,-2],[1.1,-2],[-1.1,-2],[0,1.4],[1.1,1.4],[-1.1,1.4],[2.2,0],[-2.2,0],[0,-3],[2.2,1.4],[2.2,-1.4],[0,2.6],[3.3,0],[3.3,1.4]]; let best=null; for(const [tx,ty] of tries){ const x=ax+tx*PW*1.08, y=py+ty*PH*1.22; if(ok(x,y)){ best=[x,y]; break; } } if(!best){ outer: for(let r=1;r<=8;r++){ for(let k=0;k<16;k++){ const an=k/16*Math.PI*2; const x=ax+Math.cos(an)*r*PW*0.8, y=py+Math.sin(an)*r*PH*1.1; if(x>PW&&x<1920-PW&&y>PH&&y<1080-PH&&ok(x,y)){ best=[x,y]; break outer; } } } } if(!best){ if(inZ(px,py)||placed.some(p=>Math.abs(p[0]-px)<Math.max(PW,HMIN)&&Math.abs(p[1]-py)<Math.max(PH,HMIN))) return; best=[px,py]; } placed.push(best);
+    [...fr].reverse().forEach(([id,v])=>{ let ax=v.top[0]*1920, ay=v.top[1]*1080; if(ax<VR[0]+8||ax>VR[2]-8||ay<VR[1]+8||ay>VR[3]-8){ const hc=v.hull.reduce((m,q)=>[m[0]+q[0]/v.hull.length,m[1]+q[1]/v.hull.length],[0,0]); const hx=hc[0]*1920, hy=hc[1]*1080; if(hx<VR[0]||hx>VR[2]||hy<VR[1]||hy>VR[3]) return; const mg=Math.max(PW,HMIN)*0.6; ax=Math.max(VR[0]+mg,Math.min(VR[2]-mg,ax)); ay=Math.max(VR[1]+mg*1.6,Math.min(VR[3]-mg,ay)); } let px=ax, py=ay-PH*0.9; const ok=(x,y)=>x-PW/2>VR[0]+4&&x+PW/2<VR[2]-4&&y-PH/2>VR[1]+4&&y+PH/2<VR[3]-4&&!inZ(x,y)&&placed.every(p=>Math.abs(p[0]-x)>Math.max(PW,HMIN)*1.06||Math.abs(p[1]-y)>Math.max(PH,HMIN)*1.06);
+      const tries=[[0,0],[0,-1],[1,0],[-1,0],[1,-1],[-1,-1],[0,-2],[1.1,-2],[-1.1,-2],[0,1.4],[1.1,1.4],[-1.1,1.4],[2.2,0],[-2.2,0],[0,-3],[2.2,1.4],[2.2,-1.4],[0,2.6],[3.3,0],[3.3,1.4]]; let best=null; for(const [tx,ty] of tries){ const x=ax+tx*PW*1.08, y=py+ty*PH*1.22; if(ok(x,y)){ best=[x,y]; break; } } if(!best){ outer: for(let r=1;r<=8;r++){ for(let k=0;k<16;k++){ const an=k/16*Math.PI*2; const x=ax+Math.cos(an)*r*PW*0.8, y=py+Math.sin(an)*r*PH*1.1; if(x>PW&&x<1920-PW&&y>PH&&y<1080-PH&&ok(x,y)){ best=[x,y]; break outer; } } } } if(!best){ outer2: for(let r=1;r<=14;r++){ for(let k=0;k<24;k++){ const an=k/24*Math.PI*2; const x=ax+Math.cos(an)*r*Math.max(PW,HMIN)*0.7, y=py+Math.sin(an)*r*Math.max(PH,HMIN)*0.9; const free=x-PW/2>VR[0]+4&&x+PW/2<VR[2]-4&&y-PH/2>VR[1]+4&&y+PH/2<VR[3]-4&&placed.every(p=>Math.abs(p[0]-x)>Math.max(PW,HMIN)*1.06||Math.abs(p[1]-y)>Math.max(PH,HMIN)*1.06); if(free){ best=[x,y]; break outer2; } } } } if(!best) best=[px,py]; placed.push(best); best._id=id; best._a=[ax,ay];
+      PL.push({id,ax,ay,x:best[0],y:best[1],ref:best}); return;
       const b=BLD.find(x=>x.id===id), a=av(b); if(Math.hypot(best[0]-ax,best[1]-(ay-PH*0.9))>4) lead.push(`<line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${best[0].toFixed(1)}" y2="${(best[1]+PH/2).toFixed(1)}"/><circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="${(4/s).toFixed(1)}"/>`);
+      const HH=Math.max(PH,(innerWidth>=1600?56:44)/s), HW=Math.max(PW,HH); out.push(`<g class="pl${state.kind&&!a?' dim':''}" data-b="${id}" transform="translate(${best[0].toFixed(1)},${best[1].toFixed(1)})"><rect class="hit" x="${(-HW/2).toFixed(1)}" y="${(-HH/2).toFixed(1)}" width="${HW.toFixed(1)}" height="${HH.toFixed(1)}"/><rect x="${(-PW/2).toFixed(1)}" y="${(-PH/2).toFixed(1)}" width="${PW.toFixed(1)}" height="${PH.toFixed(1)}" rx="${(PH/2).toFixed(1)}"/><text text-anchor="middle" y="${(FS*0.36).toFixed(1)}" style="font-size:${FS.toFixed(1)}px">${dg(id)}</text><circle cx="${(PW*0.3).toFixed(1)}" cy="0" r="${(5/s).toFixed(1)}" class="${a?'ok':'no'}"/></g>`); });
+    const cross=(a,b)=>{ const o=(p,q,r)=>Math.sign((q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0])); const A=[a.ax,a.ay],B=[a.x,a.y+PH/2],C=[b.ax,b.ay],D=[b.x,b.y+PH/2]; return o(A,B,C)!==o(A,B,D)&&o(C,D,A)!==o(C,D,B); };
+    const disp=q=>Math.hypot(q.x-q.ax,q.y-(q.ay-PH*0.9))>4;
+    for(let it=0;it<40;it++){ let sw=false; for(let i=0;i<PL.length;i++) for(let j=i+1;j<PL.length;j++){ const a=PL[i],b=PL[j]; if((disp(a)||disp(b))&&cross(a,b)){ [a.x,b.x]=[b.x,a.x]; [a.y,b.y]=[b.y,a.y]; sw=true; } } if(!sw) break; }
+    PL.forEach(q=>{ const id=q.id, ax=q.ax, ay=q.ay; const best=[q.x,q.y]; const b=BLD.find(x=>x.id===id), a=av(b);
+      if(disp(q)) lead.push(`<line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${best[0].toFixed(1)}" y2="${(best[1]+PH/2).toFixed(1)}"/><circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="${(4/s).toFixed(1)}"/>`);
       const HH=Math.max(PH,(innerWidth>=1600?56:44)/s), HW=Math.max(PW,HH); out.push(`<g class="pl${state.kind&&!a?' dim':''}" data-b="${id}" transform="translate(${best[0].toFixed(1)},${best[1].toFixed(1)})"><rect class="hit" x="${(-HW/2).toFixed(1)}" y="${(-HH/2).toFixed(1)}" width="${HW.toFixed(1)}" height="${HH.toFixed(1)}"/><rect x="${(-PW/2).toFixed(1)}" y="${(-PH/2).toFixed(1)}" width="${PW.toFixed(1)}" height="${PH.toFixed(1)}" rx="${(PH/2).toFixed(1)}"/><text text-anchor="middle" y="${(FS*0.36).toFixed(1)}" style="font-size:${FS.toFixed(1)}px">${dg(id)}</text><circle cx="${(PW*0.3).toFixed(1)}" cy="0" r="${(5/s).toFixed(1)}" class="${a?'ok':'no'}"/></g>`); });
     gL.innerHTML=lead.join(''); gP.innerHTML=out.join('');
     if(DBG){ gP.insertAdjacentHTML('beforeend',fr.map(([id,v])=>{ const c=hullOf(v.hull).reduce((m,p)=>[m[0]+p[0],m[1]+p[1]],[0,0]).map(n=>n/hullOf(v.hull).length); return `<text class="dbgl" x="${c[0].toFixed(0)}" y="${c[1].toFixed(0)}">${id}</text>`; }).join('')+`<text class="dbgl" x="40" y="1040">angle ${orbI} · ${TODS[orbT]}</text>`); }
@@ -1458,9 +1497,9 @@ function sMaster(){
     if(!g0) return; if(Math.hypot(e.clientX-g0.x,e.clientY-g0.y)>8){ if(!moved) svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press')); moved=true; }
     const now=performance.now(); g0.v=(e.clientX-g0.lx)/Math.max(1,now-g0.lt); g0.lx=e.clientX; g0.lt=now;
     if(Z.s>1.02){ Z.x+=dx; Z.y+=dy; clampZ(); applyZ(); return; }
-    acc+=dx; if(PHONE_UI()){ if(!g0.stepped&&Math.abs(acc)>=Math.max(60,innerWidth*0.22)){ g0.stepped=true; step(acc>0?-1:1); } return; } const th=Math.max(90,innerWidth/14); while(Math.abs(acc)>=th){ const d=acc>0?-1:1; acc+=d*th; step(d); } });
+    acc+=dx; if(Z.s<=1.02&&!busy){ imgs.style.transition='none'; imgs.style.transform=`translateX(${Math.max(-60,Math.min(60,acc*0.25)).toFixed(1)}px)`; } if(PHONE_UI()){ if(!g0.stepped&&Math.abs(acc)>=Math.max(60,innerWidth*0.22)){ g0.stepped=true; step(acc>0?-1:1); } return; } const th=Math.max(90,innerWidth/14); while(Math.abs(acc)>=th){ const d=acc>0?-1:1; acc+=d*th; step(d); } });
   const up=e=>{ if(!P.has(e.pointerId)) return; P.delete(e.pointerId); if(P.size<2) pinch0=null; if(P.size){ if(g0) g0.multi=true; return; }
-    svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press'));
+    svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press')); imgs.style.transition='transform .25s ease'; imgs.style.transform='';
     if(!g0) return; const g=g0; g0=null;
     // BUG-001: pointer capture retargets pointerup to the frame, so resolve the tower from the
     // pointer-down position and confirm it at the release point; cancelled / multi-touch / moved gestures never select.
@@ -1521,11 +1560,17 @@ function panelTowerPreview(b){
 }
 function sTower({b}){
   state.b=b;state.f=null;state.u=null;
-  const W=3168,H=1344; const L=b.levels; const YB=[1250,1080,904,730,550,380]; const bands=Array.from({length:L},(_,f)=>[[124,YB[f]],[3044,YB[f]],[3044,YB[f+1]],[124,YB[f+1]]]);
+  const W=3168,H=1344; const L=b.levels; const TY=TYPES[b.ty]||{}; const hasPart=!!TY.partMix&&L>TY.full;
+  // schematic elevation from the developer's floor data (no photo): equal storeys, partial top floor at its real share of units
+  const LH=Math.min(220,(1200-120)/Math.max(L,5)), X0=300, X1=2868, Y0=1240; const sum=a=>a.reduce((x,y)=>x+y,0);
+  const partR=hasPart?Math.max(.25,Math.min(1,sum(TY.partMix)/sum(TY.fullMix))):1;
+  const bands=Array.from({length:L},(_,f)=>{ const y0=Y0-f*LH, y1=y0-LH; const part=hasPart&&f===L-1; const w=(X1-X0)*(part?partR:1), xa=(X0+X1)/2-w/2, xb=xa+w; return [[xa,y0],[xb,y0],[xb,y1],[xa,y1]]; });
+  const winRow=(bd)=>{ const n=Math.round((bd[1][0]-bd[0][0])/150); let o=''; for(let k=0;k<n;k++){ const x=bd[0][0]+40+k*((bd[1][0]-bd[0][0]-80)/Math.max(1,n-1))-28; o+=`<rect class="ewin" x="${x.toFixed(0)}" y="${(bd[2][1]+LH*.28).toFixed(0)}" width="56" height="${(LH*.46).toFixed(0)}"/>`; } return o; };
+  const elevSvg=`<rect class="eground" x="160" y="${Y0}" width="2848" height="14"/>${bands.map((bd,f)=>`<rect class="emass" x="${bd[0][0]}" y="${bd[2][1]}" width="${bd[1][0]-bd[0][0]}" height="${LH}"/>${winRow(bd)}<text class="elab" x="${bd[0][0]-36}" y="${bd[0][1]-LH/2+16}" text-anchor="end">${f===0?'G':dg(f)}${hasPart&&f===L-1?' · '+t('partFloor'):''}</text>`).join('')}<text class="ecap" x="${W/2}" y="${H-24}" text-anchor="middle">${t('type')} ${b.ty} · ${(TY.h||{})[lang]||''} · ${t('elevSchem')}</text>`;
   const night=document.documentElement.dataset.theme!=='light';
-  const svg=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${bands.map((bd,f)=>`<polygon class="band" data-f="${f}" points="${bd.map(p=>p.join(',')).join(' ')}"/>`).join('')}
+  const svg=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" class="elev">${elevSvg}${bands.map((bd,f)=>`<polygon class="band" data-f="${f}" points="${bd.map(p=>p.join(',')).join(' ')}"/>`).join('')}
    ${bands.map((bd,f)=>`<line class="bandline" x1="${bd[0][0]}" y1="${bd[0][1]}" x2="${bd[1][0]}" y2="${bd[1][1]}"/>`).join('')}</svg>`;
-  const EI=night?'assets/E_night.jpg':'assets/E_day.jpg'; const f=newFrame({img:EI,blur:EI,w:W,h:H,mode:'contain',pad:()=>mir(innerWidth>980?{t:120,r:440,b:150,l:40}:{t:150,r:14,b:innerHeight*.45,l:14}),kb:false,svg}); setPhoto(TWIMG.includes(b.id)?`ai/tw_${b.id}.jpg`:EI); PBcur&&PBcur.classList.add('bl');
+  const EI='ai/real/orb_00_s.jpg'; const f=newFrame({blur:EI,w:W,h:H,mode:'contain',pad:()=>mir(innerWidth>980?{t:120,r:440,b:150,l:40}:{t:150,r:14,b:innerHeight*.45,l:14}),kb:false,svg}); setPhoto(EI); PBcur&&PBcur.classList.add('bl');
   const hl=fl=>{f.querySelectorAll('.band').forEach(el=>el.classList.toggle('hl',+el.dataset.f===fl));$$('.fl').forEach(el=>el.classList.toggle('hl',+el.dataset.f===fl));};
   f.querySelectorAll('.band').forEach(el=>{const fl=+el.dataset.f;const us=b.units.filter(u=>u.f===fl);
     el.onmouseenter=e=>{hl(fl);tip(`<b>${floorName(fl)}</b><span>${nf(us.filter(u=>u.st==='available').length)} ${t('avShort')} / ${nf(us.length)}</span>`,e);};
@@ -1551,7 +1596,7 @@ function sFloor({b,f}){
     if(b.single) svg.setAttribute('viewBox',`0 0 ${P.w} ${P.h+40}`);
     const byI=colorPlan(host,b,f,null);
     host.querySelectorAll('.u path').forEach(p=>{const u=byI[+p.dataset.i]; if(!u) return;
-      p.onmouseenter=e=>tip(`<b>${u.code}</b><span>${t(u.kind)} · ${nf(u.area)} ${t('sqm')}</span><span><i class="dot d-${u.st}"></i> ${t(u.st)}</span>`,e);
+      p.onmouseenter=null;
       p.onmousemove=e=>tip($('#tip').innerHTML,e); p.onmouseleave=()=>tip(null);
       p.onclick=()=>{ if(state.sel===u) go('unit',{u}); else {state.sel=u;colorPlan(host,b,f,u);panelUnitPreview(u);} };}); }).catch(()=>toast(t('planErr')));
   setTitle(`${t('building')} ${b.id} · ${t('flEye')}`,floorName(f),'',true);
@@ -1649,11 +1694,11 @@ function sWalk({u,kind,k0}){
   $$('[data-kind]').forEach(b=>b.onclick=()=>go('walk',{kind:b.dataset.kind})); if(u)$('#w-back').onclick=()=>go('unit',{u});
   show(); restart();
 }
-const AMVID={}; const AMST={1:'ai/S_am1_cafe.jpg',2:'ai/S_am2_kids.jpg',4:'ai/S_am4_family.jpg',5:'ai/S_am5_gym.jpg',6:'ai/S_am6_wellness.jpg',7:'ai/S_am7_cowork.jpg',8:'ai/S_am8_sundecks.jpg'};
+const AMVID={}; const AMST={1:'ai/real/am1.jpg',2:'ai/real/am2.jpg',3:'ai/real/am3.jpg',4:'ai/real/am4.jpg',5:'ai/real/am5.jpg',6:'ai/real/am6.jpg',7:'ai/real/am7.jpg',8:'ai/real/am8.jpg'};
 function sAmen({n}){
   const a=AMEN[n-1]; const vs=AMVID[n];
   if(vs){ const fr=newFrame({full:true,html:`<img class="amv" alt="" src="${IMG[a.img]}"><video class="amv" src="${vs}" autoplay muted loop playsinline preload="auto"></video>`}); const v=fr.querySelector('video'); v.onerror=()=>v.remove(); v.play&&v.play().catch(()=>{}); }
-  else newFrame({img:AMST[n]||IMG[a.img],w:AMST[n]?3168:1448,h:AMST[n]?1344:1086,mode:'cover',kb:true});
+  else newFrame({img:AMST[n]||IMG[a.img],w:AMST[n]?1137:1448,h:AMST[n]?410:1086,mode:'cover',kb:true});
   setTitle(`${t('amenT')} · 0${n}`,t('a'+n),t('a'+n+'d'));
   side(`<span class="eye">${t('amenT')}</span><div class="chips">${AMEN.map(x=>`<button class="chip" data-n="${x.n}" aria-pressed="${x===a}">0${x.n} · ${t('a'+x.n)}</button>`).join('')}</div>${cta('am-b',t('d_master'),'back',true)}`,()=>{
     $$('#sc .chip').forEach(c=>c.onclick=()=>go('amenview',{n:+c.dataset.n}));$('#am-b').onclick=()=>{state.amen=true;go('plan');};});
@@ -1720,11 +1765,11 @@ document.body.classList.add('intro');
 $('#enter').onclick=enter;
 Object.assign(IMG,{in_bed3:'ai/09_bedroom.jpg',in_bed4:'ai/08_bedroom_window.jpg',in_bed5:'ai/09_bedroom.jpg',cover:'ai/01_aerial_context.jpg',in_bed1:'ai/09_bedroom.jpg',in_bed2:'ai/08_bedroom_window.jpg',in_tv:'ai/11_living.jpg',in_tv2:'ai/11_living.jpg',in_kitchen:'ai/10_kitchen.jpg',in_kitchen2:'ai/10_kitchen.jpg',lagoon_lounge:'ai/03_lagoon_eye.jpg',lagoon_cafe:'ai/05_lagoon_eye_b.jpg',lagoon_cabana:'ai/04_lagoon_aerial.jpg'});
 /* ===== Real film (AI-finished renders of the real model, real site) + photo gallery ===== */
-Object.assign(S2.en,{dhHint:"Furnished plan, rendered from the ALAIA 3D model",resBack:"Floor plan",resNext:"Next room",resSkip:"Skip",enterT:"Enter the tower",floorsW:"floors",planView:"Site plan",all:"All homes",vt_am:"Sunrise",vt_noon:"Midday",vt_pm:"Sunset",vt_night:"Night",vt_real:"Rendered from this tower on the real site, at this floor height, with the real sun path. Finishes photoreal.",vt_rep:"Rendered from Tower 06 at the same floor height and orientation on the real site; your tower's view is similar, not identical.",vf_e9:"Lagoon sundecks",vf_t9:"Afternoons by the water",vf_e10:"Lagoon café",vf_t10:"Coffee on the sand",vf_e11:"Kids' club",vf_t11:"Room to play, steps from home",vf_e12:"Open-air gym",vf_t12:"Train under the palms",vf_e13:"Family time",vf_t13:"Long days by the lagoon",dimT:"Room dimensions",planNote:"Furnished plan supplied by the developer. Dimensions in metres.",d_bedliv:"Bedroom / living",d_bath:"Bathroom",d_bath1:"Bathroom 1",d_bath2:"Bathroom 2",d_bed1:"Bedroom 1",d_bed2:"Bedroom 2",d_kitdin:"Kitchen & dining",d_kitent:"Kitchen & entrance",viewT:"View from this home",bvSoon:"This view is being rendered on the real site — available in the next update.",bvCap:"Tower {t} · {s} side · rendered on the real site, real sun",bvA:"front",bvB:"rear",vf_e8:"Entrance B",vf_t8:"Two entrances, one for each wing",vf_e7:"International Coastal Road",vf_t7:"Direct frontage, minutes from the beach",insideT:"Inside the home",vf_e1:"El Hamam · International Coastal Road",vf_t1:"ALAIA, where it really is",vf_e2:"Three crystal lagoons",vf_t2:"Water at the heart of every block",vf_e3:"The lagoon edge",vf_t3:"Sand, palms and still water",vf_e4:"Golden hour",vf_t4:"Every evening on the water",vf_e5:"Entrance A",vf_t5:"Arrive under the timber canopy",vf_e6:"Your home",vf_t6:"Light oak, soft linen, real space",vfSound:"Sound",vfNote:"Visualisation from the architect's model, finished with AI. Final finishes may vary.",
- g_t:"The place",g_p:"Every image starts from the architect's model, placed on the real site at El Hamam, lit by the real sun, then finished photo-real.",g_all:"All",g_site:"Site & context",g_lag:"Lagoons",g_arch:"Architecture",g_home:"Inside the home",
+Object.assign(S2.en,{dhHint:"Furnished plan, rendered from the ALAIA 3D model",resBack:"Floor plan",resNext:"Next room",resSkip:"Skip",enterT:"Enter the tower",floorsW:"floors",planView:"Site plan",all:"All homes",vt_am:"Sunrise",vt_noon:"Midday",vt_pm:"Sunset",vt_night:"Night",vt_real:"Rendered from this tower on the real site, at this floor height, with the real sun path. Finishes photoreal.",vt_rep:"Rendered from Tower 06 at the same floor height and orientation on the real site; your tower's view is similar, not identical.",vf_e9:"Lagoon sundecks",vf_t9:"Afternoons by the water",vf_e10:"Lagoon café",vf_t10:"Coffee on the sand",vf_e11:"Kids' club",vf_t11:"Room to play, steps from home",vf_e12:"Open-air gym",vf_t12:"Train under the palms",vf_e13:"Family time",vf_t13:"Long days by the lagoon",dimT:"Room dimensions",planNote:"Furnished plan supplied by the developer. Dimensions in metres.",d_bedliv:"Bedroom / living",d_bath:"Bathroom",d_bath1:"Bathroom 1",d_bath2:"Bathroom 2",d_bed1:"Bedroom 1",d_bed2:"Bedroom 2",d_kitdin:"Kitchen & dining",d_kitent:"Kitchen & entrance",viewT:"View from this home",bvSoon:"This view is being rendered on the real site — available in the next update.",bvCap:"Tower {t} · {s} side · rendered on the real site, real sun",bvA:"front",bvB:"rear",vf_e8:"Entrance B",vf_t8:"Two entrances, one for each wing",vf_e7:"International Coastal Road",vf_t7:"Direct frontage, minutes from the beach",insideT:"Inside the home",vf_e1:"El Hammam · International Coastal Road",vf_t1:"ALAIA, where it really is",vf_e2:"Three crystal lagoons",vf_t2:"Water at the heart of every block",vf_e3:"The lagoon edge",vf_t3:"Sand, palms and still water",vf_e4:"Golden hour",vf_t4:"Every evening on the water",vf_e5:"Entrance A",vf_t5:"Arrive under the timber canopy",vf_e6:"Your home",vf_t6:"Light oak, soft linen, real space",vfSound:"Sound",vfNote:"Visualisation from the architect's model, finished with AI. Final finishes may vary.",
+ g_t:"The place",g_p:"Rendered directly from the architect's 3D model on the real site at El Hammam, with the real sun path.",galNote:"Renders of the 3D model, not photographs. Final finishes may vary.",g_all:"All",g_site:"Site & context",g_lag:"Lagoons",g_arch:"Architecture",g_home:"Inside the home",
  g1:"The site between the coastal road and the olive farms",g2:"Frontage on the International Coastal Road",g3:"The lagoon edge",g4:"Lagoons and palm gardens",g5:"Golden hour by the water",g6:"Entrance A",g7:"Entrance B",g8:"Bedroom and window",g9:"Bedroom",g10:"Kitchen and entry",g11:"Living room"});
 Object.assign(S2.ar,{dhHint:"المسقط المفروش، مُصوَّر من الموديل ثلاثي الأبعاد لألايا",resBack:"المسقط",resNext:"الغرفة التالية",resSkip:"تخطي",enterT:"ادخل البرج",floorsW:"أدوار",planView:"المخطط",all:"كل الوحدات",vt_am:"الشروق",vt_noon:"الضهر",vt_pm:"الغروب",vt_night:"بالليل",vt_real:"مترندر من البرج ده في المكان الحقيقي، على ارتفاع الدور ده ومسار الشمس الحقيقي.",vt_rep:"مترندر من برج ٠٦ على نفس ارتفاع الدور ونفس الاتجاه في المكان الحقيقي؛ الفيو من برجك قريب منه مش نفسه بالظبط.",vf_e9:"شيزلونجات اللاجون",vf_t9:"العصاري جنب المية",vf_e10:"كافيه اللاجون",vf_t10:"قهوتك على الرملة",vf_e11:"نادي الأطفال",vf_t11:"مكان يلعبوا فيه، خطوتين من البيت",vf_e12:"جيم مفتوح",vf_t12:"تمرين تحت النخل",vf_e13:"وقت العيلة",vf_t13:"أيام طويلة جنب اللاجون",dimT:"مقاسات الغرف",planNote:"مخطط مفروش من المطوّر. المقاسات بالمتر.",d_bedliv:"نوم / معيشة",d_bath:"الحمام",d_bath1:"حمام ١",d_bath2:"حمام ٢",d_bed1:"غرفة نوم ١",d_bed2:"غرفة نوم ٢",d_kitdin:"مطبخ وسفرة",d_kitent:"مطبخ ومدخل",viewT:"الفيو من الشقة دي",bvSoon:"الفيو ده بيترندر دلوقتي في المكان الحقيقي — هيبقى موجود في التحديث الجاي.",bvCap:"برج {t} · الواجهة {s} · مترندر في المكان الحقيقي وبالشمس الحقيقية",bvA:"الأمامية",bvB:"الخلفية",vf_e8:"المدخل B",vf_t8:"مدخلين، واحد لكل جناح",vf_e7:"الطريق الساحلي الدولي",vf_t7:"واجهة مباشرة على الطريق، دقايق من البحر",insideT:"جوه البيت",vf_e1:"الحمّام · الطريق الساحلي الدولي",vf_t1:"ألايا في مكانها الحقيقي",vf_e2:"ثلاث بحيرات كريستالية",vf_t2:"المية في قلب كل مجموعة",vf_e3:"حافة البحيرة",vf_t3:"رمل ونخل ومية هادية",vf_e4:"وقت الغروب",vf_t4:"كل ليلة على المية",vf_e5:"المدخل A",vf_t5:"وصول تحت المظلة الخشب",vf_e6:"بيتك",vf_t6:"بلوط فاتح، كتان ناعم، ومساحة حقيقية",vfSound:"الصوت",vfNote:"تصوّر مبني على موديل المعماري ومكمّل بالذكاء الاصطناعي. التشطيبات النهائية قد تختلف.",
- g_t:"المكان",g_p:"كل صورة بادئة من موديل المعماري، في مكان الأرض الحقيقي بالحمّام، وبالشمس الحقيقية، ومتكمّلة لتبقى زي الصورة الحقيقية.",g_all:"الكل",g_site:"الموقع وما حوله",g_lag:"البحيرات",g_arch:"المعمار",g_home:"جوه البيت",
+ g_t:"المكان",g_p:"مُصوَّرة مباشرة من الموديل ثلاثي الأبعاد للمعماري، في مكان الأرض الحقيقي بالحمّام، وبمسار الشمس الحقيقي.",galNote:"صور مُصوَّرة من الموديل ثلاثي الأبعاد، مش صور فوتوغرافية. التشطيبات النهائية قد تختلف.",g_all:"الكل",g_site:"الموقع وما حوله",g_lag:"البحيرات",g_arch:"المعمار",g_home:"جوه البيت",
  g1:"الأرض بين الطريق الساحلي ومزارع الزيتون",g2:"الواجهة على الطريق الساحلي الدولي",g3:"حافة البحيرة",g4:"البحيرات وحدائق النخل",g5:"الغروب جنب المية",g6:"المدخل A",g7:"المدخل B",g8:"غرفة النوم والشباك",g9:"غرفة النوم",g10:"المطبخ والمدخل",g11:"المعيشة"});
 const VF=[{v:'ai/v1_aerial.mp4',e:'vf_e1',t:'vf_t1'},{v:'ai/v8_road.mp4',e:'vf_e7',t:'vf_t7'},{v:'ai/v2_lagoon_glide.mp4',e:'vf_e2',t:'vf_t2'},{v:'ai/v3_lagoon_walk.mp4',e:'vf_e3',t:'vf_t3'},{v:'ai/v4_lagoon_slide.mp4',e:'vf_e4',t:'vf_t4'},{img:'ai/S_am8_sundecks.jpg',dur:5,e:'vf_e9',t:'vf_t9'},{img:'ai/S_am1_cafe.jpg',dur:5,e:'vf_e10',t:'vf_t10'},{img:'ai/S_am2_kids.jpg',dur:5,e:'vf_e11',t:'vf_t11'},{img:'ai/S_am5_gym.jpg',dur:5,e:'vf_e12',t:'vf_t12'},{v:'ai/v5_entrance.mp4',e:'vf_e5',t:'vf_t5'},{v:'ai/v7_entrance_B.mp4',e:'vf_e8',t:'vf_t8'},{v:'ai/v6_home.mp4',e:'vf_e6',t:'vf_t6'}];
 const GAL=[['01_aerial_context','site','g1'],['02_road_frontage','site','g2'],['04_lagoon_aerial','lag','g4'],['03_lagoon_eye','lag','g3'],['05_lagoon_eye_b','lag','g5'],['06_entrance_A','arch','g6'],['07_entrance_B','arch','g7'],['11_living','home','g11'],['09_bedroom','home','g9'],['10_kitchen','home','g10'],['08_bedroom_window','home','g8']];
@@ -1773,12 +1818,13 @@ function openBalcony(u){ const side=u.p.r===0?'a':'b'; const id=u.b.id; let lb=$
   lb.innerHTML=`<img src="ai/bv_T${id}_${side}.jpg" alt="" onerror="this.replaceWith(Object.assign(document.createElement('p'),{className:'lb-soon',textContent:t('bvSoon')}))"><div class="lb-cap"><span class="eye">${u.code} · ${floorName(u.f)}</span><h3>${t('bvCap').replace('{t}',id).replace('{s}',t(side==='a'?'bvA':'bvB'))}</h3></div><button class="iconbtn glass lb-x" aria-label="Close">${ICO.x}</button>`;
   lb.classList.add('on'); lb.querySelector('.lb-x').onclick=()=>lb.classList.remove('on'); lb.onpointerdown=lb.onpointerup=null; }
 /* gallery */
-function openGallery(cat){ cat=cat||''; let el=$('#gal'); if(!el){ el=document.createElement('div'); el.id='gal'; document.body.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); }
+function openGallery(cat){ cat=cat||''; if(!openGallery.warm){ openGallery.warm=GAL.map(g=>{ const i=new Image(); i.decoding='async'; i.src=`ai/${g[0]}_s.jpg`; return i; }); } let el=$('#gal'); if(!el){ el=document.createElement('div'); el.id='gal'; document.body.appendChild(el); requestAnimationFrame(()=>el.classList.add('on')); }
   const items=GAL.filter(g=>!cat||g[1]===cat);
   el.innerHTML=`<div class="gal-in"><header class="gal-h"><div><span class="eye">ALAIA</span><h2>${t('g_t')}</h2><p>${t('g_p')}</p></div><button class="iconbtn glass" id="gal-x" aria-label="Close">${ICO.x}</button></header>
    <div class="chips gal-f">${[['',t('g_all')],['site',t('g_site')],['lag',t('g_lag')],['arch',t('g_arch')],['home',t('g_home')]].map(([k,l])=>`<button class="chip" data-c="${k}" aria-pressed="${cat===k}">${l}</button>`).join('')}</div>
-   <div class="gal-grid">${items.map((g,k)=>`<figure data-k="${k}"><img loading="lazy" src="ai/${g[0]}_s.jpg" alt="${t(g[2])}"><figcaption>${t(g[2])}</figcaption></figure>`).join('')}</div>
-   <p class="vf-note">${t('vfNote')}</p></div>`;
+   <div class="gal-grid">${items.map((g,k)=>`<figure data-k="${k}"><img decoding="async" src="ai/${g[0]}_s.jpg" alt="${t(g[2])}"><figcaption>${t(g[2])}</figcaption></figure>`).join('')}</div>
+   <p class="vf-note">${t('galNote')}</p></div>`;
+  el.querySelectorAll('.gal-grid img').forEach(im=>{ const on=()=>im.classList.add('ld'); if(im.complete&&im.naturalWidth) on(); else { im.onload=on; im.onerror=on; } });
   $('#gal-x').onclick=()=>{el.classList.remove('on');setTimeout(()=>el.remove(),600);};
   el.querySelectorAll('.gal-f button').forEach(b=>b.onclick=()=>openGallery(b.dataset.c));
   el.querySelectorAll('figure').forEach(f=>f.onclick=()=>galLight(items,+f.dataset.k)); }
@@ -1819,7 +1865,7 @@ function openView(u){ const side=u.p.r===0?'a':'b'; let f=Math.min(4,u.f); let k
   $('#bf-360').onclick=()=>openWalk3D(u,TOUR_URL,'balcony'); load(); }
 
 /* ================= KIOSK LAYER: modes, idle, leads, walk viewer, project details ================= */
-Object.assign(S2.en,{vfSlow:"The film is still loading. Explore ALAIA now?",back:"Back",sheetMore:"Show more",sheetLess:"Show less",crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
+Object.assign(S2.en,{partFloor:"part floor",elevSchem:"schematic from the developer's floor data",amenListT:"Eight places to use every day",pj_hotelRooms:"Hotel rooms",vfSlow:"The film is still loading. Explore ALAIA now?",back:"Back",sheetMore:"Show more",sheetLess:"Show less",crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
  smLeadsSrv:"requests received on the server",smLeadsPend:"waiting on this device to sync",lm_sales:"sales",'lm_self-serve':"self-serve",close:"Close",
  crm_not_configured:"Engaz is not connected yet: requests are stored on the ALAIA server and listed here. Connecting needs Engaz API documentation and credentials.",crm_configured:"Engaz connection configured.",
  reqPendT:"Saved on this screen",reqPendP:"The connection is down, so your request is saved here and will be sent automatically when it returns. A sales advisor can also help you right away.",
@@ -1835,7 +1881,7 @@ Object.assign(S2.en,{vfSlow:"The film is still loading. Explore ALAIA now?",back
  pj_eye:"Project details",pj_t:"ALAIA, North Coast",pj_p:"Thirteen low-rise residential towers in four rows around three crystal lagoons, with a boutique hotel and a retail promenade on the coastal-road front.",
  pj_loc:"Location",pj_tw:"Towers",pj_homes:"Homes",pj_lag:"Lagoons",pj_types:"Tower types",pj_mix:"Home types",pj_svc:"Hotel & retail",pj_am:"Amenities",pj_del:"Delivery stages",pj_land:"Land area",
  pj_delP:"Delivery stages and dates have not been issued yet.",pj_units:"Homes",pj_qty:"Towers",pj_h:"Height",pj_ty:"Type",pj_ids:"Tower numbers",pj_map:"Open in Google Maps"});
-Object.assign(S2.ar,{vfSlow:"الفيلم لسه بيحمّل. تحب تستكشف ألايا دلوقتي؟",back:"رجوع",sheetMore:"عرض المزيد",sheetLess:"عرض أقل",crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
+Object.assign(S2.ar,{partFloor:"دور جزئي",elevSchem:"مخطط مبسّط من بيانات أدوار المطوّر",amenListT:"ثمانية أماكن للاستخدام اليومي",pj_hotelRooms:"غرفة فندقية",vfSlow:"الفيلم لسه بيحمّل. تحب تستكشف ألايا دلوقتي؟",back:"رجوع",sheetMore:"عرض المزيد",sheetLess:"عرض أقل",crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
  smLeadsSrv:"طلب وصل للسيرفر",smLeadsPend:"مستني على الجهاز ده لحد ما يتبعت",lm_sales:"مبيعات",'lm_self-serve':"خدمة ذاتية",close:"إغلاق",
  crm_not_configured:"Engaz لسه مش متوصل: الطلبات بتتحفظ على سيرفر ألايا وبتظهر هنا. الربط محتاج مستندات الربط وبيانات الدخول من Engaz.",crm_configured:"اتظبط الربط مع Engaz.",
  reqPendT:"اتحفظ على الشاشة دي",reqPendP:"الاتصال مقطوع، فطلبك اتحفظ هنا وهيتبعت أوتوماتيك أول ما الاتصال يرجع. ومستشار المبيعات يقدر يساعدك دلوقتي.",
@@ -1924,7 +1970,7 @@ setInterval(()=>{ if(state.scene==='intro'&&document.body.classList.contains('in
 
 /* ---------- dock: SALES removed from public nav; walk + project added */
 DOCK.length=0; DOCK.push(['master','map','d_master'],['towers','tower','d_towers'],['walk','home','d_walk'],['film','walk','d_film'],['gal','plan','d_gallery'],['amen','leaf','d_amen'],['proj','stack','d_proj']);
-dock=function(){ const act=k=>(k==='master'&&state.scene==='master'&&!state.amen)||(k==='amen'&&state.amen)||(k==='towers'&&state.scene==='tower')||(k==='walk'&&!!$('#wk'))||(k==='proj'&&!!$('#proj'));
+dock=function(){ const wkOn=!!$('#wk.on'), pj=!!$('#proj'); const act=k=>(k==='master'&&state.scene==='master'&&!wkOn&&!pj)||(k==='amen'&&state.amen&&state.scene==='plan'&&!wkOn&&!pj)||(k==='towers'&&['tower','floor','unit'].includes(state.scene)&&!wkOn&&!pj)||(k==='walk'&&wkOn)||(k==='proj'&&pj);
   $('#dock').innerHTML=DOCK.map(([k,i,l])=>`<button data-d="${k}" aria-pressed="${act(k)}">${ICO[i]}<span>${t(l)}</span></button>`).join('');
   $$('#dock button').forEach(b=>b.onclick=()=>{ const k=b.dataset.d; if(k!=='walk') wkClose(true); if(k!=='proj') $('#proj')?.remove();
     if(k==='master'){state.amen=false;go('master');} if(k==='amen'){state.amen=true;go('plan');} if(k==='towers')go('tower',{b:state.b||BLD.find(x=>x.feat)});
@@ -1937,7 +1983,7 @@ const _colorPlan=colorPlan; colorPlan=function(root,b,f,selU){ const byI=_colorP
 function planLabels(root,byI,selU){ const svg=root.querySelector('svg'); if(!svg) return; svg.querySelector('.ulab')?.remove();
   const ctm=svg.getScreenCTM(); const sc=ctm?Math.abs(ctm.a):1; const g=document.createElementNS('http://www.w3.org/2000/svg','g'); g.setAttribute('class','ulab');
   root.querySelectorAll('.u path').forEach(p=>{ const u=byI[+p.dataset.i]; if(!u||p.classList.contains('na')) return; let bb; try{ bb=p.getBBox(); }catch(e){ return; }
-    const fs=Math.max(14,Math.min(20,bb.width*sc/7))/sc, cx=bb.x+bb.width/2, cy=bb.y+bb.height/2; const num=u.code.split('-').pop();
+    const fs=Math.max(14,Math.min(20,bb.width*sc/7))/sc, cx=bb.x+bb.width/2, cy=bb.y+bb.height/2; const num=u.ent+'-'+u.code.split('-').pop();
     const gg=document.createElementNS('http://www.w3.org/2000/svg','g'); if(u===selU) gg.setAttribute('class','sel');
     const bw=Math.max(String(num).length*.62*fs*1.1,(String(u.area).length+3)*.55*fs)+fs*.9; gg.innerHTML=`<rect x="${cx-bw/2}" y="${cy-fs*1.45}" width="${bw}" height="${fs*2.9}" rx="${fs*.5}"/><text class="n" data-latin x="${cx}" y="${cy-fs*.62}" font-size="${fs*1.1}">${num}</text><text class="a" x="${cx}" y="${cy+fs*.7}" font-size="${fs}">${nf(u.area)} ${t('sqm')}</text>`; g.appendChild(gg); });
   svg.appendChild(g); }
@@ -1976,7 +2022,7 @@ const WDIM={st:{studio:'d_bedliv'},br1:{livkit:'r_living',bedroom:'r_bed'},br2:{
 const WHS={fwd:[.5,.64],back:[.24,.72],info:[.36,.4]};
 const wk={el:null,u:null,k:null,i:0,iw:2600,ih:1103,x:0,y:0,z:1,tx:0,ty:0,tz:1,vx:0,vy:0,raf:0,busy:false,pre:{}};
 function wkStop(){ cancelAnimationFrame(wk.raf); wk.raf=0; Object.values(wk.pre).forEach(v=>{try{v.pause();v.removeAttribute('src');v.load();}catch(e){}}); wk.pre={}; }
-function wkClose(now){ const el=$('#wk'); if(!el) return; wkStop(); wk.el=null; if(now){ el.remove(); } else { el.classList.remove('on'); setTimeout(()=>el.remove(),500); } setTimeout(()=>dock(),0); }
+function wkClose(now){ const el=$('#wk'); if(!el) return; wkStop(); wk.el=null; el.classList.remove('on'); if(now){ el.remove(); } else { setTimeout(()=>el.remove(),500); } setTimeout(()=>dock(),0); }
 function nearAmen(b){ return AMEN.map(a=>({a,d:Math.hypot(a.px-b.px,a.py-b.py)})).sort((p,q)=>p.d-q.d).slice(0,2).map(x=>t('a'+x.a.n)); }
 function wkSafe(){ const el=wk.el||document.querySelector('#wk'); const bar=el&&el.querySelector('.wkbar'), cap=el&&el.querySelector('.top2'), mm=el&&el.querySelector('.mm'); const br=bar?bar.getBoundingClientRect():{top:innerHeight}; const cr=cap?cap.getBoundingClientRect():{bottom:90};
   const mr=mm&&getComputedStyle(mm).display!=='none'?mm.getBoundingClientRect():null; return {l:44,r:innerWidth-44,t:cr.bottom+44,b:Math.max(cr.bottom+60,br.top-44),mm:mr&&mr.width?mr:null}; }
@@ -2073,7 +2119,7 @@ function openProj(){ $('#proj')?.remove(); wkClose(true);
   const el=document.createElement('div'); el.id='proj'; document.body.appendChild(el);
   el.innerHTML=`<button class="xb" id="pj-x" aria-label="close">${ICO.x}</button><div class="wrap">
    <header class="h"><div><span class="eye">${t('pj_eye')}</span><h2>${t('pj_t')}</h2></div></header>
-   <section class="w"><p>${t('pj_p')}</p><div class="nums"><div><b>${nf(towers)}</b><span>${t('pj_tw')}</span></div><div><b>${nf(homes)}</b><span>${t('pj_homes')}</span></div><div><b>${nf(3)}</b><span>${t('pj_lag')}</span></div><div><b>${nf(47)}</b><span>${t('hotel')}</span></div></div></section>
+   <section class="w"><p>${t('pj_p')}</p><div class="nums"><div><b>${nf(towers)}</b><span>${t('pj_tw')}</span></div><div><b>${nf(homes)}</b><span>${t('pj_homes')}</span></div><div><b>${nf(3)}</b><span>${t('pj_lag')}</span></div><div><b>${nf(47)}</b><span>${t('pj_hotelRooms')}</span></div></div></section>
    <section><h3>${t('pj_loc')}</h3><p>${t('locV')}</p><div class="kv"><span>${t('pj_land')}</span><b class="tbc">${t('tbc')}</b></div></section>
    <section><h3>${t('pj_mix')}</h3><div class="kv">${mix.map(([k,n])=>`<span>${t(k)} · ${nf(AREA[k])} ${t('sqm')}</span><b>${nf(n)}</b>`).join('')}</div></section>
    <section class="w"><h3>${t('pj_types')}</h3><div style="overflow-x:auto"><table><thead><tr><th>${t('pj_ty')}</th><th>${t('pj_qty')}</th><th>${t('pj_ids')}</th><th>${t('pj_h')}</th><th>${t('pj_units')} / ${t('building')}</th></tr></thead><tbody>

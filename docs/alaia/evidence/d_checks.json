@@ -1,0 +1,61 @@
+{
+ "tower02": {
+  "bands": 4,
+  "levels": 4,
+  "ty": "A",
+  "cap": "Type A · Ground + 2 + part of 3rd · schematic from the developer's floor data"
+ },
+ "tower04": {
+  "bands": 5,
+  "levels": 5,
+  "ty": "B",
+  "cap": "Type B · Ground + 3 + part of 4th · schematic from the developer's floor data"
+ },
+ "tower03": {
+  "bands": 5,
+  "levels": 5,
+  "ty": "C",
+  "cap": "Type C · Ground + 3 + part of 4th · schematic from the developer's floor data"
+ },
+ "tower11": {
+  "bands": 5,
+  "levels": 5,
+  "ty": "E",
+  "cap": "Type E · Ground + 4 · schematic from the developer's floor data"
+ },
+ "tower13": {
+  "bands": 4,
+  "levels": 4,
+  "ty": "D",
+  "cap": "Type D · Ground + 3 · schematic from the developer's floor data"
+ },
+ "floorLabels": [
+  "A-201",
+  "A-202",
+  "A-203",
+  "A-204",
+  "A-205",
+  "A-206"
+ ],
+ "amen": {
+  "rows": 8,
+  "pinPx": [
+   44,
+   44,
+   44
+  ],
+  "active": [
+   "amen"
+  ]
+ },
+ "activeOnTower": [
+  "towers"
+ ],
+ "activeOnFloor": [
+  "towers"
+ ],
+ "galleryBlankAfter300ms": 0,
+ "galleryLoaded": "11/11",
+ "hammam": false,
+ "errors": []
+}

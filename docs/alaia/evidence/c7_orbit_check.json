@@ -1,0 +1,50 @@
+[
+ {
+  "vp": "1920x1080",
+  "angles": 16,
+  "failingAngles": [],
+  "dragLatencyMs": 1,
+  "fps": {
+   "n": 1093,
+   "avgFps": 165,
+   "p95ms": 6.2
+  },
+  "errors": []
+ },
+ {
+  "vp": "1300x740",
+  "angles": 16,
+  "failingAngles": [],
+  "dragLatencyMs": 2,
+  "fps": {
+   "n": 1064,
+   "avgFps": 165,
+   "p95ms": 6.2
+  },
+  "errors": []
+ },
+ {
+  "vp": "820x1180",
+  "angles": 16,
+  "failingAngles": [],
+  "dragLatencyMs": 10,
+  "fps": {
+   "n": 1014,
+   "avgFps": 165,
+   "p95ms": 6.2
+  },
+  "errors": []
+ },
+ {
+  "vp": "390x844",
+  "angles": 16,
+  "failingAngles": [],
+  "dragLatencyMs": 11,
+  "fps": {
+   "n": 1014,
+   "avgFps": 165,
+   "p95ms": 6.2
+  },
+  "errors": []
+ }
+]
