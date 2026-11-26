@@ -1992,7 +1992,7 @@ dock=function(){ const wkOn=!!$('#wk.on'), pj=!!$('#proj'); const act=k=>(k==='m
   $('#dock').innerHTML=DOCK.map(([k,i,l])=>`<button data-d="${k}" aria-pressed="${act(k)}">${ICO[i]}<span>${t(l)}</span></button>`).join('');
   $$('#dock button').forEach(b=>b.onclick=()=>{ const k=b.dataset.d; if(k!=='walk') wkClose(true); if(k!=='proj') $('#proj')?.remove();
     if(k==='master'){state.amen=false;go('master');} if(k==='amen'){state.amen=true;go('plan');} if(k==='towers')go('tower',{b:state.b||BLD.find(x=>x.feat)});
-    if(k==='walk') openWalk(state.u||null,state.u?0:0,null,state.u?null:'br2'); if(k==='film')openFilm(); if(k==='gal')openGallery(); if(k==='proj')openProj(); }); };
+    if(k==='walk') openWalk(state.u||null,0,null,state.u?null:'br1'); if(k==='film')openFilm(); if(k==='gal')openGallery(); if(k==='proj')openProj(); }); };
 
 /* ---------- scene wrappers */
 const _goK=go; go=function(scene,o){ if(scene!=='walk') wkClose(true); $('#proj')?.remove(); $$('.ksheet').forEach(e=>e.remove()); kLoad(false); _goK(scene,o||{}); document.body.dataset.scene=scene; };
@@ -2044,7 +2044,7 @@ function wkClose(now){ const el=$('#wk'); if(!el) return; wkStop(); wk.el=null; 
 function nearAmen(b){ return AMEN.map(a=>({a,d:Math.hypot(a.px-b.px,a.py-b.py)})).sort((p,q)=>p.d-q.d).slice(0,2).map(x=>t('a'+x.a.n)); }
 function wkSafe(){ const el=wk.el||document.querySelector('#wk'); const bar=el&&el.querySelector('.wkbar'), cap=el&&el.querySelector('.top2'), mm=el&&el.querySelector('.mm'); const br=bar?bar.getBoundingClientRect():{top:innerHeight}; const cr=cap?cap.getBoundingClientRect():{bottom:90};
   const mr=mm&&getComputedStyle(mm).display!=='none'?mm.getBoundingClientRect():null; return {l:44,r:innerWidth-44,t:cr.bottom+44,b:Math.max(cr.bottom+60,br.top-44),mm:mr&&mr.width?mr:null}; }
-function openWalk(u,node,intro,kind){ kind=u?u.kind:(kind||'br2'); wkStop(); $('#wk')?.remove(); $('#proj')?.remove();
+function openWalk(u,node,intro,kind){ kind=u?u.kind:(kind||'br1'); wkStop(); $('#wk')?.remove(); $('#proj')?.remove();
   const map=window.ALAIA_VIDEOMAP?window.ALAIA_VIDEOMAP.lookup(kind,u&&u.b.id,u&&u.f):null; const it=map&&map.interior;
   Object.assign(wk,{u:u||null,k:kind,i:Math.max(0,Math.min((WN[kind]||[]).length-1,node||0)),z:1,tz:1,busy:false});
   const el=document.createElement('div'); el.id='wk'; wk.el=el; document.body.appendChild(el);
