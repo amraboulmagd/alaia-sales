@@ -821,6 +821,53 @@ body.sales .resf .dhbox{top:200px!important}
  .frame.fswipe .planbox{margin-right:12px}
  .side .sc{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))!important}
 }
+
+/* ===== phone/tablet pass 2: true bottom sheet, dock reserved, scroll rows with edge fades ===== */
+.shandle{display:none}
+@media (max-width:980px){
+ .side{height:38dvh!important;top:auto!important;bottom:var(--dockH,0px)!important;transition:height .35s var(--ease),transform .8s var(--ease),opacity .6s!important;border-radius:20px 20px 0 0!important}
+ .side.exp{height:calc(100dvh - var(--dockH,0px) - 84px)!important}
+ .shandle{display:flex;justify-content:center;align-items:center;width:100%;min-height:44px;flex:0 0 44px;background:transparent;border:0;cursor:grab;touch-action:none}
+ .shandle i{width:44px;height:5px;border-radius:3px;background:var(--line);opacity:.9}
+ .side .sc{padding-top:4px!important;padding-bottom:24px!important}
+ .dock{background:var(--bg2)!important;border-top:1px solid var(--line)!important;bottom:0!important;left:0!important;right:0!important;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))!important}
+ .dock,.orbinfo .chips,.orbctl{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);padding-inline:22px!important;scroll-padding-inline:22px}
+ .orbctl{bottom:calc(var(--dockH,60px) + 10px)!important}
+ #crumbs .cback{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+ #crumbs .cback svg{width:20px;height:20px}
+ #crumbs .cur{min-height:44px}
+}
+
+@media (max-width:980px){
+ .resf .dhbox,body.sales .resf .dhbox{top:calc(var(--hdrH,88px) + 8px)!important;bottom:calc(38dvh + var(--dockH,0px) + 8px)!important;gap:8px}
+ .resf .dhbox .illus{font-size:13px;padding:6px 10px;margin-top:4px}
+ .resf .dhbox .dhhint{font-size:13px!important}
+ .resf .dhbox #dh-in{min-height:48px!important}
+}
+
+/* tablet landscape / small desktop: the side rail ends above the dock so nothing in it sits under the nav */
+@media (min-width:981px) and (max-width:1599px){ .side{bottom:calc(var(--dockH,64px) + 34px)!important} }
+#crumbs.compact .cback{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;pointer-events:auto}
+#crumbs.compact .cback svg{width:20px;height:20px}
+#crumbs.compact .cur{pointer-events:auto}
+
+/* phones: compact one-line scene title so it never sits on the dollhouse / plan */
+@media (max-width:600px){
+ .title.tt h1{font-size:22px!important;line-height:1.2!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100vw - 32px)}
+ .title.tt .eye{font-size:11px!important}
+ .title.tt p{display:none!important}
+ .resf .dhbox,body.sales .resf .dhbox{top:150px!important}
+}
+
+@media (max-width:600px){
+ .dhs span{display:none!important}
+ .dhs{width:44px!important;height:44px!important;min-width:44px;min-height:44px;justify-content:center}
+ #intro h1{font-size:clamp(36px,13vw,72px)!important;letter-spacing:.16em!important;max-width:calc(100vw - 32px);overflow-wrap:anywhere}
+ #intro #i-p{max-width:calc(100vw - 40px)!important;font-size:15px!important}
+ #intro .in{padding-inline:20px!important;max-width:100vw;box-sizing:border-box}
+}
+#wk .mm{z-index:3}
+#wk .lay{z-index:4}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -973,6 +1020,8 @@ const S2={en:{resortL:"Resort · North Coast",themeD:"Night",themeL:"Day",i_eye:
   blocked:"مقفولة",admT:"تحكم المبيعات",admNote:"اسم العميل / ملاحظة (اختياري)",admEye:"فريق المبيعات",admLogin:"دخول المبيعات",admLoginP:"اكتب الرقم السري للمبيعات علشان تغيّر حالة الوحدات وتقفل أو تفتح أي وحدة.",admEnter:"دخول",admWrong:"الرقم السري غلط",admTitle:"التحكم في الوحدات",admLocal:"محفوظ على الجهاز ده. اربط قاعدة البيانات المشتركة علشان كل الشاشات تتزامن.",admLive:"مباشر — أي شاشة بتشوف التغيير فورًا.",admSearch:"ابحث بالكود مثلًا T06-A-2",admExport:"تصدير CSV",admImport:"استيراد CSV",admLogout:"قفل",admCode:"الكود",admStatus:"الحالة",admImported:"وحدة اتحدّثت",admEngaz:"Engaz لسه مش متوصل. حالات الوحدات محفوظة على سيرفر ألايا؛ استخدم التصدير والاستيراد مع شيت Engaz لحد ما Engaz يدّونا مستندات الربط وبيانات الدخول.",
   shareP:"انسخ وابعت على واتساب أو الإيميل.",copy:"انسخ الرسالة",copied:"اتنسخت",planErr:"تعذّر تحميل المسقط",demo:"نسخة تجريبية — الحالات توضيحية لحد الربط بالمبيعات."}};
 let lang='en'; const t=k=>S2[lang][k]??S[lang][k]??S2.en[k]??S.en[k]??k;
+const LOCALHOST=/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname); const PRODHOST=location.hostname==='alaia-sales.pages.dev'; const HOOK=PRODHOST?{}:window;
+const PHONE_UI=()=>innerWidth<1000||matchMedia('(pointer:coarse)').matches&&innerWidth<1300;
 const nf=(v,d=0)=>Number(v).toLocaleString(lang==='ar'?'ar-EG':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 const dg=s=>lang==='ar'?String(s).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]):String(s);
 
@@ -1054,7 +1103,7 @@ function newFrame(opts){ // {img,w,h,mode,pad,kb,svg,blur}
   const show=()=>{requestAnimationFrame(()=>f.classList.add('on')); if(cur&&cur!==f){const old=cur;old.classList.remove('on');old.classList.add('dying');old.style.pointerEvents='none';old.querySelectorAll('[id]').forEach(x=>x.removeAttribute('id'));setTimeout(()=>old.remove(),1200);} cur=f;};
   f._show=show; const im=f.querySelector(':scope>img'); if(f._rl){} else if(im&&!im.complete){im.onload=show;im.onerror=show;} else show();
   return f; }
-function place(f){ const o=f._o; if(o.full){Object.assign(f.style,{left:0,top:0,width:'100vw',height:'100vh'});return;} const r=frameRect(o.w,o.h,o.mode,o.pad&&o.pad()); Object.assign(f.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'}); f._r=r; }
+function place(f){ const o=f._o; if(!o) return; if(o.full){Object.assign(f.style,{left:0,top:0,width:'100vw',height:'100vh'});return;} const r=frameRect(o.w,o.h,o.mode,o.pad&&o.pad()); Object.assign(f.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'}); f._r=r; }
 addEventListener('resize',()=>{$$('.frame').forEach(place);});
 
 
@@ -1226,6 +1275,8 @@ function crumbs(){ const c=[[t('d_master'),()=>go('master')]];
   if(state.b&&['tower','floor','unit','walk'].includes(state.scene)) c.push([`${t('building')} ${state.b.id}`,()=>go('tower',{b:state.b})]);
   if(state.f!=null&&['floor','unit','walk'].includes(state.scene)) c.push([floorName(state.f),()=>go('floor',{b:state.b,f:state.f})]);
   if(state.u&&['unit','walk'].includes(state.scene)) c.push([state.u.code,()=>go('unit',{u:state.u})]);
+  const cEl=$('#crumbs'); cEl.classList.toggle('compact',false); if(c.length>1&&innerWidth>=600){ cEl.innerHTML=c.map((x,i)=>`<button class="${i===c.length-1?'cur':''}">${x[0]}</button>`).join('<i>/</i>'); if(cEl.scrollWidth<=cEl.clientWidth+1){ $$('#crumbs button').forEach((b,i)=>b.onclick=c[i][1]); return; } }
+  if(c.length>1){ cEl.classList.toggle('compact',true); $('#crumbs').innerHTML=`<button class="cback" aria-label="${t('back')}">${lang==='ar'?ICO.next:ICO.back}</button><button class="cur">${c[c.length-1][0]}</button>`; $('#crumbs .cback').onclick=c[c.length-2][1]; $('#crumbs .cur').onclick=c[c.length-1][1]; return; }
   $('#crumbs').innerHTML=c.map((x,i)=>`<button class="${i===c.length-1?'cur':''}">${x[0]}</button>`).join('<i>/</i>'); $$('#crumbs button').forEach((b,i)=>b.onclick=c[i][1]); }
 const DOCK=[['master','map','d_master'],['towers','tower','d_towers'],['film','walk','d_film'],['gal','plan','d_gallery'],['amen','leaf','d_amen'],['inter','home','d_inter'],['sales','lock','d_sales']];
 const THREED_URL='3d/';
@@ -1234,7 +1285,8 @@ function dock(){ $('#dock').innerHTML=DOCK.map(([k,i,l])=>`<button data-d="${k}"
 function tip(html,e){const el=$('#tip');if(!html){el.style.opacity=0;return;}el.innerHTML=html;el.style.opacity=1;el.style.left=Math.min(innerWidth-220,e.clientX+16)+'px';el.style.top=(e.clientY+16)+'px';}
 function toast(s){const el=document.createElement('div');el.className='toast';el.textContent=s;document.body.appendChild(el);setTimeout(()=>el.style.opacity=0,1700);setTimeout(()=>el.remove(),2200);}
 const mir=p=>lang==='ar'?Object.assign({},p,{l:p.r,r:p.l}):p;
-const PAD=()=>mir(innerWidth>980?{t:200,r:420,b:110,l:40}:{t:130,r:14,b:innerHeight*.5,l:14});
+const sheetTop=()=>Math.round(innerHeight*0.38+(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dockH'))||(($('#dock')||{}).offsetHeight||0)));
+const PAD=()=>mir(innerWidth>980?{t:200,r:420,b:110,l:40}:{t:130,r:14,b:sheetTop()+12,l:14});
 
 /* ---------------- scenes */
 function go(scene,o={}){ state._prevScene=state.scene; state.scene=scene; tip(null); if(scene!=='master'){document.body.classList.remove('orbit'); if(typeof m3dHide==='function') m3dHide(); document.querySelectorAll('.frame.orb').forEach(x=>{x.classList.add('dive');setTimeout(()=>x.remove(),1000);});} document.getElementById('orbcard')?.remove(); todUI(false); $('#scrim').style.opacity=['intro','tower','walk','amenview'].includes(scene)?1:.0;
@@ -1268,7 +1320,7 @@ const ORB={"2": {"01": {"top": [0.4745, 0.7326], "base": [0.4753, 0.821], "d": 2
 let orbI=2, orbT=2;
 function hullOf(pts){ const P=pts.map(p=>[p[0]*1920,p[1]*1080]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]); const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
   const lo=[],up=[]; for(const q of P){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],q)<=0)lo.pop();lo.push(q);} for(const q of P.slice().reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],q)<=0)up.pop();up.push(q);} return lo.slice(0,-1).concat(up.slice(0,-1)); }
-function orbSrc(i,t){ return `ai/orb_${String(i).padStart(2,'0')}_${TODS[t]}.jpg`; }
+function orbSrc(i,t){ return `ai/orb_${String(i).padStart(2,'0')}_${TODS[t]}${innerWidth<1000?'_s':''}.jpg`; }
 
 /* ---------------- real-time 3D masterplan (persistent iframe) */
 const M3D_OK=(()=>{try{const c=document.createElement('canvas');return !!(c.getContext('webgl2'));}catch(e){return false;}})() && !/[?&]no3d/.test(location.search);
@@ -1307,7 +1359,7 @@ function sMaster(){
   state.b=null;state.f=null;state.u=null; document.body.classList.add('orbit');
   const av=b=>b.units.filter(u=>u.st==='available'&&(!state.kind||u.kind===state.kind)).length;
   $$('.frame').forEach(x=>{x.classList.remove('on');setTimeout(()=>x.remove(),900);});
-  const DBG=/[?&]debug=1/.test(location.search);
+  const DBG=LOCALHOST&&/[?&]debug=1/.test(location.search);
   const el=document.createElement('div'); el.className='frame orb on'+(DBG?' dbg':'');
   el.innerHTML=`<div class="orb-zoom"><div class="orb-imgs"></div><video class="orb-tv" muted playsinline preload="auto"></video><video class="orb-tv" muted playsinline preload="auto"></video><svg class="orb-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"><g class="hits"></g><g class="lead"></g><g class="pills"></g></svg></div><div class="orb-sh"></div><div class="orb-load" hidden></div>`;
   stage.appendChild(el);
@@ -1321,13 +1373,13 @@ function sMaster(){
   const Z={s:1,x:0,y:0}; const applyZ=()=>{ zw.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.s})`; el.classList.toggle('zoomed',Z.s>1.02); };
   const clampZ=()=>{ const r=el.getBoundingClientRect(); const mx=(Z.s-1)*r.width/2, my=(Z.s-1)*r.height/2; Z.x=Math.max(-mx,Math.min(mx,Z.x)); Z.y=Math.max(-my,Math.min(my,Z.y)); };
   let busy=false, queue=0;
-  const prime=()=>{ vA.src=clip(orbI,1); vB.src=clip(orbI,-1); vA.load(); vB.load(); [1,-1,2,-2].forEach(d=>still(wrap(orbI+d),orbT)); };
-  const show=()=>{ const im=still(orbI,orbT); const on=()=>{ imgs.querySelectorAll('.orb-im').forEach(x=>x.classList.toggle('on',x===im)); }; if(im.complete) on(); else im.onload=on; draw(); el.querySelector('.orb-dial i')?.style.setProperty('--k',orbI); };
-  const step=dir=>{ if(busy){ queue=Math.max(-4,Math.min(4,queue+dir)); return; } busy=true; tip(null); $('#orbcard')?.remove(); svg.classList.add('hide');
+  const prime=()=>{ if(!PHONE_UI()){ vA.src=clip(orbI,1); vB.src=clip(orbI,-1); vA.load(); vB.load(); } [1,-1,2,-2].forEach(d=>still(wrap(orbI+d),orbT)); };
+  const show=()=>{ const im=still(orbI,orbT); const on=()=>{ imgs.querySelectorAll('.orb-im').forEach(x=>x.classList.toggle('on',x===im)); }; if(im.complete) on(); else im.onload=on; draw(); el.querySelector('.orb-dial i')?.style.setProperty('--k',orbI); const cc=el.querySelector('.orbctl'); if(cc&&cc.scrollWidth>cc.clientWidth+2){ const pr=cc.querySelector('.orb-t[aria-pressed="true"]'); if(pr) cc.scrollLeft=pr.offsetLeft+pr.offsetWidth/2-cc.clientWidth/2; } };
+  const step=dir=>{ if(busy){ if(!PHONE_UI()) queue=Math.max(-4,Math.min(4,queue+dir)); return; } busy=true; tip(null); $('#orbcard')?.remove(); svg.classList.add('hide');
     const to=wrap(orbI+dir), rate=1+Math.min(1.4,Math.abs(queue)*0.5);
     const fin=()=>{ orbI=to; show(); requestAnimationFrame(()=>{ vA.classList.remove('on'); vB.classList.remove('on'); }); busy=false; if(queue){ const d=Math.sign(queue); queue-=d; step(d); } else { svg.classList.remove('hide'); prime(); } };
     const tgt=still(to,orbT);
-    if(orbT!==TODS.indexOf('pm')){ // other times of day: still-to-still crossfade (no video for these lights)
+    if(orbT!==TODS.indexOf('pm')||PHONE_UI()){ // other times of day: still-to-still crossfade (no video for these lights)
       imgs.classList.add('xf'); imgs.style.setProperty('--dx',dir>0?'-1.5%':'1.5%'); setTimeout(()=>{ imgs.classList.remove('xf'); fin(); },380); return; }
     const v=dir>0?vA:vB; v.playbackRate=rate; v.currentTime=0;
     const go2=()=>{ v.classList.add('on'); let done=false; const end=()=>{ if(done) return; done=true; v.onended=null; fin(); };
@@ -1361,7 +1413,7 @@ function sMaster(){
     if(!g0) return; if(Math.hypot(e.clientX-g0.x,e.clientY-g0.y)>8){ if(!moved) svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press')); moved=true; }
     const now=performance.now(); g0.v=(e.clientX-g0.lx)/Math.max(1,now-g0.lt); g0.lx=e.clientX; g0.lt=now;
     if(Z.s>1.02){ Z.x+=dx; Z.y+=dy; clampZ(); applyZ(); return; }
-    acc+=dx; const th=Math.max(90,innerWidth/14); while(Math.abs(acc)>=th){ const d=acc>0?-1:1; acc+=d*th; step(d); } });
+    acc+=dx; if(PHONE_UI()){ if(!g0.stepped&&Math.abs(acc)>=Math.max(60,innerWidth*0.22)){ g0.stepped=true; step(acc>0?-1:1); } return; } const th=Math.max(90,innerWidth/14); while(Math.abs(acc)>=th){ const d=acc>0?-1:1; acc+=d*th; step(d); } });
   const up=e=>{ if(!P.has(e.pointerId)) return; P.delete(e.pointerId); if(P.size<2) pinch0=null; if(P.size){ if(g0) g0.multi=true; return; }
     svg.querySelectorAll('.press').forEach(x=>x.classList.remove('press'));
     if(!g0) return; const g=g0; g0=null;
@@ -1369,7 +1421,7 @@ function sMaster(){
     // pointer-down position and confirm it at the release point; cancelled / multi-touch / moved gestures never select.
     if(e.type==='pointercancel'||g.multi) return;
     if(!moved){ if(busy) return; const b=g.b, b2=towerAt(e); if(b&&(!b2||b2.id===b.id)){ state.sel=b; orbDive(b); } return; }
-    if(Z.s<=1.02 && Math.abs(g.v)>0.45){ const n=Math.min(3,Math.round(Math.abs(g.v)*2.2)); for(let i=0;i<n;i++) step(g.v>0?-1:1); } };
+    if(!PHONE_UI() && Z.s<=1.02 && Math.abs(g.v)>0.45){ const n=Math.min(3,Math.round(Math.abs(g.v)*2.2)); for(let i=0;i<n;i++) step(g.v>0?-1:1); } };
   el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up);
   el.addEventListener('wheel',e=>{ e.preventDefault(); const r=el.getBoundingClientRect(); const s0=Z.s; Z.s=Math.max(1,Math.min(2.6,Z.s*Math.exp(-e.deltaY*0.0015))); const k=Z.s/s0; const cx=e.clientX-r.left-r.width/2, cy=e.clientY-r.top-r.height/2; Z.x=cx-(cx-Z.x)*k; Z.y=cy-(cy-Z.y)*k; clampZ(); applyZ(); draw(); },{passive:false});
   el.addEventListener('dblclick',()=>{ Z.s=1;Z.x=0;Z.y=0; applyZ(); draw(); }); el.addEventListener('contextmenu',e=>e.preventDefault());
@@ -1383,7 +1435,7 @@ function sMaster(){
   // ---------- controls
   const ctl=document.createElement('div'); ctl.className='orbctl'; ctl.innerHTML=`<button class="orb-r" data-d="-1" aria-label="rotate left">${ICO.back}</button><span class="orb-dial"><i style="--k:${orbI}"></i></span><button class="orb-r" data-d="1" aria-label="rotate right" style="transform:scaleX(-1)">${ICO.back}</button>
     <span class="orb-sep"></span>${TODS.map((x,k)=>`<button class="orb-t" data-t="${k}" aria-pressed="${k===orbT}">${t('vt_'+x)}</button>`).join('')}<span class="orb-sep"></span><button class="orb-plan">${t('planView')}</button>`;
-  el.appendChild(ctl);
+  el.appendChild(ctl); requestAnimationFrame(()=>{ const pr=ctl.querySelector('.orb-t[aria-pressed="true"]'); if(pr&&ctl.scrollWidth>ctl.clientWidth+2){ const c=pr.offsetLeft+pr.offsetWidth/2-ctl.clientWidth/2; ctl.scrollLeft=c; } });
   ctl.querySelectorAll('.orb-r').forEach(b=>b.onclick=e=>{e.stopPropagation(); step(+b.dataset.d);});
   ctl.querySelectorAll('.orb-t').forEach(b=>b.onclick=e=>{e.stopPropagation(); orbT=+b.dataset.t; ctl.querySelectorAll('.orb-t').forEach(x=>x.setAttribute('aria-pressed',x===b)); show(); prime();});
   ctl.querySelector('.orb-plan').onclick=e=>{e.stopPropagation(); go('plan');};
@@ -1393,17 +1445,17 @@ function sMaster(){
   el.appendChild(fl); fl.addEventListener('pointerdown',e=>e.stopPropagation());
   fl.querySelectorAll('.chip').forEach(c=>c.onclick=e=>{e.stopPropagation(); state.kind=c.dataset.k||null; fl.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c)); draw();});
   // gentle attract: step every 4s after 25s untouched
-  let OV_idle=0; const idI=setInterval(()=>{ if(!el.isConnected){ clearInterval(idI); return; } if(document.hidden||state.scene!=='master') return; OV_idle++; if(OV_idle>=25&&OV_idle%4===1&&!busy&&Z.s<=1.02) step(1); },1000);
+  let OV_idle=0; const idI=setInterval(()=>{ if(!el.isConnected){ clearInterval(idI); return; } if(document.hidden||state.scene!=='master') return; OV_idle++; if(innerWidth>=1600&&!matchMedia('(pointer:coarse)').matches&&OV_idle>=25&&OV_idle%4===1&&!busy&&Z.s<=1.02) step(1); },1000);
   el.addEventListener('pointerdown',()=>{OV_idle=0;},true);
   addEventListener('resize',()=>{ if(el.isConnected) draw(); });
   setTitle('','','',true); $('#title')?.classList.add('swap'); side(''); state.sel=null; show(); prime();
-  window.__orbShow=show; window.__orbDive=orbDive; window.__orbStep=step; window.__orbState=()=>({i:orbI,t:orbT,busy,z:Z.s}); window.__orbSet=(i,tt)=>{ orbI=i; if(tt!=null) orbT=tt; show(); };
+  HOOK.__orbShow=show; HOOK.__orbDive=orbDive; HOOK.__orbStep=step; HOOK.__orbState=()=>({i:orbI,t:orbT,busy,z:Z.s}); HOOK.__orbSet=(i,tt)=>{ orbI=i; if(tt!=null) orbT=tt; show(); };
 }
 
 function orbCard(b){ $('#orbcard')?.remove(); const us=b.units, a=us.filter(u=>u.st==='available').length;
   const c=document.createElement('div'); c.id='orbcard'; c.innerHTML=`<span class="eye">${t('type')} ${b.ty} · ${b.levels} ${t('floorsW')}</span><h3 class="serif">${t('building')} ${b.id}</h3>
    <div class="oc-row"><b>${nf(a)}</b><span>${t('avShort')} / ${nf(us.length)}</span></div>${sbar(us)}<button class="cta" id="oc-go"><span>${t('enterT')}</span><span class="ic">${ICO.arrow||'→'}</span></button>`;
-  document.body.appendChild(c); requestAnimationFrame(()=>c.classList.add('on')); $('#oc-go').onclick=()=>{ window.__orbDive?window.__orbDive(b):go('tower',{b}); }; }
+  document.body.appendChild(c); requestAnimationFrame(()=>c.classList.add('on')); $('#oc-go').onclick=()=>{ HOOK.__orbDive?HOOK.__orbDive(b):go('tower',{b}); }; }
 
 function panelMaster(){
   const av=ALLU.filter(u=>u.st==='available').length;
@@ -1478,10 +1530,13 @@ function sUnit({u,plan}){
   if(showDwg){ const fr=newFrame({full:true,html:`<div class="planbox" id="pbox"><div class="plan" id="plan"></div></div>`}); const box=fr.querySelector('#pbox'); const pad=PAD();
     Object.assign(box.style,{left:pad.l+'px',top:pad.t+'px',width:(innerWidth-pad.l-pad.r)+'px',height:(innerHeight-pad.t-pad.b)+'px'});
     asset('plan_'+u.b.plan+'.svg').then(txt=>{const h=fr.querySelector('#plan');h.innerHTML=txt;const svg=h.querySelector('svg');const bb=u.p.bb,pd=40;svg.setAttribute('viewBox',`${bb[0]-pd} ${bb[1]-pd} ${bb[2]-bb[0]+pd*2} ${bb[3]-bb[1]+pd*2}`);svg.setAttribute('preserveAspectRatio','xMidYMid meet');colorPlan(h,u.b,u.f,u);h.querySelectorAll('.u path').forEach(p=>{if(+p.dataset.i!==u.p.i)p.setAttribute('class','na');});});
-  } else if(RESDH[u.kind]){ const wide=innerWidth>980; const P=wide?mir({t:130,r:430,b:110,l:60}):{t:110,r:8,b:innerHeight*.46,l:8};
-    const fr=newFrame({full:true,html:`<div class="dhbox" style="left:${P.l}px;right:${P.r}px;top:${P.t}px;bottom:${P.b}px"><div class="dhw"><img alt="" src="ai/res/${u.kind}_dh.jpg">${RESDH[u.kind].map(([x,y,j])=>`<button class="dhs" data-j="${j}" style="left:${x*100}%;top:${y*100}%"><i></i><span>${t(WALK[u.kind][j][1])}</span></button>`).join('')}</div><div class="dhhint">${t('dhHint')}</div></div>`});
+  } else if(RESDH[u.kind]){ const wide=innerWidth>980; const P=wide?mir({t:130,r:430,b:110,l:60}):{t:innerWidth<600?96:120,r:8,b:sheetTop()+8,l:8};
+    const fr=newFrame({full:true,html:`<div class="dhbox" style="left:${P.l}px;right:${P.r}px;top:${P.t}px;bottom:${P.b}px"><div class="dhw"><img alt="" src="ai/res/${u.kind}_dh.jpg">${RESDH[u.kind].map(([x,y,j])=>`<button class="dhs" data-j="${j}" aria-label="${t(WALK[u.kind][j][1])}" style="left:${x*100}%;top:${y*100}%"><i></i><span>${t(WALK[u.kind][j][1])}</span></button>`).join('')}</div><div class="dhhint">${t('dhHint')}</div></div>`});
     fr.classList.add('resf');
-    const w=fr.querySelector('.dhw'); const fit=()=>{ const bx=fr.querySelector('.dhbox').getBoundingClientRect(); const s=Math.min(bx.width/4,(bx.height-30)/3); w.style.width=s*4+'px'; w.style.height=s*3+'px'; }; fit(); addEventListener('resize',fit);
+    const w=fr.querySelector('.dhw'); const fit=()=>{ const bx=fr.querySelector('.dhbox').getBoundingClientRect(); const extra=[...fr.querySelector('.dhbox').children].filter(c=>!c.classList.contains('dhw')).reduce((a,c)=>a+c.offsetHeight+12,0); const s=Math.max(40,Math.min(bx.width/4,(bx.height-Math.max(30,extra))/3)); w.style.width=s*4+'px'; w.style.height=s*3+'px'; }; const sep=()=>{ const L=[...fr.querySelectorAll('.dhs')]; if(!L.length) return; L.forEach(b=>{ b.style.transform=''; }); const P=L.map(b=>{ const r=b.getBoundingClientRect(); return {b,x:r.left+r.width/2,y:r.top+r.height/2,dx:0,dy:0}; });
+      for(let it=0;it<6;it++) for(let i=0;i<P.length;i++) for(let j=i+1;j<P.length;j++){ const a=P[i],c=P[j]; const vx=(c.x+c.dx)-(a.x+a.dx), vy=(c.y+c.dy)-(a.y+a.dy); const d=Math.hypot(vx,vy)||1; if(d<48){ const k=(48-d)/2; a.dx-=vx/d*k; a.dy-=vy/d*k; c.dx+=vx/d*k; c.dy+=vy/d*k; } }
+      P.forEach(q=>{ if(q.dx||q.dy) q.b.style.transform=`translate(-50%,-50%) translate(${q.dx.toFixed(1)}px,${q.dy.toFixed(1)}px)`; }); };
+    const fit2=()=>{ fit(); requestAnimationFrame(sep); }; fit2(); addEventListener('resize',fit2); addEventListener('alaia:fit',fit2);
     fr.querySelectorAll('.dhs').forEach(b=>b.onclick=e=>{ e.stopPropagation(); openRoom(u,+b.dataset.j); });
     if(state._prevScene!=='unit'&&!state._liftSkip) resLift(u);
   } else newFrame({img:'assets/UP_'+u.kind+'.webp',w:UPL[u.kind][0],h:UPL[u.kind][1],mode:'contain',cls:'upl',pad:()=>mir(innerWidth>980?{t:200,r:440,b:215,l:40}:{t:130,r:14,b:innerHeight*.5,l:14})});
@@ -1710,7 +1765,7 @@ function openView(u){ const side=u.p.r===0?'a':'b'; let f=Math.min(4,u.f); let k
   $('#bf-360').onclick=()=>openWalk3D(u,TOUR_URL,'balcony'); load(); }
 
 /* ================= KIOSK LAYER: modes, idle, leads, walk viewer, project details ================= */
-Object.assign(S2.en,{crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
+Object.assign(S2.en,{back:"Back",sheetMore:"Show more",sheetLess:"Show less",crmEye:"Engaz · customer relationship system",admServer:"Saved on the ALAIA server. Other screens pick up changes within two minutes.",admSaveErr:"Not saved. Check the connection and try again.",admLocked:"Too many attempts. Try again in 15 minutes.",admOffline:"Sales server unreachable. Check the connection.",admExpired:"Sales session ended. Please sign in again.",
  smLeadsSrv:"requests received on the server",smLeadsPend:"waiting on this device to sync",lm_sales:"sales",'lm_self-serve':"self-serve",close:"Close",
  crm_not_configured:"Engaz is not connected yet: requests are stored on the ALAIA server and listed here. Connecting needs Engaz API documentation and credentials.",crm_configured:"Engaz connection configured.",
  reqPendT:"Saved on this screen",reqPendP:"The connection is down, so your request is saved here and will be sent automatically when it returns. A sales advisor can also help you right away.",
@@ -1721,12 +1776,12 @@ Object.assign(S2.en,{crmEye:"Engaz · customer relationship system",admServer:"S
  idleT:"Still there?",idleP:"Returning to the welcome screen in",idleStay:"I'm here",
  d_walk:"Walk the home",d_proj:"Project",d_towers:"Towers",
  wkEnter:"Enter this home",wkSoon:"Interior view coming soon",wkHint:"Drag to look around · pinch to zoom · tap an arrow to walk",wkView:"View from this home",wkInfo:"About this room",
- wn_entry:"Entrance",wn_studio:"Studio",wn_sleep:"Sleeping area",wn_kitchenette:"Kitchenette",wn_livkit:"Living & kitchen",wn_living:"Living room",wn_kitchen:"Kitchen",wn_bed:"Bedroom",wn_master:"Master bedroom",wn_second:"Second bedroom",wn_bath:"Bathroom",
+ wn_entry:"Entrance",wn_room:"Room",wn_studio:"Studio",wn_sleep:"Sleeping area",wn_kitchenette:"Kitchenette",wn_livkit:"Living & kitchen",wn_living:"Living room",wn_kitchen:"Kitchen",wn_bed:"Bedroom",wn_master:"Master bedroom",wn_second:"Second bedroom",wn_bath:"Bathroom",
  infoArea:"Home area",infoRoom:"Room size",infoFin:"Finishes",infoView:"View direction",infoNear:"Nearby amenities",tbc:"To be confirmed by the developer",infoTypeOnly:"Interior and view are illustrative, typical for this home type.",
  pj_eye:"Project details",pj_t:"ALAIA, North Coast",pj_p:"Thirteen low-rise residential towers in four rows around three crystal lagoons, with a boutique hotel and a retail promenade on the coastal-road front.",
  pj_loc:"Location",pj_tw:"Towers",pj_homes:"Homes",pj_lag:"Lagoons",pj_types:"Tower types",pj_mix:"Home types",pj_svc:"Hotel & retail",pj_am:"Amenities",pj_del:"Delivery stages",pj_land:"Land area",
  pj_delP:"Delivery stages and dates have not been issued yet.",pj_units:"Homes",pj_qty:"Towers",pj_h:"Height",pj_ty:"Type",pj_ids:"Tower numbers",pj_map:"Open in Google Maps"});
-Object.assign(S2.ar,{crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
+Object.assign(S2.ar,{back:"رجوع",sheetMore:"عرض المزيد",sheetLess:"عرض أقل",crmEye:"Engaz · نظام إدارة العملاء",admServer:"محفوظ على سيرفر ألايا. الشاشات التانية بتاخد التغيير خلال دقيقتين.",admSaveErr:"ما اتحفظش. اتأكد من الاتصال وجرّب تاني.",admLocked:"محاولات كتير. جرّب تاني بعد ١٥ دقيقة.",admOffline:"مش قادرين نوصل لسيرفر المبيعات. اتأكد من الاتصال.",admExpired:"جلسة المبيعات خلصت. ادخل تاني من فضلك.",
  smLeadsSrv:"طلب وصل للسيرفر",smLeadsPend:"مستني على الجهاز ده لحد ما يتبعت",lm_sales:"مبيعات",'lm_self-serve':"خدمة ذاتية",close:"إغلاق",
  crm_not_configured:"Engaz لسه مش متوصل: الطلبات بتتحفظ على سيرفر ألايا وبتظهر هنا. الربط محتاج مستندات الربط وبيانات الدخول من Engaz.",crm_configured:"اتظبط الربط مع Engaz.",
  reqPendT:"اتحفظ على الشاشة دي",reqPendP:"الاتصال مقطوع، فطلبك اتحفظ هنا وهيتبعت أوتوماتيك أول ما الاتصال يرجع. ومستشار المبيعات يقدر يساعدك دلوقتي.",
@@ -1737,7 +1792,7 @@ Object.assign(S2.ar,{crmEye:"Engaz · نظام إدارة العملاء",admSer
  idleT:"لسه معانا؟",idleP:"الشاشة هترجع لشاشة الترحيب خلال",idleStay:"أنا هنا",
  d_walk:"امشي جوه البيت",d_proj:"المشروع",d_towers:"الأبراج",
  wkEnter:"ادخل البيت",wkSoon:"المنظر الداخلي قريبًا",wkHint:"اسحب علشان تبص حواليك · قرّب بصباعين · اضغط على السهم علشان تمشي",wkView:"المنظر من البيت ده",wkInfo:"عن الأوضة دي",
- wn_entry:"المدخل",wn_studio:"الاستوديو",wn_sleep:"منطقة النوم",wn_kitchenette:"المطبخ الصغير",wn_livkit:"المعيشة والمطبخ",wn_living:"المعيشة",wn_kitchen:"المطبخ",wn_bed:"غرفة النوم",wn_master:"غرفة النوم الرئيسية",wn_second:"غرفة النوم التانية",wn_bath:"الحمام",
+ wn_entry:"المدخل",wn_room:"غرفة",wn_studio:"الاستوديو",wn_sleep:"منطقة النوم",wn_kitchenette:"المطبخ الصغير",wn_livkit:"المعيشة والمطبخ",wn_living:"المعيشة",wn_kitchen:"المطبخ",wn_bed:"غرفة النوم",wn_master:"غرفة النوم الرئيسية",wn_second:"غرفة النوم التانية",wn_bath:"الحمام",
  infoArea:"مساحة الوحدة",infoRoom:"مقاس الأوضة",infoFin:"التشطيبات",infoView:"اتجاه الفيو",infoNear:"مميزات قريبة",tbc:"يؤكدها المطوّر",infoTypeOnly:"التصميم الداخلي والإطلالة توضيحيان لهذا النوع من الوحدات.",
  pj_eye:"تفاصيل المشروع",pj_t:"ألايا، الساحل الشمالي",pj_p:"١٣ برج سكني منخفض في أربع صفوف حوالين ثلاث بحيرات كريستالية، مع فندق بوتيك وممشى تجاري على واجهة الطريق الساحلي.",
  pj_loc:"الموقع",pj_tw:"الأبراج",pj_homes:"الوحدات",pj_lag:"البحيرات",pj_types:"نماذج الأبراج",pj_mix:"أنواع الوحدات",pj_svc:"الفندق والتجاري",pj_am:"المميزات",pj_del:"مراحل التسليم",pj_land:"مساحة الأرض",
@@ -1841,6 +1896,7 @@ const _sUnit=sUnit; sUnit=function(o){ const u=o.u; sideHook=()=>{ const pr=$('#
   _sUnit(o);
   const box=[...document.querySelectorAll('.dhbox')].pop(); if(box&&!o.plan){ box.querySelectorAll('.dhs').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const j=+b.dataset.j; openWalk(u,DH2N[u.kind][j],`ai/res/${u.kind}_dive_${j}.mp4`); });
     const hint=box.querySelector('.dhhint'); if(hint&&!box.querySelector('.illus')) hint.insertAdjacentHTML('beforebegin',`<div class="illus">${t('infoTypeOnly')}</div>`); if(hint){ hint.insertAdjacentHTML('afterend',`<div style="display:flex;justify-content:center;margin-top:14px">${cta('dh-in',t('wkEnter'),'home')}</div>`); const din=box.querySelector('#dh-in'); din.classList.add('pri'); din.dataset.code=u.code; din.onclick=e=>{ e.stopPropagation(); if(din.closest('.frame.dying')) return; openWalk(u,0); }; }
+    requestAnimationFrame(()=>dispatchEvent(new Event('alaia:fit')));
     // warm the first walk node and the dive clips so taps never wait on the network
     [0,1].forEach(i=>{ const im=new Image(); im.src=`ai/walk/${u.kind}_n${i}.jpg`; }); }
 };
@@ -1861,13 +1917,15 @@ try{ const lk=document.createElement('link'); lk.rel='preload'; lk.as='image'; l
 
 /* ================= walk-through viewer (item 12) ================= */
 const WN={st:['studio','sleep','kitchenette','bath'],br1:['livkit','kitchen','living','bedroom','bath'],br2:['living','livkit','master','second','bath']};
-const WNL={entry:'wn_entry',living:'wn_living',kitchen:'wn_kitchen',bedroom:'wn_bed',master:'wn_master',second:'wn_second',bath:'wn_bath'};
+const WNL=new Proxy({entry:'wn_entry',living:'wn_living',kitchen:'wn_kitchen',bedroom:'wn_bed',master:'wn_master',second:'wn_second',bath:'wn_bath',studio:'wn_studio',sleep:'wn_sleep',kitchenette:'wn_kitchenette',livkit:'wn_livkit'},{get:(o,k)=>o[k]||'wn_room'});
 const WDIM={st:{living:'d_bedliv',kitchen:'r_kitchen',bath:'d_bath'},br1:{living:'r_living',bedroom:'r_bed',kitchen:'r_kitchen',bath:'d_bath'},br2:{entry:'d_kitent',living:'r_living',master:'d_bed1',second:'d_bed2',bath:'d_bath1'}};
 const WHS={fwd:[.5,.64],back:[.24,.72],info:[.36,.4]};
 const wk={el:null,u:null,k:null,i:0,iw:2600,ih:1103,x:0,y:0,z:1,tx:0,ty:0,tz:1,vx:0,vy:0,raf:0,busy:false,pre:{}};
 function wkStop(){ cancelAnimationFrame(wk.raf); wk.raf=0; Object.values(wk.pre).forEach(v=>{try{v.pause();v.removeAttribute('src');v.load();}catch(e){}}); wk.pre={}; }
 function wkClose(now){ const el=$('#wk'); if(!el) return; wkStop(); wk.el=null; if(now){ el.remove(); } else { el.classList.remove('on'); setTimeout(()=>el.remove(),500); } setTimeout(()=>dock(),0); }
 function nearAmen(b){ return AMEN.map(a=>({a,d:Math.hypot(a.px-b.px,a.py-b.py)})).sort((p,q)=>p.d-q.d).slice(0,2).map(x=>t('a'+x.a.n)); }
+function wkSafe(){ const el=wk.el||document.querySelector('#wk'); const bar=el&&el.querySelector('.wkbar'), cap=el&&el.querySelector('.top2'), mm=el&&el.querySelector('.mm'); const br=bar?bar.getBoundingClientRect():{top:innerHeight}; const cr=cap?cap.getBoundingClientRect():{bottom:90};
+  const mr=mm&&getComputedStyle(mm).display!=='none'?mm.getBoundingClientRect():null; return {l:44,r:innerWidth-44,t:cr.bottom+44,b:Math.max(cr.bottom+60,br.top-44),mm:mr&&mr.width?mr:null}; }
 function openWalk(u,node,intro,kind){ kind=u?u.kind:(kind||'br2'); wkStop(); $('#wk')?.remove(); $('#proj')?.remove();
   const map=window.ALAIA_VIDEOMAP?window.ALAIA_VIDEOMAP.lookup(kind,u&&u.b.id,u&&u.f):null; const it=map&&map.interior;
   Object.assign(wk,{u:u||null,k:kind,i:Math.max(0,Math.min((WN[kind]||[]).length-1,node||0)),z:1,tz:1,busy:false});
@@ -1902,7 +1960,8 @@ function wkFrame(){ if(!wk.el){ wk.raf=0; return; }
   if(!wk.drag){ wk.tx+=wk.vx; wk.ty+=wk.vy; wk.vx*=.92; wk.vy*=.92; if(Math.abs(wk.vx)<.05) wk.vx=0; if(Math.abs(wk.vy)<.05) wk.vy=0; wkClamp(); }
   wk.x+=(wk.tx-wk.x)*.2; wk.y+=(wk.ty-wk.y)*.2; wk.z+=(wk.tz-wk.z)*.2; const S=wkFit()*wk.z;
   const pan=wk.el.querySelector('.pan'); if(pan){ pan.style.width=wk.iw+'px'; pan.style.height=wk.ih+'px'; pan.style.transform=`translate3d(${wk.x}px,${wk.y}px,0) scale(${S})`; }
-  wk.el.querySelectorAll('.lay .hs').forEach(h=>{ const fx=+h.dataset.x, fy=+h.dataset.y; h.style.left=(wk.x+fx*wk.iw*S)+'px'; h.style.top=(wk.y+fy*wk.ih*S)+'px'; });
+  wk.el.querySelectorAll('.lay .hs').forEach(h=>{ const fx=+h.dataset.x, fy=+h.dataset.y; let X=wk.x+fx*wk.iw*S, Y=wk.y+fy*wk.ih*S; const SA=wkSafe(); X=Math.max(SA.l,Math.min(SA.r,X)); Y=Math.max(SA.t,Math.min(SA.b,Y)); if(SA.mm&&X>SA.mm.left-40&&X<SA.mm.right+40&&Y>SA.mm.top-40&&Y<SA.mm.bottom+40) Y=SA.mm.top-48; h.style.left=X+'px'; h.style.top=Y+'px'; const hb=h.getBoundingClientRect(); let dx=0, dy=0; if(hb.left<12) dx=12-hb.left; else if(hb.right>innerWidth-12) dx=innerWidth-12-hb.right; if(hb.top<SA.t-36) dy=SA.t-36-hb.top; else if(hb.bottom>SA.b+36) dy=SA.b+36-hb.bottom; if(dx||dy){ h.style.left=(X+dx)+'px'; h.style.top=(Y+dy)+'px'; }
+      const zc=document.querySelector('#wk-zi'); const obs=[SA.mm, zc&&zc.parentElement&&zc.parentElement.getBoundingClientRect()].filter(Boolean); for(const o of obs){ const b2=h.getBoundingClientRect(); if(b2.right>o.left-6&&b2.left<o.right+6&&b2.bottom>o.top-6&&b2.top<o.bottom+6){ const cur=parseFloat(h.style.top)||Y; h.style.top=(cur-(b2.bottom-o.top+10))+'px'; } } });
   wk.raf=requestAnimationFrame(wkFrame); }
 function wkBind(el){ const st=el.querySelector('.st'); const P=new Map(); let last=null, pinch=null, moved=0;
   st.addEventListener('pointerdown',e=>{ st.setPointerCapture(e.pointerId); P.set(e.pointerId,{x:e.clientX,y:e.clientY}); wk.drag=true; wk.vx=wk.vy=0; moved=0; last={x:e.clientX,y:e.clientY,t:performance.now()};
@@ -1969,6 +2028,24 @@ function openProj(){ $('#proj')?.remove(); wkClose(true);
   requestAnimationFrame(()=>el.classList.add('on')); el.querySelector('#pj-x').onclick=()=>{ el.classList.remove('on'); setTimeout(()=>{el.remove();dock();},500); }; dock(); }
 
 document.body.dataset.scene=state.scene; setTimeout(()=>{ modeUI(); arDigits(document.body); },0);
+
+/* ---------- bottom sheet handle (<=980px): collapsed 38dvh, tap or drag the handle to expand */
+(function(){ const sd=$('#side'); if(!sd) return; const h=document.createElement('button'); h.className='shandle'; h.type='button'; h.setAttribute('aria-label',t('sheetMore')); h.innerHTML='<i></i>'; sd.insertBefore(h,sd.firstChild);
+  const setExp=v=>{ sd.classList.toggle('exp',v); h.setAttribute('aria-expanded',v); h.setAttribute('aria-label',t(v?'sheetLess':'sheetMore')); };
+  let y0=null; h.addEventListener('pointerdown',e=>{ y0=e.clientY; h.setPointerCapture?.(e.pointerId); });
+  h.addEventListener('pointerup',e=>{ if(y0==null) return; const dy=e.clientY-y0; y0=null; if(Math.abs(dy)<10) setExp(!sd.classList.contains('exp')); else setExp(dy<0); });
+  h.addEventListener('pointercancel',()=>{ y0=null; });
+  const _go=go; go=function(sc,o){ setExp(false); return _go.apply(this,arguments); }; })();
+/* ---------- keep the dock height reserved (CSS var) and re-run the active scene layout on resize / rotation */
+(function(){ const dockVar=()=>{ const d=$('#dock'); const vis=d&&getComputedStyle(d).display!=='none'; document.documentElement.style.setProperty('--dockH',(vis?d.offsetHeight:0)+'px'); }; dockVar(); try{ new ResizeObserver(dockVar).observe($('#dock')); }catch(e){}
+  let lw=innerWidth, lh=innerHeight, raf=0, tm=0;
+  const relayout=()=>{ dockVar(); const s=state.scene; if(document.querySelector('#wk')||document.querySelector('.resov')){ relayout.pending=true; return; } relayout.pending=false; if(!s||s==='intro') return;
+    if(s==='master'){ if(typeof HOOK.__orbShow==='function') HOOK.__orbShow(); crumbs&&crumbs(); return; }
+    state._liftSkip=true; try{ rerender(); } finally { setTimeout(()=>{ state._liftSkip=false; },50); } };
+  const onRz=()=>{ const dw=Math.abs(innerWidth-lw), dh=Math.abs(innerHeight-lh); const typing=document.activeElement&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+    if(dw<2&&(dh<140||typing)) { dockVar(); return; } lw=innerWidth; lh=innerHeight; cancelAnimationFrame(raf); clearTimeout(tm); tm=setTimeout(()=>{ raf=requestAnimationFrame(relayout); },120); };
+  addEventListener('resize',onRz); addEventListener('orientationchange',()=>setTimeout(onRz,200));
+  new MutationObserver(()=>{ if(relayout.pending&&!document.querySelector('#wk')&&!document.querySelector('.resov')) requestAnimationFrame(relayout); }).observe(document.body,{childList:true}); })();
 /* ---------- staff session (server-side, HttpOnly cookie). Expiry or exit closes every protected surface. */
 function exitSales(reason){ const was=state.admin; state.admin=false; clearInterval(staffStart.iv);
   document.querySelectorAll('.modal,.ksheet,#salesbar').forEach(e=>e.remove()); api('/api/staff/logout',{method:'POST'}).catch(()=>{});
@@ -1976,9 +2053,9 @@ function exitSales(reason){ const was=state.admin; state.admin=false; clearInter
 function staffStart(){ clearInterval(staffStart.iv); staffStart.last=Date.now();
   staffStart.iv=setInterval(async()=>{ if(!state.admin) return clearInterval(staffStart.iv); try{ const r=await api('/api/staff/session?peek=1'); if(r.status===401) exitSales('expired'); }catch(e){} },30000); }
 addEventListener('pointerdown',()=>{ if(state.admin&&Date.now()-(staffStart.last||0)>120000){ staffStart.last=Date.now(); api('/api/staff/session').then(r=>{ if(r.status===401) exitSales('expired'); }).catch(()=>{}); } },{capture:true,passive:true});
-Object.assign(window.__alaiaK={},{openWalk,openProj,openReq,toAttract,wk,modeUI});
+Object.assign(HOOK.__alaiaK={},{openWalk,openProj,openReq,toAttract,wk,modeUI});
 
-window.__alaia={openView,openGallery,go,state,ALLU,BLD,enter,openAdmin,film,openFilm,closeFilm,unitView,floorName,openWalk3D};
+HOOK.__alaia={openView,openGallery,go,state,ALLU,BLD,enter,openAdmin,film,openFilm,closeFilm,unitView,floorName,openWalk3D};
 })();
 </script>
 
