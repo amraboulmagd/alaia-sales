@@ -1,0 +1,167 @@
+[
+ {
+  "w": 1920,
+  "lang": "en",
+  "code": "T06-B-210",
+  "kind": "br1",
+  "wk": true,
+  "soon": false,
+  "pano": true,
+  "nodes": 2,
+  "title": "Living & kitchen",
+  "bg": "url(\"ai/real/pano_br1_liv.jpg\")",
+  "wrapDrag": {
+   "tx": -7970,
+   "seamInView": true
+  },
+  "dragFrom": -4912,
+  "room2": "Bedroom",
+  "dipMaxOpacity": 1
+ },
+ {
+  "w": 1920,
+  "lang": "en",
+  "code": "T01-A-G01",
+  "kind": "br2",
+  "wk": true,
+  "soon": true,
+  "pano": true,
+  "nodes": 0,
+  "title": "",
+  "wrapDrag": {
+   "tx": -8863,
+   "seamInView": true
+  },
+  "dragFrom": -8863
+ },
+ {
+  "w": 1920,
+  "lang": "en",
+  "code": "T06-B-207",
+  "kind": "br2",
+  "wk": true,
+  "soon": true,
+  "pano": true,
+  "nodes": 0,
+  "title": "",
+  "wrapDrag": {
+   "tx": -8863,
+   "seamInView": true
+  },
+  "dragFrom": -8863
+ },
+ {
+  "w": 1920,
+  "errors": []
+ },
+ {
+  "w": 390,
+  "lang": "ar",
+  "code": "T06-B-210",
+  "kind": "br1",
+  "wk": true,
+  "soon": false,
+  "pano": true,
+  "nodes": 2,
+  "title": "المعيشة والمطبخ",
+  "bg": "url(\"ai/real/pano_br1_liv.jpg\")",
+  "wrapDrag": {
+   "tx": -6635,
+   "seamInView": true
+  },
+  "dragFrom": -3838,
+  "room2": "غرفة النوم",
+  "dipMaxOpacity": 1
+ },
+ {
+  "w": 390,
+  "lang": "ar",
+  "code": "T01-A-G01",
+  "kind": "br2",
+  "wk": true,
+  "soon": true,
+  "pano": true,
+  "nodes": 0,
+  "title": "",
+  "wrapDrag": {
+   "tx": -7482,
+   "seamInView": true
+  },
+  "dragFrom": -7482
+ },
+ {
+  "w": 390,
+  "lang": "ar",
+  "code": "T06-B-207",
+  "kind": "br2",
+  "wk": true,
+  "soon": true,
+  "pano": true,
+  "nodes": 0,
+  "title": "",
+  "wrapDrag": {
+   "tx": -7482,
+   "seamInView": true
+  },
+  "dragFrom": -7482
+ },
+ {
+  "w": 390,
+  "errors": []
+ },
+ {
+  "w": 1300,
+  "lang": "en",
+  "code": "T06-B-210",
+  "kind": "br1",
+  "wk": true,
+  "soon": false,
+  "pano": true,
+  "nodes": 2,
+  "title": "Living & kitchen",
+  "bg": "url(\"ai/real/pano_br1_liv.jpg\")",
+  "wrapDrag": {
+   "tx": -6428,
+   "seamInView": true
+  },
+  "dragFrom": -3365,
+  "room2": "Bedroom",
+  "dipMaxOpacity": 1
+ },
+ {
+  "w": 1300,
+  "lang": "en",
+  "code": "T01-A-G01",
+  "kind": "br2",
+  "wk": true,
+  "soon": true,
+  "pano": true,
+  "nodes": 0,
+  "title": "",
+  "wrapDrag": {
+   "tx": -6081,
+   "seamInView": true
+  },
+  "dragFrom": -6081
+ },
+ {
+  "w": 1300,
+  "lang": "en",
+  "code": "T06-B-207",
+  "kind": "br2",
+  "wk": true,
+  "soon": true,
+  "pano": true,
+  "nodes": 0,
+  "title": "",
+  "wrapDrag": {
+   "tx": -6081,
+   "seamInView": true
+  },
+  "dragFrom": -6081
+ },
+ {
+  "w": 1300,
+  "errors": []
+ }
+]

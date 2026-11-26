@@ -888,6 +888,18 @@ body.sales .resf .dhbox{top:200px!important}
  .orbinfo h1{font-size:24px!important}
  .orbinfo p{display:none!important}
 }
+
+/* B4: real plan as mini-map and unit image; coming-soon card with plan */
+#wk .mm .dh.plan{background-size:contain!important;background-repeat:no-repeat!important;background-position:center!important;background-color:#F4EEE4}
+.dhw.planw{background:#F4EEE4;border-radius:10px;overflow:hidden;box-shadow:0 20px 60px -20px rgba(0,0,0,.6)}
+.dhw.planw img{width:100%;height:100%;object-fit:contain;display:block}
+#wk .soon{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:100%;padding:90px 20px 120px;box-sizing:border-box;text-align:center}
+#wk .soon .soonplan{max-height:calc(100% - 120px);max-width:min(520px,90vw);object-fit:contain;background:#F4EEE4;border-radius:10px}
+#wk .soon b{font-size:20px} #wk .soon small{max-width:46ch;opacity:.8;line-height:1.5}
+#wk .img2{pointer-events:none}
+
+#wk .soon b{font-size:clamp(20px,2.2vw,28px)!important;font-weight:500;color:#F3EEE5}
+#wk .soon small{font-size:clamp(14px,1.2vw,17px)!important;color:rgba(243,238,229,.75)}
 </style>
 </head><body>
 <div id="stage"></div>
@@ -1552,14 +1564,14 @@ function sUnit({u,plan}){
     Object.assign(box.style,{left:pad.l+'px',top:pad.t+'px',width:(innerWidth-pad.l-pad.r)+'px',height:(innerHeight-pad.t-pad.b)+'px'});
     asset('plan_'+u.b.plan+'.svg').then(txt=>{const h=fr.querySelector('#plan');h.innerHTML=txt;const svg=h.querySelector('svg');const bb=u.p.bb,pd=40;svg.setAttribute('viewBox',`${bb[0]-pd} ${bb[1]-pd} ${bb[2]-bb[0]+pd*2} ${bb[3]-bb[1]+pd*2}`);svg.setAttribute('preserveAspectRatio','xMidYMid meet');colorPlan(h,u.b,u.f,u);h.querySelectorAll('.u path').forEach(p=>{if(+p.dataset.i!==u.p.i)p.setAttribute('class','na');});});
   } else if(RESDH[u.kind]){ const wide=innerWidth>980; const P=wide?mir({t:130,r:430,b:110,l:60}):LANDPHONE()?mir({t:60,r:railW()+8,b:(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dockH'))||56)+6,l:8}):{t:innerWidth<600?96:120,r:8,b:sheetTop()+8,l:8};
-    const fr=newFrame({full:true,html:`<div class="dhbox" style="left:${P.l}px;right:${P.r}px;top:${P.t}px;bottom:${P.b}px"><div class="dhw"><img alt="" src="ai/res/${u.kind}_dh.jpg">${RESDH[u.kind].map(([x,y,j])=>`<button class="dhs" data-j="${j}" aria-label="${t(WALK[u.kind][j][1])}" style="left:${x*100}%;top:${y*100}%"><i></i><span>${t(WALK[u.kind][j][1])}</span></button>`).join('')}</div><div class="dhhint">${t('dhHint')}</div></div>`});
+    const fr=newFrame({full:true,html:`<div class="dhbox" style="left:${P.l}px;right:${P.r}px;top:${P.t}px;bottom:${P.b}px"><div class="dhw planw"><img alt="${t('planAlt')}" src="ai/real/plan_${u.kind}.jpg"></div><div class="dhhint">${t('dhHint')}</div></div>`});
     fr.classList.add('resf');
-    const w=fr.querySelector('.dhw'); const fit=()=>{ const bx=fr.querySelector('.dhbox').getBoundingClientRect(); const extra=[...fr.querySelector('.dhbox').children].filter(c=>!c.classList.contains('dhw')).reduce((a,c)=>a+c.offsetHeight+12,0); const s=Math.max(40,Math.min(bx.width/4,(bx.height-Math.max(30,extra))/3)); w.style.width=s*4+'px'; w.style.height=s*3+'px'; }; const sep=()=>{ const L=[...fr.querySelectorAll('.dhs')]; if(!L.length) return; L.forEach(b=>{ b.style.transform=''; }); const P=L.map(b=>{ const r=b.getBoundingClientRect(); return {b,x:r.left+r.width/2,y:r.top+r.height/2,dx:0,dy:0}; });
+    const w=fr.querySelector('.dhw'); const fit=()=>{ const bx=fr.querySelector('.dhbox').getBoundingClientRect(); const extra=[...fr.querySelector('.dhbox').children].filter(c=>!c.classList.contains('dhw')).reduce((a,c)=>a+c.offsetHeight+12,0); const PR={st:900/1706,br1:900/1912,br2:1100/1492}[u.kind]||0.6; const hh=Math.max(80,bx.height-Math.max(30,extra)); let ww=hh*PR, h2=hh; if(ww>bx.width){ ww=bx.width; h2=ww/PR; } w.style.width=ww+'px'; w.style.height=h2+'px'; }; const sep=()=>{ const L=[...fr.querySelectorAll('.dhs')]; if(!L.length) return; L.forEach(b=>{ b.style.transform=''; }); const P=L.map(b=>{ const r=b.getBoundingClientRect(); return {b,x:r.left+r.width/2,y:r.top+r.height/2,dx:0,dy:0}; });
       for(let it=0;it<6;it++) for(let i=0;i<P.length;i++) for(let j=i+1;j<P.length;j++){ const a=P[i],c=P[j]; const vx=(c.x+c.dx)-(a.x+a.dx), vy=(c.y+c.dy)-(a.y+a.dy); const d=Math.hypot(vx,vy)||1; if(d<48){ const k=(48-d)/2; a.dx-=vx/d*k; a.dy-=vy/d*k; c.dx+=vx/d*k; c.dy+=vy/d*k; } }
       P.forEach(q=>{ if(q.dx||q.dy) q.b.style.transform=`translate(-50%,-50%) translate(${q.dx.toFixed(1)}px,${q.dy.toFixed(1)}px)`; }); };
     const fit2=()=>{ fit(); requestAnimationFrame(sep); }; fit2(); addEventListener('resize',fit2); addEventListener('alaia:fit',fit2);
     fr.querySelectorAll('.dhs').forEach(b=>b.onclick=e=>{ e.stopPropagation(); openRoom(u,+b.dataset.j); });
-    if(state._prevScene!=='unit'&&!state._liftSkip) resLift(u);
+    
   } else newFrame({img:'assets/UP_'+u.kind+'.webp',w:UPL[u.kind][0],h:UPL[u.kind][1],mode:'contain',cls:'upl',pad:()=>mir(innerWidth>980?{t:200,r:440,b:215,l:40}:{t:130,r:14,b:innerHeight*.5,l:14})});
   if(!RES[u.kind]){document.body.insertAdjacentHTML('beforeend',`<div class="istrip">${WALK[u.kind].map(([im],j)=>`<button data-j="${j}" aria-label="interior"><img alt="" src="${IMG[im]}"></button>`).join('')}</div>`); $$('.istrip button').forEach(b=>b.onclick=()=>go('walk',{u}));}
   setTitle(`${t('building')} ${u.b.id} · ${t('entrance')} ${u.ent} · ${floorName(u.f)}`,t(u.kind),'',true);
@@ -1696,10 +1708,10 @@ document.body.classList.add('intro');
 $('#enter').onclick=enter;
 Object.assign(IMG,{in_bed3:'ai/09_bedroom.jpg',in_bed4:'ai/08_bedroom_window.jpg',in_bed5:'ai/09_bedroom.jpg',cover:'ai/01_aerial_context.jpg',in_bed1:'ai/09_bedroom.jpg',in_bed2:'ai/08_bedroom_window.jpg',in_tv:'ai/11_living.jpg',in_tv2:'ai/11_living.jpg',in_kitchen:'ai/10_kitchen.jpg',in_kitchen2:'ai/10_kitchen.jpg',lagoon_lounge:'ai/03_lagoon_eye.jpg',lagoon_cafe:'ai/05_lagoon_eye_b.jpg',lagoon_cabana:'ai/04_lagoon_aerial.jpg'});
 /* ===== Real film (AI-finished renders of the real model, real site) + photo gallery ===== */
-Object.assign(S2.en,{dhHint:"Tap a room to step inside",resBack:"Floor plan",resNext:"Next room",resSkip:"Skip",enterT:"Enter the tower",floorsW:"floors",planView:"Site plan",all:"All homes",vt_am:"Sunrise",vt_noon:"Midday",vt_pm:"Sunset",vt_night:"Night",vt_real:"Rendered from this tower on the real site, at this floor height, with the real sun path. Finishes photoreal.",vt_rep:"Rendered from Tower 06 at the same floor height and orientation on the real site; your tower's view is similar, not identical.",vf_e9:"Lagoon sundecks",vf_t9:"Afternoons by the water",vf_e10:"Lagoon café",vf_t10:"Coffee on the sand",vf_e11:"Kids' club",vf_t11:"Room to play, steps from home",vf_e12:"Open-air gym",vf_t12:"Train under the palms",vf_e13:"Family time",vf_t13:"Long days by the lagoon",dimT:"Room dimensions",planNote:"Furnished plan supplied by the developer. Dimensions in metres.",d_bedliv:"Bedroom / living",d_bath:"Bathroom",d_bath1:"Bathroom 1",d_bath2:"Bathroom 2",d_bed1:"Bedroom 1",d_bed2:"Bedroom 2",d_kitdin:"Kitchen & dining",d_kitent:"Kitchen & entrance",viewT:"View from this home",bvSoon:"This view is being rendered on the real site — available in the next update.",bvCap:"Tower {t} · {s} side · rendered on the real site, real sun",bvA:"front",bvB:"rear",vf_e8:"Entrance B",vf_t8:"Two entrances, one for each wing",vf_e7:"International Coastal Road",vf_t7:"Direct frontage, minutes from the beach",insideT:"Inside the home",vf_e1:"El Hamam · International Coastal Road",vf_t1:"ALAIA, where it really is",vf_e2:"Three crystal lagoons",vf_t2:"Water at the heart of every block",vf_e3:"The lagoon edge",vf_t3:"Sand, palms and still water",vf_e4:"Golden hour",vf_t4:"Every evening on the water",vf_e5:"Entrance A",vf_t5:"Arrive under the timber canopy",vf_e6:"Your home",vf_t6:"Light oak, soft linen, real space",vfSound:"Sound",vfNote:"Visualisation from the architect's model, finished with AI. Final finishes may vary.",
+Object.assign(S2.en,{dhHint:"Furnished plan, rendered from the ALAIA 3D model",resBack:"Floor plan",resNext:"Next room",resSkip:"Skip",enterT:"Enter the tower",floorsW:"floors",planView:"Site plan",all:"All homes",vt_am:"Sunrise",vt_noon:"Midday",vt_pm:"Sunset",vt_night:"Night",vt_real:"Rendered from this tower on the real site, at this floor height, with the real sun path. Finishes photoreal.",vt_rep:"Rendered from Tower 06 at the same floor height and orientation on the real site; your tower's view is similar, not identical.",vf_e9:"Lagoon sundecks",vf_t9:"Afternoons by the water",vf_e10:"Lagoon café",vf_t10:"Coffee on the sand",vf_e11:"Kids' club",vf_t11:"Room to play, steps from home",vf_e12:"Open-air gym",vf_t12:"Train under the palms",vf_e13:"Family time",vf_t13:"Long days by the lagoon",dimT:"Room dimensions",planNote:"Furnished plan supplied by the developer. Dimensions in metres.",d_bedliv:"Bedroom / living",d_bath:"Bathroom",d_bath1:"Bathroom 1",d_bath2:"Bathroom 2",d_bed1:"Bedroom 1",d_bed2:"Bedroom 2",d_kitdin:"Kitchen & dining",d_kitent:"Kitchen & entrance",viewT:"View from this home",bvSoon:"This view is being rendered on the real site — available in the next update.",bvCap:"Tower {t} · {s} side · rendered on the real site, real sun",bvA:"front",bvB:"rear",vf_e8:"Entrance B",vf_t8:"Two entrances, one for each wing",vf_e7:"International Coastal Road",vf_t7:"Direct frontage, minutes from the beach",insideT:"Inside the home",vf_e1:"El Hamam · International Coastal Road",vf_t1:"ALAIA, where it really is",vf_e2:"Three crystal lagoons",vf_t2:"Water at the heart of every block",vf_e3:"The lagoon edge",vf_t3:"Sand, palms and still water",vf_e4:"Golden hour",vf_t4:"Every evening on the water",vf_e5:"Entrance A",vf_t5:"Arrive under the timber canopy",vf_e6:"Your home",vf_t6:"Light oak, soft linen, real space",vfSound:"Sound",vfNote:"Visualisation from the architect's model, finished with AI. Final finishes may vary.",
  g_t:"The place",g_p:"Every image starts from the architect's model, placed on the real site at El Hamam, lit by the real sun, then finished photo-real.",g_all:"All",g_site:"Site & context",g_lag:"Lagoons",g_arch:"Architecture",g_home:"Inside the home",
  g1:"The site between the coastal road and the olive farms",g2:"Frontage on the International Coastal Road",g3:"The lagoon edge",g4:"Lagoons and palm gardens",g5:"Golden hour by the water",g6:"Entrance A",g7:"Entrance B",g8:"Bedroom and window",g9:"Bedroom",g10:"Kitchen and entry",g11:"Living room"});
-Object.assign(S2.ar,{dhHint:"اضغط على أي غرفة لتدخلها",resBack:"المسقط",resNext:"الغرفة التالية",resSkip:"تخطي",enterT:"ادخل البرج",floorsW:"أدوار",planView:"المخطط",all:"كل الوحدات",vt_am:"الشروق",vt_noon:"الضهر",vt_pm:"الغروب",vt_night:"بالليل",vt_real:"مترندر من البرج ده في المكان الحقيقي، على ارتفاع الدور ده ومسار الشمس الحقيقي.",vt_rep:"مترندر من برج ٠٦ على نفس ارتفاع الدور ونفس الاتجاه في المكان الحقيقي؛ الفيو من برجك قريب منه مش نفسه بالظبط.",vf_e9:"شيزلونجات اللاجون",vf_t9:"العصاري جنب المية",vf_e10:"كافيه اللاجون",vf_t10:"قهوتك على الرملة",vf_e11:"نادي الأطفال",vf_t11:"مكان يلعبوا فيه، خطوتين من البيت",vf_e12:"جيم مفتوح",vf_t12:"تمرين تحت النخل",vf_e13:"وقت العيلة",vf_t13:"أيام طويلة جنب اللاجون",dimT:"مقاسات الغرف",planNote:"مخطط مفروش من المطوّر. المقاسات بالمتر.",d_bedliv:"نوم / معيشة",d_bath:"الحمام",d_bath1:"حمام ١",d_bath2:"حمام ٢",d_bed1:"غرفة نوم ١",d_bed2:"غرفة نوم ٢",d_kitdin:"مطبخ وسفرة",d_kitent:"مطبخ ومدخل",viewT:"الفيو من الشقة دي",bvSoon:"الفيو ده بيترندر دلوقتي في المكان الحقيقي — هيبقى موجود في التحديث الجاي.",bvCap:"برج {t} · الواجهة {s} · مترندر في المكان الحقيقي وبالشمس الحقيقية",bvA:"الأمامية",bvB:"الخلفية",vf_e8:"المدخل B",vf_t8:"مدخلين، واحد لكل جناح",vf_e7:"الطريق الساحلي الدولي",vf_t7:"واجهة مباشرة على الطريق، دقايق من البحر",insideT:"جوه البيت",vf_e1:"الحمّام · الطريق الساحلي الدولي",vf_t1:"ألايا في مكانها الحقيقي",vf_e2:"ثلاث بحيرات كريستالية",vf_t2:"المية في قلب كل مجموعة",vf_e3:"حافة البحيرة",vf_t3:"رمل ونخل ومية هادية",vf_e4:"وقت الغروب",vf_t4:"كل ليلة على المية",vf_e5:"المدخل A",vf_t5:"وصول تحت المظلة الخشب",vf_e6:"بيتك",vf_t6:"بلوط فاتح، كتان ناعم، ومساحة حقيقية",vfSound:"الصوت",vfNote:"تصوّر مبني على موديل المعماري ومكمّل بالذكاء الاصطناعي. التشطيبات النهائية قد تختلف.",
+Object.assign(S2.ar,{dhHint:"المسقط المفروش، مُصوَّر من الموديل ثلاثي الأبعاد لألايا",resBack:"المسقط",resNext:"الغرفة التالية",resSkip:"تخطي",enterT:"ادخل البرج",floorsW:"أدوار",planView:"المخطط",all:"كل الوحدات",vt_am:"الشروق",vt_noon:"الضهر",vt_pm:"الغروب",vt_night:"بالليل",vt_real:"مترندر من البرج ده في المكان الحقيقي، على ارتفاع الدور ده ومسار الشمس الحقيقي.",vt_rep:"مترندر من برج ٠٦ على نفس ارتفاع الدور ونفس الاتجاه في المكان الحقيقي؛ الفيو من برجك قريب منه مش نفسه بالظبط.",vf_e9:"شيزلونجات اللاجون",vf_t9:"العصاري جنب المية",vf_e10:"كافيه اللاجون",vf_t10:"قهوتك على الرملة",vf_e11:"نادي الأطفال",vf_t11:"مكان يلعبوا فيه، خطوتين من البيت",vf_e12:"جيم مفتوح",vf_t12:"تمرين تحت النخل",vf_e13:"وقت العيلة",vf_t13:"أيام طويلة جنب اللاجون",dimT:"مقاسات الغرف",planNote:"مخطط مفروش من المطوّر. المقاسات بالمتر.",d_bedliv:"نوم / معيشة",d_bath:"الحمام",d_bath1:"حمام ١",d_bath2:"حمام ٢",d_bed1:"غرفة نوم ١",d_bed2:"غرفة نوم ٢",d_kitdin:"مطبخ وسفرة",d_kitent:"مطبخ ومدخل",viewT:"الفيو من الشقة دي",bvSoon:"الفيو ده بيترندر دلوقتي في المكان الحقيقي — هيبقى موجود في التحديث الجاي.",bvCap:"برج {t} · الواجهة {s} · مترندر في المكان الحقيقي وبالشمس الحقيقية",bvA:"الأمامية",bvB:"الخلفية",vf_e8:"المدخل B",vf_t8:"مدخلين، واحد لكل جناح",vf_e7:"الطريق الساحلي الدولي",vf_t7:"واجهة مباشرة على الطريق، دقايق من البحر",insideT:"جوه البيت",vf_e1:"الحمّام · الطريق الساحلي الدولي",vf_t1:"ألايا في مكانها الحقيقي",vf_e2:"ثلاث بحيرات كريستالية",vf_t2:"المية في قلب كل مجموعة",vf_e3:"حافة البحيرة",vf_t3:"رمل ونخل ومية هادية",vf_e4:"وقت الغروب",vf_t4:"كل ليلة على المية",vf_e5:"المدخل A",vf_t5:"وصول تحت المظلة الخشب",vf_e6:"بيتك",vf_t6:"بلوط فاتح، كتان ناعم، ومساحة حقيقية",vfSound:"الصوت",vfNote:"تصوّر مبني على موديل المعماري ومكمّل بالذكاء الاصطناعي. التشطيبات النهائية قد تختلف.",
  g_t:"المكان",g_p:"كل صورة بادئة من موديل المعماري، في مكان الأرض الحقيقي بالحمّام، وبالشمس الحقيقية، ومتكمّلة لتبقى زي الصورة الحقيقية.",g_all:"الكل",g_site:"الموقع وما حوله",g_lag:"البحيرات",g_arch:"المعمار",g_home:"جوه البيت",
  g1:"الأرض بين الطريق الساحلي ومزارع الزيتون",g2:"الواجهة على الطريق الساحلي الدولي",g3:"حافة البحيرة",g4:"البحيرات وحدائق النخل",g5:"الغروب جنب المية",g6:"المدخل A",g7:"المدخل B",g8:"غرفة النوم والشباك",g9:"غرفة النوم",g10:"المطبخ والمدخل",g11:"المعيشة"});
 const VF=[{v:'ai/v1_aerial.mp4',e:'vf_e1',t:'vf_t1'},{v:'ai/v8_road.mp4',e:'vf_e7',t:'vf_t7'},{v:'ai/v2_lagoon_glide.mp4',e:'vf_e2',t:'vf_t2'},{v:'ai/v3_lagoon_walk.mp4',e:'vf_e3',t:'vf_t3'},{v:'ai/v4_lagoon_slide.mp4',e:'vf_e4',t:'vf_t4'},{img:'ai/S_am8_sundecks.jpg',dur:5,e:'vf_e9',t:'vf_t9'},{img:'ai/S_am1_cafe.jpg',dur:5,e:'vf_e10',t:'vf_t10'},{img:'ai/S_am2_kids.jpg',dur:5,e:'vf_e11',t:'vf_t11'},{img:'ai/S_am5_gym.jpg',dur:5,e:'vf_e12',t:'vf_t12'},{v:'ai/v5_entrance.mp4',e:'vf_e5',t:'vf_t5'},{v:'ai/v7_entrance_B.mp4',e:'vf_e8',t:'vf_t8'},{v:'ai/v6_home.mp4',e:'vf_e6',t:'vf_t6'}];
@@ -1796,9 +1808,9 @@ Object.assign(S2.en,{back:"Back",sheetMore:"Show more",sheetLess:"Show less",crm
  smT:"Sales mode",smUnits:"Units & status",smLeads:"Leads",smExit:"Exit sales mode",smLeadsN:"leads on this device",
  idleT:"Still there?",idleP:"Returning to the welcome screen in",idleStay:"I'm here",
  d_walk:"Walk the home",d_proj:"Project",d_towers:"Towers",
- wkEnter:"Enter this home",wkSoon:"Interior view coming soon",wkHint:"Drag to look around · pinch to zoom · tap an arrow to walk",wkView:"View from this home",wkInfo:"About this room",
+ wkEnter:"Enter this home",wkSoon:"Interior view coming soon",wkHint:"Drag to look around 360° · pinch or scroll to zoom · choose a room on the plan",wkView:"View from this home",wkInfo:"About this room",
  wn_entry:"Entrance",wn_room:"Room",wn_studio:"Studio",wn_sleep:"Sleeping area",wn_kitchenette:"Kitchenette",wn_livkit:"Living & kitchen",wn_living:"Living room",wn_kitchen:"Kitchen",wn_bed:"Bedroom",wn_master:"Master bedroom",wn_second:"Second bedroom",wn_bath:"Bathroom",
- infoArea:"Home area",infoRoom:"Room size",infoFin:"Finishes",infoView:"View direction",infoNear:"Nearby amenities",tbc:"To be confirmed by the developer",infoTypeOnly:"Interior and view are illustrative, typical for this home type.",
+ infoArea:"Home area",infoRoom:"Room size",infoFin:"Finishes",infoView:"View direction",infoNear:"Nearby amenities",tbc:"To be confirmed by the developer",infoTypeOnly:"Rendered from the ALAIA 3D model · typical layout for this home type",planAlt:"Furnished plan",wkSoonP:"No interior render of this home type exists yet. The furnished plan above is the real layout.",wn_studio2:"Studio",
  pj_eye:"Project details",pj_t:"ALAIA, North Coast",pj_p:"Thirteen low-rise residential towers in four rows around three crystal lagoons, with a boutique hotel and a retail promenade on the coastal-road front.",
  pj_loc:"Location",pj_tw:"Towers",pj_homes:"Homes",pj_lag:"Lagoons",pj_types:"Tower types",pj_mix:"Home types",pj_svc:"Hotel & retail",pj_am:"Amenities",pj_del:"Delivery stages",pj_land:"Land area",
  pj_delP:"Delivery stages and dates have not been issued yet.",pj_units:"Homes",pj_qty:"Towers",pj_h:"Height",pj_ty:"Type",pj_ids:"Tower numbers",pj_map:"Open in Google Maps"});
@@ -1812,9 +1824,9 @@ Object.assign(S2.ar,{back:"رجوع",sheetMore:"عرض المزيد",sheetLess:"
  smT:"وضع المبيعات",smUnits:"الوحدات والحالة",smLeads:"الطلبات",smExit:"خروج من وضع المبيعات",smLeadsN:"طلب على الجهاز ده",
  idleT:"لسه معانا؟",idleP:"الشاشة هترجع لشاشة الترحيب خلال",idleStay:"أنا هنا",
  d_walk:"امشي جوه البيت",d_proj:"المشروع",d_towers:"الأبراج",
- wkEnter:"ادخل البيت",wkSoon:"المنظر الداخلي قريبًا",wkHint:"اسحب علشان تبص حواليك · قرّب بصباعين · اضغط على السهم علشان تمشي",wkView:"المنظر من البيت ده",wkInfo:"عن الأوضة دي",
+ wkEnter:"ادخل البيت",wkSoon:"المنظر الداخلي قريبًا",wkHint:"اسحب علشان تبص حواليك ٣٦٠° · قرّب بصباعين أو بالعجلة · اختار الأوضة من المسقط",wkView:"المنظر من البيت ده",wkInfo:"عن الأوضة دي",
  wn_entry:"المدخل",wn_room:"غرفة",wn_studio:"الاستوديو",wn_sleep:"منطقة النوم",wn_kitchenette:"المطبخ الصغير",wn_livkit:"المعيشة والمطبخ",wn_living:"المعيشة",wn_kitchen:"المطبخ",wn_bed:"غرفة النوم",wn_master:"غرفة النوم الرئيسية",wn_second:"غرفة النوم التانية",wn_bath:"الحمام",
- infoArea:"مساحة الوحدة",infoRoom:"مقاس الأوضة",infoFin:"التشطيبات",infoView:"اتجاه الفيو",infoNear:"مميزات قريبة",tbc:"يؤكدها المطوّر",infoTypeOnly:"التصميم الداخلي والإطلالة توضيحيان لهذا النوع من الوحدات.",
+ infoArea:"مساحة الوحدة",infoRoom:"مقاس الأوضة",infoFin:"التشطيبات",infoView:"اتجاه الفيو",infoNear:"مميزات قريبة",tbc:"يؤكدها المطوّر",infoTypeOnly:"مُصوَّر من الموديل ثلاثي الأبعاد لألايا · التوزيع المعتاد لنوع الوحدة",planAlt:"المسقط المفروش",wkSoonP:"مفيش لسه صورة داخلية من الموديل لنوع الوحدة ده. المسقط المفروش اللي فوق هو التوزيع الحقيقي.",
  pj_eye:"تفاصيل المشروع",pj_t:"ألايا، الساحل الشمالي",pj_p:"١٣ برج سكني منخفض في أربع صفوف حوالين ثلاث بحيرات كريستالية، مع فندق بوتيك وممشى تجاري على واجهة الطريق الساحلي.",
  pj_loc:"الموقع",pj_tw:"الأبراج",pj_homes:"الوحدات",pj_lag:"البحيرات",pj_types:"نماذج الأبراج",pj_mix:"أنواع الوحدات",pj_svc:"الفندق والتجاري",pj_am:"المميزات",pj_del:"مراحل التسليم",pj_land:"مساحة الأرض",
  pj_delP:"مراحل التسليم ومواعيدها لسه ماصدرتش.",pj_units:"الوحدات",pj_qty:"عدد الأبراج",pj_h:"الارتفاع",pj_ty:"النموذج",pj_ids:"أرقام الأبراج",pj_map:"افتح على خرائط جوجل"});
@@ -1916,10 +1928,10 @@ const _sUnit=sUnit; sUnit=function(o){ const u=o.u; sideHook=()=>{ const pr=$('#
   const g=$('#u-gal'); if(g) g.onclick=()=>openWalk(u,1); };
   _sUnit(o);
   const box=[...document.querySelectorAll('.dhbox')].pop(); if(box&&!o.plan){ box.querySelectorAll('.dhs').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const j=+b.dataset.j; openWalk(u,DH2N[u.kind][j],`ai/res/${u.kind}_dive_${j}.mp4`); });
-    const hint=box.querySelector('.dhhint'); if(hint&&!box.querySelector('.illus')) hint.insertAdjacentHTML('beforebegin',`<div class="illus">${t('infoTypeOnly')}</div>`); if(hint){ hint.insertAdjacentHTML('afterend',`<div style="display:flex;justify-content:center;margin-top:14px">${cta('dh-in',t('wkEnter'),'home')}</div>`); const din=box.querySelector('#dh-in'); din.classList.add('pri'); din.dataset.code=u.code; din.onclick=e=>{ e.stopPropagation(); if(din.closest('.frame.dying')) return; openWalk(u,0); }; }
+    const hint=box.querySelector('.dhhint'); if(hint){ hint.insertAdjacentHTML('afterend',`<div style="display:flex;justify-content:center;margin-top:14px">${cta('dh-in',t('wkEnter'),'home')}</div>`); const din=box.querySelector('#dh-in'); din.classList.add('pri'); din.dataset.code=u.code; const hasInt=!!(window.ALAIA_VIDEOMAP&&window.ALAIA_VIDEOMAP.lookup(u.kind,u.b.id,u.f).interior); if(!hasInt){ din.querySelector('span').textContent=t('wkSoon'); din.classList.remove('pri'); } din.onclick=e=>{ e.stopPropagation(); if(din.closest('.frame.dying')) return; openWalk(u,0); }; }
     requestAnimationFrame(()=>dispatchEvent(new Event('alaia:fit')));
     // warm the first walk node and the dive clips so taps never wait on the network
-    [0,1].forEach(i=>{ const im=new Image(); im.src=`ai/walk/${u.kind}_n${i}.jpg`; }); }
+    const wm=window.ALAIA_VIDEOMAP&&window.ALAIA_VIDEOMAP.lookup(u.kind,u.b.id,u.f); const n0=wm&&wm.interior&&wm.interior.walk.nodes[0]; if(n0){ const im=new Image(); im.src=n0.src; } }
 };
 /* tower → home lift: no dead wait; play as soon as the clip can play, never block more than 3 s */
 resLift=function(u,done){ const ov=document.createElement('div'); ov.className='resov'; document.body.appendChild(ov);
@@ -1937,9 +1949,9 @@ try{ const lk=document.createElement('link'); lk.rel='preload'; lk.as='image'; l
   if(innerWidth>=1280){ const pv=document.createElement('video'); pv.preload='auto'; pv.muted=true; pv.src='ai/film.mp4'; pv.style.display='none'; document.body.appendChild(pv); setTimeout(()=>{pv.removeAttribute('src');pv.load();pv.remove();},60000); } }catch(e){}
 
 /* ================= walk-through viewer (item 12) ================= */
-const WN={st:['studio','sleep','kitchenette','bath'],br1:['livkit','kitchen','living','bedroom','bath'],br2:['living','livkit','master','second','bath']};
+const WN={st:['studio'],br1:['livkit','bedroom'],br2:[]};
 const WNL=new Proxy({entry:'wn_entry',living:'wn_living',kitchen:'wn_kitchen',bedroom:'wn_bed',master:'wn_master',second:'wn_second',bath:'wn_bath',studio:'wn_studio',sleep:'wn_sleep',kitchenette:'wn_kitchenette',livkit:'wn_livkit'},{get:(o,k)=>o[k]||'wn_room'});
-const WDIM={st:{living:'d_bedliv',kitchen:'r_kitchen',bath:'d_bath'},br1:{living:'r_living',bedroom:'r_bed',kitchen:'r_kitchen',bath:'d_bath'},br2:{entry:'d_kitent',living:'r_living',master:'d_bed1',second:'d_bed2',bath:'d_bath1'}};
+const WDIM={st:{studio:'d_bedliv'},br1:{livkit:'r_living',bedroom:'r_bed'},br2:{}};
 const WHS={fwd:[.5,.64],back:[.24,.72],info:[.36,.4]};
 const wk={el:null,u:null,k:null,i:0,iw:2600,ih:1103,x:0,y:0,z:1,tx:0,ty:0,tz:1,vx:0,vy:0,raf:0,busy:false,pre:{}};
 function wkStop(){ cancelAnimationFrame(wk.raf); wk.raf=0; Object.values(wk.pre).forEach(v=>{try{v.pause();v.removeAttribute('src');v.load();}catch(e){}}); wk.pre={}; }
@@ -1947,7 +1959,7 @@ function wkClose(now){ const el=$('#wk'); if(!el) return; wkStop(); wk.el=null; 
 function nearAmen(b){ return AMEN.map(a=>({a,d:Math.hypot(a.px-b.px,a.py-b.py)})).sort((p,q)=>p.d-q.d).slice(0,2).map(x=>t('a'+x.a.n)); }
 function wkSafe(){ const el=wk.el||document.querySelector('#wk'); const bar=el&&el.querySelector('.wkbar'), cap=el&&el.querySelector('.top2'), mm=el&&el.querySelector('.mm'); const br=bar?bar.getBoundingClientRect():{top:innerHeight}; const cr=cap?cap.getBoundingClientRect():{bottom:90};
   const mr=mm&&getComputedStyle(mm).display!=='none'?mm.getBoundingClientRect():null; return {l:44,r:innerWidth-44,t:cr.bottom+44,b:Math.max(cr.bottom+60,br.top-44),mm:mr&&mr.width?mr:null}; }
-function openWalk(u,node,intro,kind){ kind=u?u.kind:(kind||'br2'); wkStop(); $('#wk')?.remove(); $('#proj')?.remove();
+function openWalk(u,node,intro,kind){ kind=u?u.kind:(kind||'br1'); const hadWk=!!$('#wk'); wkStop(); $('#wk')?.remove(); $('#proj')?.remove();
   const map=window.ALAIA_VIDEOMAP?window.ALAIA_VIDEOMAP.lookup(kind,u&&u.b.id,u&&u.f):null; const it=map&&map.interior;
   Object.assign(wk,{u:u||null,k:kind,i:Math.max(0,Math.min((WN[kind]||[]).length-1,node||0)),z:1,tz:1,busy:false});
   const el=document.createElement('div'); el.id='wk'; wk.el=el; document.body.appendChild(el);
@@ -1956,31 +1968,32 @@ function openWalk(u,node,intro,kind){ kind=u?u.kind:(kind||'br2'); wkStop(); $('
    <div class="top2"><div class="cap"><span class="eye"></span><h3></h3><small>${t('infoTypeOnly')}</small></div><span class="sp"></span>
     ${u?'':`<div class="chips">${['st','br1','br2'].map(x=>`<button class="chip glass" data-wk="${x}" aria-pressed="${x===kind}" style="color:#F3EEE5">${t(x)}</button>`).join('')}</div>`}
     <button class="xb" id="wk-x" aria-label="close">${ICO.x}</button></div>
-   <div class="mm"><div class="dh" style="background-image:url('ai/res/${kind}_dh.jpg')"></div><div class="rt"></div></div>
+   <div class="mm"><div class="dh plan" style="background-image:url('ai/real/plan_${kind}.jpg')"></div><div class="rt"></div></div>
    <div class="zm"><button id="wk-zi" aria-label="zoom in">+</button><button id="wk-zo" aria-label="zoom out">−</button></div>
    <div class="hint">${t('wkHint')}</div>
    <div class="icard" id="wk-ic"></div>
    <div class="wkbar">${u?`<span class="u" data-latin>${u.code}</span>`:''}<span class="m">${t(kind)} · ${nf(area)} ${t('sqm')}${u?` · ${t('v_'+u.view)}`:''}</span><span class="pr">${t('pricePend')}</span><span class="sp"></span>
-    ${u?cta('wk-view',t('wkView'),'walk',true):''}${u?cta('wk-req',t('reqT'),'send'):''}</div>`;
-  requestAnimationFrame(()=>el.classList.add('on')); setTimeout(()=>{ const h=el.querySelector('.hint'); if(h) h.style.opacity=0; },6000);
+    <button class="chip glass" id="wk-info">${t('wkInfo')}</button>${u?cta('wk-view',t('wkView'),'walk',true):''}${u?cta('wk-req',t('reqT'),'send'):''}</div>`;
+  if(hadWk){ el.style.transition='none'; el.classList.add('on'); requestAnimationFrame(()=>{ el.style.transition=''; }); } else requestAnimationFrame(()=>el.classList.add('on')); setTimeout(()=>{ const h=el.querySelector('.hint'); if(h) h.style.opacity=0; },6000);
   el.querySelector('#wk-x').onclick=()=>wkClose(); if(u){ el.querySelector('#wk-req').onclick=()=>openReq(u); el.querySelector('#wk-view').onclick=()=>openView(u); }
   el.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>openWalk(null,0,null,b.dataset.wk));
+  const wif=el.querySelector('#wk-info'); if(wif) wif.onclick=()=>wkInfo();
   el.querySelector('#wk-zi').onclick=()=>wkZoom(1.4); el.querySelector('#wk-zo').onclick=()=>wkZoom(1/1.4);
-  if(!it){ el.querySelector('.st').innerHTML=`<div class="soon">${t('wkSoon')}</div>`; el.querySelector('.mm').remove(); el.querySelector('.zm').remove(); el.querySelector('.hint').remove(); dock(); return; }
+  if(!it){ el.querySelector('.st').innerHTML=`<div class="soon"><img class="soonplan" alt="" src="ai/real/plan_${kind}.jpg"><b>${t('wkSoon')}</b><small>${t('wkSoonP')}</small></div>`; const wif2=el.querySelector('#wk-info'); if(wif2) wif2.remove(); el.querySelector('.mm').remove(); el.querySelector('.zm').remove(); el.querySelector('.hint').remove(); dock(); return; }
   wk.it=it; wkBind(el); wkShow(wk.i,!!intro); dock();
   if(intro) wkIntro(intro);
 }
 function wkIntro(src){ const v=wk.el.querySelector('video.tv'); let fin=false; const land=()=>{ if(fin) return; fin=true; kLoad(false); v.classList.remove('on'); setTimeout(()=>{ v.pause(); },300); };
   v.src=src; kLoad(true); v.onplaying=()=>{ kLoad(false); v.classList.add('on'); }; v.ontimeupdate=()=>{ if(v.duration&&v.currentTime>v.duration-.6) land(); }; v.onended=land; v.onerror=land;
   v.play().catch(land); setTimeout(()=>{ if(!v.classList.contains('on')) land(); },2500); setTimeout(land,9000); }
-function wkFit(){ const W=innerWidth,H=innerHeight; return Math.max(W/wk.iw,H/wk.ih); }
-function wkClamp(){ const W=innerWidth,H=innerHeight,S=wkFit()*wk.tz; wk.tx=Math.min(0,Math.max(W-wk.iw*S,wk.tx)); wk.ty=Math.min(0,Math.max(H-wk.ih*S,wk.ty)); }
-function wkCenter(){ const W=innerWidth,H=innerHeight,S=wkFit()*wk.tz; wk.tx=(W-wk.iw*S)/2; wk.ty=(H-wk.ih*S)/2; }
+function wkFit(){ const W=innerWidth,H=innerHeight; return wk.pano?H/wk.ih:Math.max(W/wk.iw,H/wk.ih); }
+function wkClamp(){ const W=innerWidth,H=innerHeight,S=wkFit()*wk.tz; if(wk.pano){ const P=wk.iw*S; while(wk.tx>-P){ wk.tx-=P; wk.x-=P; } while(wk.tx<-2*P){ wk.tx+=P; wk.x+=P; } wk.ty=Math.min(0,Math.max(H-wk.ih*S,wk.ty)); return; } wk.tx=Math.min(0,Math.max(W-wk.iw*S,wk.tx)); wk.ty=Math.min(0,Math.max(H-wk.ih*S,wk.ty)); }
+function wkCenter(){ const W=innerWidth,H=innerHeight,S=wkFit()*wk.tz; if(wk.pano){ wk.tx=-wk.iw*S-(wk.iw*S*(wk.start||0))+W/2; wk.ty=(H-wk.ih*S)/2; return; } wk.tx=(W-wk.iw*S)/2; wk.ty=(H-wk.ih*S)/2; }
 function wkZoom(f,cx,cy){ cx=cx??innerWidth/2; cy=cy??innerHeight/2; const S0=wkFit()*wk.tz; const nz=Math.max(1,Math.min(2.6,wk.tz*f)); const S1=wkFit()*nz; wk.tx=cx-(cx-wk.tx)*S1/S0; wk.ty=cy-(cy-wk.ty)*S1/S0; wk.tz=nz; wkClamp(); }
 function wkFrame(){ if(!wk.el){ wk.raf=0; return; }
   if(!wk.drag){ wk.tx+=wk.vx; wk.ty+=wk.vy; wk.vx*=.92; wk.vy*=.92; if(Math.abs(wk.vx)<.05) wk.vx=0; if(Math.abs(wk.vy)<.05) wk.vy=0; wkClamp(); }
   wk.x+=(wk.tx-wk.x)*.2; wk.y+=(wk.ty-wk.y)*.2; wk.z+=(wk.tz-wk.z)*.2; const S=wkFit()*wk.z;
-  const pan=wk.el.querySelector('.pan'); if(pan){ pan.style.width=wk.iw+'px'; pan.style.height=wk.ih+'px'; pan.style.transform=`translate3d(${wk.x}px,${wk.y}px,0) scale(${S})`; }
+  const pan=wk.el.querySelector('.pan'); if(pan){ pan.style.width=(wk.pano?wk.iw*3:wk.iw)+'px'; pan.style.height=wk.ih+'px'; pan.style.transform=`translate3d(${wk.x}px,${wk.y}px,0) scale(${S})`; }
   wk.el.querySelectorAll('.lay .hs').forEach(h=>{ const fx=+h.dataset.x, fy=+h.dataset.y; let X=wk.x+fx*wk.iw*S, Y=wk.y+fy*wk.ih*S; const SA=wkSafe(); X=Math.max(SA.l,Math.min(SA.r,X)); Y=Math.max(SA.t,Math.min(SA.b,Y)); if(SA.mm&&X>SA.mm.left-40&&X<SA.mm.right+40&&Y>SA.mm.top-40&&Y<SA.mm.bottom+40) Y=SA.mm.top-48; h.style.left=X+'px'; h.style.top=Y+'px'; const hb=h.getBoundingClientRect(); let dx=0, dy=0; if(hb.left<12) dx=12-hb.left; else if(hb.right>innerWidth-12) dx=innerWidth-12-hb.right; if(hb.top<SA.t-36) dy=SA.t-36-hb.top; else if(hb.bottom>SA.b+36) dy=SA.b+36-hb.bottom; if(dx||dy){ h.style.left=(X+dx)+'px'; h.style.top=(Y+dy)+'px'; }
       const zc=document.querySelector('#wk-zi'); const obs=[SA.mm, zc&&zc.parentElement&&zc.parentElement.getBoundingClientRect()].filter(Boolean); for(const o of obs){ const b2=h.getBoundingClientRect(); if(b2.right>o.left-6&&b2.left<o.right+6&&b2.bottom>o.top-6&&b2.top<o.bottom+6){ const cur=parseFloat(h.style.top)||Y; h.style.top=(cur-(b2.bottom-o.top+10))+'px'; } } });
   wk.raf=requestAnimationFrame(wkFrame); }
@@ -1999,19 +2012,20 @@ function wkBind(el){ const st=el.querySelector('.st'); const P=new Map(); let la
 function wkClip(a,b){ const it=wk.it; if(Math.abs(a-b)!==1) return null; const L=b>a?it.walk.forward:it.walk.back; const c=L.find(x=>x.from===a&&x.to===b); return c?c.src:null; }
 function wkPreload(){ const n=WN[wk.k].length, keep={}; [wk.i+1,wk.i-1].forEach(j=>{ if(j<0||j>=n) return; const s=wkClip(wk.i,j); if(!s) return; keep[s]=wk.pre[s]||Object.assign(document.createElement('video'),{muted:true,preload:'auto',playsInline:true,src:s}); const im=new Image(); im.src=wk.it.walk.nodes[j].src; });
   Object.keys(wk.pre).forEach(s=>{ if(!keep[s]){ try{ wk.pre[s].removeAttribute('src'); wk.pre[s].load(); }catch(e){} } }); wk.pre=keep; }
-function wkShow(i,first){ const el=wk.el; if(!el) return; wk.i=i; const k=wk.k, nodes=WN[k], id=nodes[i], src=wk.it.walk.nodes[i].src;
-  const img=el.querySelector('.pan img'); if(img.getAttribute('src')!==src){ img.src=src; }
-  img.onload=()=>{ wk.iw=img.naturalWidth||2600; wk.ih=img.naturalHeight||1103; if(first){ wk.tz=wk.z=1; wkCenter(); wk.x=wk.tx; wk.y=wk.ty; } else wkClamp(); };
+function wkShow(i,first){ const el=wk.el; if(!el) return; wk.i=i; const k=wk.k, nodes=WN[k], id=nodes[i], nd=wk.it.walk.nodes[i], src=nd.src; wk.pano=!!nd.pano; wk.start=nd.start||0;
+  const img=el.querySelector('.pan img'); const pan=el.querySelector('.pan'); if(wk.pano){ img.style.display='none'; pan.style.backgroundImage=`url('${src}')`; pan.style.backgroundRepeat='repeat-x'; pan.style.backgroundSize=`${nd.w}px ${nd.h}px`; wk.iw=nd.w; wk.ih=nd.h; } else { img.style.display=''; pan.style.backgroundImage=''; }
+  if(img.getAttribute('src')!==src){ img.src=src; }
+  img.onload=()=>{ wk.iw=wk.pano?nd.w:(img.naturalWidth||2600); wk.ih=wk.pano?nd.h:(img.naturalHeight||1103); if(first){ wk.tz=wk.z=1; wkCenter(); wk.x=wk.tx; wk.y=wk.ty; } else wkClamp(); };
   if(first||!img.complete){ wk.tz=1; wkCenter(); wk.x=wk.tx; wk.y=wk.ty; }
   el.querySelector('.cap .eye').textContent=`${t(k)}${wk.u?' · '+wk.u.code:''} · ${nf(i+1)}/${nf(nodes.length)}`; el.querySelector('.cap h3').textContent=t(WNL[id]);
   const n=nodes.length, hs=[];
-  if(i<n-1) hs.push(`<button class="hs wk-go" data-x="${WHS.fwd[0]}" data-y="${WHS.fwd[1]}" data-to="${i+1}"><i><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></i><span>${t(WNL[nodes[i+1]])}</span></button>`);
-  if(i>0) hs.push(`<button class="hs wk-go" data-x="${WHS.back[0]}" data-y="${WHS.back[1]}" data-to="${i-1}"><i><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></i><span>${t(WNL[nodes[i-1]])}</span></button>`);
-  hs.push(`<button class="hs wk-in" data-x="${WHS.info[0]}" data-y="${WHS.info[1]}" aria-label="${t('wkInfo')}"><i>i</i></button>`);
+  if(!wk.pano&&i<n-1) hs.push(`<button class="hs wk-go" data-x="${WHS.fwd[0]}" data-y="${WHS.fwd[1]}" data-to="${i+1}"><i><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></i><span>${t(WNL[nodes[i+1]])}</span></button>`);
+  if(!wk.pano&&i>0) hs.push(`<button class="hs wk-go" data-x="${WHS.back[0]}" data-y="${WHS.back[1]}" data-to="${i-1}"><i><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></i><span>${t(WNL[nodes[i-1]])}</span></button>`);
+  if(!wk.pano) hs.push(`<button class="hs wk-in" data-x="${WHS.info[0]}" data-y="${WHS.info[1]}" aria-label="${t('wkInfo')}"><i>i</i></button>`);
   const lay=el.querySelector('.lay'); lay.innerHTML=hs.join(''); lay.querySelectorAll('.hs').forEach(h=>h.style.pointerEvents='auto');
   lay.querySelectorAll('.wk-go').forEach(b=>b.onclick=e=>{ e.stopPropagation(); wkGo(+b.dataset.to); });
-  lay.querySelector('.wk-in').onclick=e=>{ e.stopPropagation(); wkInfo(); };
-  const dh=el.querySelector('.mm .dh'); if(dh){ const RD=RESDH[k]||[]; dh.innerHTML=RD.map(([x,y,j])=>`<b class="${DH2N[k][j]===i?'on':''}" style="left:${x*100}%;top:${y*100}%"></b>`).join(''); }
+  const wi=lay.querySelector('.wk-in'); if(wi) wi.onclick=e=>{ e.stopPropagation(); wkInfo(); };
+  const dh=el.querySelector('.mm .dh'); if(dh) dh.innerHTML='';
   const rt=el.querySelector('.mm .rt'); if(rt){ rt.innerHTML=nodes.map((nd,j)=>`<button data-j="${j}" aria-pressed="${j===i}">${t(WNL[nd])}</button>`).join(''); rt.querySelectorAll('button').forEach(b=>b.onclick=()=>wkGo(+b.dataset.j)); }
   el.querySelector('#wk-ic').classList.remove('on'); wkPreload(); }
 function wkInfo(){ const el=wk.el, k=wk.k, id=WN[k][wk.i], dk=WDIM[k][id]; const dim=dk&&(DIMS[k].find(d=>d[0]===dk)||[])[1]; const u=wk.u;
@@ -2021,7 +2035,7 @@ function wkInfo(){ const el=wk.el, k=wk.k, id=WN[k][wk.i], dk=WDIM[k][id]; const
   ic.classList.toggle('on'); }
 function wkGo(j){ if(!wk.el||wk.busy||j===wk.i) return; const el=wk.el, src=wkClip(wk.i,j); el.querySelector('#wk-ic').classList.remove('on');
   const swapTo=()=>{ wkShow(j,true); };
-  if(!src){ const im2=el.querySelector('.img2'); im2.style.backgroundImage=`url('${wk.it.walk.nodes[j].src}')`; im2.style.opacity=1; wk.busy=true; setTimeout(()=>{ swapTo(); setTimeout(()=>{ im2.style.opacity=0; wk.busy=false; },60); },500); return; }
+  if(!src){ const im2=el.querySelector('.img2'); im2.style.backgroundImage='none'; im2.style.backgroundColor='#0C0B09'; im2.style.transition='opacity .22s'; im2.style.opacity=1; wk.busy=true; const pre=new Image(); pre.src=wk.it.walk.nodes[j].src; setTimeout(()=>{ swapTo(); const done=()=>{ im2.style.opacity=0; wk.busy=false; }; if(pre.complete) setTimeout(done,40); else { pre.onload=()=>setTimeout(done,40); setTimeout(done,1500); } },230); return; }
   wk.busy=true; wk.tz=1; wkCenter(); const v=el.querySelector('video.tv'); let fin=false, started=false;
   const land=()=>{ if(fin) return; fin=true; kLoad(false); swapTo(); requestAnimationFrame(()=>{ v.classList.remove('on'); wk.busy=false; }); };
   const pv=wk.pre[src]; v.src=src; if(pv&&pv.readyState>=2){} kLoad(true);
